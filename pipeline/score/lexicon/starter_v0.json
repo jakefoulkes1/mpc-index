@@ -1,0 +1,21 @@
+{
+  "_note": "PLUMBING LEXICON ONLY - tests the pipeline end to end. The research baseline is Apel & Blix Grimaldi (2012) implemented verbatim. See DECISIONS.md 2026-07-05. Never use starter_v0 output in any analysis or claim.",
+  "hawkish": [
+    "tighten", "tightening", "tighter", "restrictive", "restrictiveness",
+    "raise bank rate", "increase bank rate", "raise rates", "rate increase",
+    "hike", "hikes", "hiking",
+    "upside risks", "upward pressure", "inflationary pressure", "inflationary pressures",
+    "price pressures", "wage pressures", "capacity pressures",
+    "above target", "above the target", "overheating",
+    "persistent inflation", "inflation persistence", "intrinsic persistence",
+    "elevated inflation", "strong demand", "robust demand", "vigilant", "forceful"
+  ],
+  "dovish": [
+    "ease", "easing", "loosen", "loosening", "accommodative", "stimulus",
+    "cut bank rate", "reduce bank rate", "rate cut", "rate cuts", "cuts", "lower rates",
+    "downside risks", "downward pressure", "below target", "below the target",
+    "spare capacity", "slack", "subdued", "weak demand", "weakening", "weakness",
+    "disinflation", "soften", "softening", "softer", "fragile", "headwinds", "deteriorating"
+  ],
+  "negators": ["not", "no", "never", "without", "less", "fewer", "unlikely", "neither", "nor", "hardly"]
+}

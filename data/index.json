@@ -1,0 +1,29 @@
+{
+  "schema": "index-v0",
+  "generated_utc": "2026-07-05T19:56:20+00:00",
+  "lexicon": "starter_v0 (plumbing only - see DECISIONS.md; A&BG replaces it)",
+  "documents": [
+    {
+      "doc_id": "minutes-2026-06",
+      "type": "minutes",
+      "meeting_end": "2026-06-17",
+      "published": "2026-06-18",
+      "decision": "hold at 3.75%",
+      "vote": "7-2 (two for +25bp)",
+      "source_url": "https://www.bankofengland.co.uk/monetary-policy-summary-and-minutes/2026/june-2026",
+      "sha256": "cb8fa61e9ca6b9aabe7fe78eccd65b77d26270d4b8f91e85601b2ec673b3d6a8",
+      "n_sentences": 237,
+      "n_scored_sentences": 71,
+      "hawkish_hits": 48,
+      "dovish_hits": 42,
+      "net_hawkishness": 0.0667
+    }
+  ],
+  "series": [
+    {
+      "date": "2026-06-18",
+      "net_hawkishness": 0.0667,
+      "doc_id": "minutes-2026-06"
+    }
+  ]
+}
