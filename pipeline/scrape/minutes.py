@@ -22,8 +22,9 @@ MONTH_NUM = {m: i + 1 for i, m in enumerate(
 ROOT = Path(__file__).resolve().parents[2]
 
 
-def minutes_url(year: int, month: str) -> str:
-    return f"{BASE}/{year}/{month.lower()}-{year}"
+def minutes_url(year: int, month: str, prefixed: bool = False) -> str:
+    slug = f"mpc-{month.lower()}-{year}" if prefixed else f"{month.lower()}-{year}"
+    return f"{BASE}/{year}/{slug}"
 
 
 def scrape_month(year: int, month: str) -> Path:
@@ -31,6 +32,13 @@ def scrape_month(year: int, month: str) -> Path:
     raw_html.mkdir(parents=True, exist_ok=True)
     url = minutes_url(year, month)
     resp = requests.get(url, headers=HEADERS, timeout=30)
+    if resp.status_code == 404:
+        # 2015-2016 pages use a "mpc-<month>-<year>" slug instead of "<month>-<year>".
+        time.sleep(2.0)
+        alt_url = minutes_url(year, month, prefixed=True)
+        alt_resp = requests.get(alt_url, headers=HEADERS, timeout=30)
+        if alt_resp.status_code != 404:
+            url, resp = alt_url, alt_resp
     resp.raise_for_status()
     time.sleep(2.0)
     stem = f"{year}-{MONTH_NUM[month.lower()]:02d}-minutes"

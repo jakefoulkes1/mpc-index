@@ -1,18 +1,1383 @@
 {
   "schema": "index-v0",
-  "generated_utc": "2026-07-05T19:56:20+00:00",
+  "generated_utc": "2026-07-10T23:17:14+00:00",
   "lexicon": "starter_v0 (plumbing only - see DECISIONS.md; A&BG replaces it)",
   "documents": [
+    {
+      "doc_id": "minutes-2015-08",
+      "type": "minutes",
+      "meeting_end": "2015-08-05",
+      "published": "2015-08-06",
+      "decision": "maintain Bank Rate at 0.5%",
+      "vote": "8-1",
+      "source_url": "https://www.bankofengland.co.uk/monetary-policy-summary-and-minutes/2015/mpc-august-2015",
+      "sha256": "fbd970430ec32a75a13d81d12460533b22ba28562e662a04bbf30df64780a626",
+      "n_sentences": 50,
+      "n_scored_sentences": 12,
+      "hawkish_hits": 4,
+      "dovish_hits": 12,
+      "net_hawkishness": -0.5
+    },
+    {
+      "doc_id": "minutes-2015-09",
+      "type": "minutes",
+      "meeting_end": "2015-09-09",
+      "published": "2015-09-10",
+      "decision": "maintain Bank Rate at 0.5%",
+      "vote": "8-1",
+      "source_url": "https://www.bankofengland.co.uk/monetary-policy-summary-and-minutes/2015/mpc-september-2015",
+      "sha256": "dd880452ff284975b5dd13e0e21741bd31cd4517cd5a8f97479b64523f9610b0",
+      "n_sentences": 35,
+      "n_scored_sentences": 11,
+      "hawkish_hits": 2,
+      "dovish_hits": 9,
+      "net_hawkishness": -0.6364
+    },
+    {
+      "doc_id": "minutes-2015-10",
+      "type": "minutes",
+      "meeting_end": null,
+      "published": null,
+      "decision": "maintain Bank Rate at 0.5%",
+      "vote": "8-1",
+      "source_url": "https://www.bankofengland.co.uk/monetary-policy-summary-and-minutes/2015/mpc-october-2015",
+      "sha256": "6c115c85fe607f9274bb3d531e62fa660e5c4c92ae3137bb305e800dc0f2a3e4",
+      "n_sentences": 36,
+      "n_scored_sentences": 7,
+      "hawkish_hits": 2,
+      "dovish_hits": 6,
+      "net_hawkishness": -0.5
+    },
+    {
+      "doc_id": "minutes-2015-11",
+      "type": "minutes",
+      "meeting_end": "2015-11-04",
+      "published": "2015-11-05",
+      "decision": "maintain Bank Rate at 0.5%",
+      "vote": "8-1",
+      "source_url": "https://www.bankofengland.co.uk/monetary-policy-summary-and-minutes/2015/mpc-november-2015",
+      "sha256": "00ffec9b29645bb275b571c25909164a3818324874fd1c3e815a2155c6a0df42",
+      "n_sentences": 44,
+      "n_scored_sentences": 9,
+      "hawkish_hits": 3,
+      "dovish_hits": 9,
+      "net_hawkishness": -0.5
+    },
+    {
+      "doc_id": "minutes-2015-12",
+      "type": "minutes",
+      "meeting_end": "2015-12-09",
+      "published": "2015-12-10",
+      "decision": "maintain Bank Rate at 0.5%",
+      "vote": "8-1",
+      "source_url": "https://www.bankofengland.co.uk/monetary-policy-summary-and-minutes/2015/mpc-december-2015",
+      "sha256": "3aa64c1f6513c897a69e250f0ecfa1728ab38c4fe2c14c7183e8255c1fd5c90a",
+      "n_sentences": 33,
+      "n_scored_sentences": 7,
+      "hawkish_hits": 2,
+      "dovish_hits": 5,
+      "net_hawkishness": -0.4286
+    },
+    {
+      "doc_id": "minutes-2016-01",
+      "type": "minutes",
+      "meeting_end": "2016-01-13",
+      "published": "2016-01-14",
+      "decision": "maintain Bank Rate at 0.5%",
+      "vote": "8-1",
+      "source_url": "https://www.bankofengland.co.uk/monetary-policy-summary-and-minutes/2016/mpc-january-2016",
+      "sha256": "80f68c638551a19aea9a08a50c44f26ed0663168a6ea85107fe10e077e2da8c3",
+      "n_sentences": 33,
+      "n_scored_sentences": 7,
+      "hawkish_hits": 2,
+      "dovish_hits": 5,
+      "net_hawkishness": -0.4286
+    },
+    {
+      "doc_id": "minutes-2016-02",
+      "type": "minutes",
+      "meeting_end": "2016-02-03",
+      "published": "2016-02-04",
+      "decision": "maintain Bank Rate at 0.5%",
+      "vote": "unanimous",
+      "source_url": "https://www.bankofengland.co.uk/monetary-policy-summary-and-minutes/2016/mpc-february-2016",
+      "sha256": "ad725742da7f3a547df425643d475396820483b9165821194c94e49f2fdc7a1b",
+      "n_sentences": 42,
+      "n_scored_sentences": 6,
+      "hawkish_hits": 1,
+      "dovish_hits": 5,
+      "net_hawkishness": -0.6667
+    },
+    {
+      "doc_id": "minutes-2016-03",
+      "type": "minutes",
+      "meeting_end": "2016-03-16",
+      "published": "2016-03-17",
+      "decision": "maintain Bank Rate at 0.5%",
+      "vote": "unanimous",
+      "source_url": "https://www.bankofengland.co.uk/monetary-policy-summary-and-minutes/2016/mpc-march-2016",
+      "sha256": "af8f7d72244bbc96664b0531a07a156a114ccbbc2a9603035f395c26e9cdc97c",
+      "n_sentences": 41,
+      "n_scored_sentences": 3,
+      "hawkish_hits": 1,
+      "dovish_hits": 2,
+      "net_hawkishness": -0.3333
+    },
+    {
+      "doc_id": "minutes-2016-04",
+      "type": "minutes",
+      "meeting_end": "2016-04-13",
+      "published": "2016-04-14",
+      "decision": "maintain Bank rate at 0.5%",
+      "vote": "unanimous",
+      "source_url": "https://www.bankofengland.co.uk/monetary-policy-summary-and-minutes/2016/mpc-april-2016",
+      "sha256": "90a306b67e191e3141ca7ace0d72b65418fcd315baae7436a67f659e39abab8b",
+      "n_sentences": 35,
+      "n_scored_sentences": 5,
+      "hawkish_hits": 0,
+      "dovish_hits": 5,
+      "net_hawkishness": -1.0
+    },
+    {
+      "doc_id": "minutes-2016-05",
+      "type": "minutes",
+      "meeting_end": "2016-05-11",
+      "published": "2016-05-12",
+      "decision": "maintain Bank Rate at 0.5%",
+      "vote": "unanimous",
+      "source_url": "https://www.bankofengland.co.uk/monetary-policy-summary-and-minutes/2016/mpc-may-2016",
+      "sha256": "5137fefe199200a2a93a8e75716dd5de9d546a0da15ec7e46de8320275af41e0",
+      "n_sentences": 44,
+      "n_scored_sentences": 4,
+      "hawkish_hits": 2,
+      "dovish_hits": 4,
+      "net_hawkishness": -0.3333
+    },
+    {
+      "doc_id": "minutes-2016-06",
+      "type": "minutes",
+      "meeting_end": "2016-06-15",
+      "published": "2016-06-16",
+      "decision": "maintain Bank Rate at 0.5%",
+      "vote": "unanimous",
+      "source_url": "https://www.bankofengland.co.uk/monetary-policy-summary-and-minutes/2016/mpc-june-2016",
+      "sha256": "163cdaeda4fb623ae320a963a9f945738a5c4d3ef288bebcf85c636cefde4d61",
+      "n_sentences": 44,
+      "n_scored_sentences": 2,
+      "hawkish_hits": 0,
+      "dovish_hits": 2,
+      "net_hawkishness": -1.0
+    },
+    {
+      "doc_id": "minutes-2016-07",
+      "type": "minutes",
+      "meeting_end": "2016-07-13",
+      "published": "2016-07-14",
+      "decision": "maintain Bank Rate at 0.5%, with one member voting for a cut in Bank Rate to 0.25%",
+      "vote": "8-1",
+      "source_url": "https://www.bankofengland.co.uk/monetary-policy-summary-and-minutes/2016/mpc-july-2016",
+      "sha256": "84ec5a9117387532d47e254fcee41520b67a8350b228a83ce8d0f55bb8f7565a",
+      "n_sentences": 34,
+      "n_scored_sentences": 5,
+      "hawkish_hits": 1,
+      "dovish_hits": 4,
+      "net_hawkishness": -0.6
+    },
+    {
+      "doc_id": "minutes-2016-08",
+      "type": "minutes",
+      "meeting_end": "2016-08-03",
+      "published": "2016-08-04",
+      "decision": "cut Bank Rate to 0.25%",
+      "vote": "unanimous",
+      "source_url": "https://www.bankofengland.co.uk/monetary-policy-summary-and-minutes/2016/mpc-august-2016",
+      "sha256": "6ad8444c93e80f01252ab36bcad3681c136a4cc14fe81b568b0ab7cd59e0f43a",
+      "n_sentences": 48,
+      "n_scored_sentences": 10,
+      "hawkish_hits": 6,
+      "dovish_hits": 14,
+      "net_hawkishness": -0.4
+    },
+    {
+      "doc_id": "minutes-2016-09",
+      "type": "minutes",
+      "meeting_end": "2016-09-14",
+      "published": "2016-09-15",
+      "decision": "keep Bank Rate at 0.25%",
+      "vote": "unanimous",
+      "source_url": "https://www.bankofengland.co.uk/monetary-policy-summary-and-minutes/2016/mpc-september-2016",
+      "sha256": "fd70bf7676400dfbde05225bbb06643eb6c0547b96d18e38e02c2dc0b5972f8e",
+      "n_sentences": 37,
+      "n_scored_sentences": 1,
+      "hawkish_hits": 0,
+      "dovish_hits": 1,
+      "net_hawkishness": -1.0
+    },
+    {
+      "doc_id": "minutes-2016-11",
+      "type": "minutes",
+      "meeting_end": "2016-11-02",
+      "published": "2016-11-03",
+      "decision": "keep Bank Rate at 0.25%",
+      "vote": "unanimous",
+      "source_url": "https://www.bankofengland.co.uk/monetary-policy-summary-and-minutes/2016/mpc-november-2016",
+      "sha256": "497564f370a9d4284f3a99e90eec0177b5566c2148b2503241221e710432ff8f",
+      "n_sentences": 46,
+      "n_scored_sentences": 5,
+      "hawkish_hits": 4,
+      "dovish_hits": 2,
+      "net_hawkishness": 0.3333
+    },
+    {
+      "doc_id": "minutes-2016-12",
+      "type": "minutes",
+      "meeting_end": "2016-12-14",
+      "published": "2016-12-15",
+      "decision": "keep Bank Rate at 0.25%",
+      "vote": "unanimous",
+      "source_url": "https://www.bankofengland.co.uk/monetary-policy-summary-and-minutes/2016/mpc-december-2016",
+      "sha256": "71b873c80ebc56b0f78823a8bb79c4d98e22ec20b4e7319a1f9844064e0dd12f",
+      "n_sentences": 40,
+      "n_scored_sentences": 4,
+      "hawkish_hits": 1,
+      "dovish_hits": 3,
+      "net_hawkishness": -0.5
+    },
+    {
+      "doc_id": "minutes-2017-02",
+      "type": "minutes",
+      "meeting_end": "2017-02-01",
+      "published": "2017-02-02",
+      "decision": "keep Bank Rate at 0.25%",
+      "vote": "unanimous",
+      "source_url": "https://www.bankofengland.co.uk/monetary-policy-summary-and-minutes/2017/february-2017",
+      "sha256": "930e57198e3380b1246b7004ec5b275ac3909e2c0b4febcdf909c1bf7903b4ac",
+      "n_sentences": 40,
+      "n_scored_sentences": 5,
+      "hawkish_hits": 2,
+      "dovish_hits": 5,
+      "net_hawkishness": -0.4286
+    },
+    {
+      "doc_id": "minutes-2017-03",
+      "type": "minutes",
+      "meeting_end": "2017-03-15",
+      "published": "2017-03-16",
+      "decision": "keep Bank Rate at 0.25%",
+      "vote": "8-1",
+      "source_url": "https://www.bankofengland.co.uk/monetary-policy-summary-and-minutes/2017/march-2017",
+      "sha256": "803cfb5f7c0fa2bc97402c72cf01edea37cdbc7ec88c33d6dfd3a82141d42c67",
+      "n_sentences": 42,
+      "n_scored_sentences": 6,
+      "hawkish_hits": 4,
+      "dovish_hits": 4,
+      "net_hawkishness": 0.0
+    },
+    {
+      "doc_id": "minutes-2017-05",
+      "type": "minutes",
+      "meeting_end": "2017-05-10",
+      "published": "2017-05-11",
+      "decision": "keep Bank Rate at 0.25%",
+      "vote": "7-1",
+      "source_url": "https://www.bankofengland.co.uk/monetary-policy-summary-and-minutes/2017/may-2017",
+      "sha256": "c3b0c7bf23e823ce56b0aaa7c9088b0b481c63fc6018cd0204f6c1c73b79b599",
+      "n_sentences": 42,
+      "n_scored_sentences": 6,
+      "hawkish_hits": 6,
+      "dovish_hits": 4,
+      "net_hawkishness": 0.2
+    },
+    {
+      "doc_id": "minutes-2017-06",
+      "type": "minutes",
+      "meeting_end": "2017-06-14",
+      "published": "2017-06-15",
+      "decision": "keep Bank Rate at 0.25%",
+      "vote": "5-3",
+      "source_url": "https://www.bankofengland.co.uk/monetary-policy-summary-and-minutes/2017/june-2017",
+      "sha256": "383f2f2d4710fa3f9a724c7da03e5d739fc9b7476fdbaf250175113982521ebe",
+      "n_sentences": 34,
+      "n_scored_sentences": 6,
+      "hawkish_hits": 6,
+      "dovish_hits": 4,
+      "net_hawkishness": 0.2
+    },
+    {
+      "doc_id": "minutes-2017-08",
+      "type": "minutes",
+      "meeting_end": "2017-08-02",
+      "published": "2017-08-03",
+      "decision": "maintain Bank Rate at 0.25%",
+      "vote": "6-2",
+      "source_url": "https://www.bankofengland.co.uk/monetary-policy-summary-and-minutes/2017/august-2017",
+      "sha256": "3e20dab5b62e4c27e01110c39e6d60fed10ad6b02d6d75b461e17c8a58ab2ece",
+      "n_sentences": 39,
+      "n_scored_sentences": 7,
+      "hawkish_hits": 6,
+      "dovish_hits": 5,
+      "net_hawkishness": 0.0909
+    },
+    {
+      "doc_id": "minutes-2017-09",
+      "type": "minutes",
+      "meeting_end": "2017-09-13",
+      "published": "2017-09-14",
+      "decision": "keep Bank Rate at 0.25%",
+      "vote": "7-2",
+      "source_url": "https://www.bankofengland.co.uk/monetary-policy-summary-and-minutes/2017/september-2017",
+      "sha256": "6a93857c5bcc10aead7cecf46fa7e15b3cea3718cd91b78847d748d30586f651",
+      "n_sentences": 35,
+      "n_scored_sentences": 6,
+      "hawkish_hits": 2,
+      "dovish_hits": 6,
+      "net_hawkishness": -0.5
+    },
+    {
+      "doc_id": "minutes-2017-11",
+      "type": "minutes",
+      "meeting_end": "2017-11-01",
+      "published": "2017-11-02",
+      "decision": "increase Bank Rate to 0.50%",
+      "vote": "7-2",
+      "source_url": "https://www.bankofengland.co.uk/monetary-policy-summary-and-minutes/2017/november-2017",
+      "sha256": "dbd3a8a55ed77feae1f49a5d03d438daeaf21104ff0186b2b3082618a861624b",
+      "n_sentences": 38,
+      "n_scored_sentences": 8,
+      "hawkish_hits": 6,
+      "dovish_hits": 6,
+      "net_hawkishness": 0.0
+    },
+    {
+      "doc_id": "minutes-2017-12",
+      "type": "minutes",
+      "meeting_end": "2017-12-13",
+      "published": "2017-12-14",
+      "decision": "maintain Bank Rate at 0.50%",
+      "vote": "unanimous",
+      "source_url": "https://www.bankofengland.co.uk/monetary-policy-summary-and-minutes/2017/december-2017",
+      "sha256": "c96eeb55e68d9e16c695b0da12ae94bb1f7f4f94f20b689eeb2302158a3cfd3a",
+      "n_sentences": 36,
+      "n_scored_sentences": 4,
+      "hawkish_hits": 4,
+      "dovish_hits": 4,
+      "net_hawkishness": 0.0
+    },
+    {
+      "doc_id": "minutes-2018-02",
+      "type": "minutes",
+      "meeting_end": "2018-02-07",
+      "published": "2018-02-08",
+      "decision": "maintain Bank Rate at 0.50%",
+      "vote": "unanimous",
+      "source_url": "https://www.bankofengland.co.uk/monetary-policy-summary-and-minutes/2018/february-2018",
+      "sha256": "e17d25c0e651d164f94f142c8e236f41b9139d3874110995b9102477376b1628",
+      "n_sentences": 45,
+      "n_scored_sentences": 8,
+      "hawkish_hits": 6,
+      "dovish_hits": 4,
+      "net_hawkishness": 0.2
+    },
+    {
+      "doc_id": "minutes-2018-03",
+      "type": "minutes",
+      "meeting_end": "2018-03-21",
+      "published": "2018-03-22",
+      "decision": "maintain Bank Rate at 0.50%",
+      "vote": "7-2",
+      "source_url": "https://www.bankofengland.co.uk/monetary-policy-summary-and-minutes/2018/march-2018",
+      "sha256": "c2c6da54e54cab06f5a2e45ebb71e5a147eacead4a0ed62fad537ab353cd0a84",
+      "n_sentences": 32,
+      "n_scored_sentences": 4,
+      "hawkish_hits": 5,
+      "dovish_hits": 3,
+      "net_hawkishness": 0.25
+    },
+    {
+      "doc_id": "minutes-2018-05",
+      "type": "minutes",
+      "meeting_end": "2018-05-09",
+      "published": "2018-05-10",
+      "decision": "maintain Bank Rate at 0.5%",
+      "vote": "7-2",
+      "source_url": "https://www.bankofengland.co.uk/monetary-policy-summary-and-minutes/2018/may-2018",
+      "sha256": "59d0e147340e7c6f5e5d1684f9b30e4bdd38922450a81c352bdad1347c2d9cb0",
+      "n_sentences": 39,
+      "n_scored_sentences": 5,
+      "hawkish_hits": 2,
+      "dovish_hits": 3,
+      "net_hawkishness": -0.2
+    },
+    {
+      "doc_id": "minutes-2018-06",
+      "type": "minutes",
+      "meeting_end": "2018-06-20",
+      "published": "2018-06-21",
+      "decision": "maintain Bank Rate at 0.5%",
+      "vote": "6-3",
+      "source_url": "https://www.bankofengland.co.uk/monetary-policy-summary-and-minutes/2018/june-2018",
+      "sha256": "fc05ba291c6da7566fc687a68c8a74df8dfb931a7b95cf36ab4162ad10581e32",
+      "n_sentences": 38,
+      "n_scored_sentences": 3,
+      "hawkish_hits": 2,
+      "dovish_hits": 3,
+      "net_hawkishness": -0.2
+    },
+    {
+      "doc_id": "minutes-2018-08",
+      "type": "minutes",
+      "meeting_end": "2018-08-01",
+      "published": "2018-08-02",
+      "decision": "raise Bank Rate to 0.75% At its meeting ending on 1 August 2018, the MPC voted by 9-0 to increase Bank Rate by 0.25 percentage points, to 0.75%",
+      "vote": "unanimous",
+      "source_url": "https://www.bankofengland.co.uk/monetary-policy-summary-and-minutes/2018/august-2018",
+      "sha256": "342b558165b748bfb77dee94dee9e68535e93bd5d0e461ef15a62b96124ca89a",
+      "n_sentences": 30,
+      "n_scored_sentences": 9,
+      "hawkish_hits": 6,
+      "dovish_hits": 4,
+      "net_hawkishness": 0.2
+    },
+    {
+      "doc_id": "minutes-2018-09",
+      "type": "minutes",
+      "meeting_end": "2018-09-12",
+      "published": "2018-09-13",
+      "decision": "maintain Bank Rate at 0.75%",
+      "vote": "unanimous",
+      "source_url": "https://www.bankofengland.co.uk/monetary-policy-summary-and-minutes/2018/september-2018",
+      "sha256": "41211d94772af67f0732c9bd6de5a9200114dab7e27a9d91bb5488eeb13e9512",
+      "n_sentences": 30,
+      "n_scored_sentences": 5,
+      "hawkish_hits": 3,
+      "dovish_hits": 4,
+      "net_hawkishness": -0.1429
+    },
+    {
+      "doc_id": "minutes-2018-11",
+      "type": "minutes",
+      "meeting_end": "2018-10-31",
+      "published": "2018-11-01",
+      "decision": "maintain Bank Rate at 0.75%",
+      "vote": "unanimous",
+      "source_url": "https://www.bankofengland.co.uk/monetary-policy-summary-and-minutes/2018/november-2018",
+      "sha256": "b72663f0fc173f1ef860cd4abb5ed0ec985ce1365943620da73d252f3c96c6e5",
+      "n_sentences": 37,
+      "n_scored_sentences": 4,
+      "hawkish_hits": 3,
+      "dovish_hits": 3,
+      "net_hawkishness": 0.0
+    },
+    {
+      "doc_id": "minutes-2018-12",
+      "type": "minutes",
+      "meeting_end": "2018-12-19",
+      "published": "2018-12-20",
+      "decision": "maintain Bank Rate at 0.75%",
+      "vote": "unanimous",
+      "source_url": "https://www.bankofengland.co.uk/monetary-policy-summary-and-minutes/2018/december-2018",
+      "sha256": "1d61ee12cc6306f00fa33627b4c485d90551e4fe75b83069db85cff5e39ce46c",
+      "n_sentences": 40,
+      "n_scored_sentences": 6,
+      "hawkish_hits": 2,
+      "dovish_hits": 4,
+      "net_hawkishness": -0.3333
+    },
+    {
+      "doc_id": "minutes-2019-02",
+      "type": "minutes",
+      "meeting_end": "2019-02-06",
+      "published": "2019-02-07",
+      "decision": "maintain Bank Rate at 0.75%",
+      "vote": "unanimous",
+      "source_url": "https://www.bankofengland.co.uk/monetary-policy-summary-and-minutes/2019/february-2019",
+      "sha256": "811c1c9fd1e28b7bd376d7a829884aa7698ecc2c348dd61f2e444636c6276961",
+      "n_sentences": 38,
+      "n_scored_sentences": 10,
+      "hawkish_hits": 5,
+      "dovish_hits": 6,
+      "net_hawkishness": -0.0909
+    },
+    {
+      "doc_id": "minutes-2019-03",
+      "type": "minutes",
+      "meeting_end": "2019-03-20",
+      "published": "2019-03-21",
+      "decision": "maintain Bank Rate at 0.75%",
+      "vote": "unanimous",
+      "source_url": "https://www.bankofengland.co.uk/monetary-policy-summary-and-minutes/2019/march-2019",
+      "sha256": "289c4fd809b3b5872797683bbdbc9e7ac3b4a9050c05c91df1eca0235e0f0fb2",
+      "n_sentences": 31,
+      "n_scored_sentences": 6,
+      "hawkish_hits": 1,
+      "dovish_hits": 5,
+      "net_hawkishness": -0.6667
+    },
+    {
+      "doc_id": "minutes-2019-05",
+      "type": "minutes",
+      "meeting_end": "2019-05-01",
+      "published": "2019-05-02",
+      "decision": "maintain Bank Rate at 0.75%",
+      "vote": "unanimous",
+      "source_url": "https://www.bankofengland.co.uk/monetary-policy-summary-and-minutes/2019/may-2019",
+      "sha256": "b0fd8372bf08ddd1a9ace6b35445913f0406ab412d947e553add044fcce06894",
+      "n_sentences": 39,
+      "n_scored_sentences": 5,
+      "hawkish_hits": 3,
+      "dovish_hits": 3,
+      "net_hawkishness": 0.0
+    },
+    {
+      "doc_id": "minutes-2019-06",
+      "type": "minutes",
+      "meeting_end": "2019-06-19",
+      "published": "2019-06-20",
+      "decision": "maintain Bank Rate at 0.75%",
+      "vote": "unanimous",
+      "source_url": "https://www.bankofengland.co.uk/monetary-policy-summary-and-minutes/2019/june-2019",
+      "sha256": "0abd7b56b3abb9e52895d497ac40a4eb7f745e03910da11b6eed59668343f1e0",
+      "n_sentences": 37,
+      "n_scored_sentences": 7,
+      "hawkish_hits": 3,
+      "dovish_hits": 5,
+      "net_hawkishness": -0.25
+    },
+    {
+      "doc_id": "minutes-2019-08",
+      "type": "minutes",
+      "meeting_end": "2019-07-31",
+      "published": "2019-08-01",
+      "decision": "maintain Bank Rate at 0.75%",
+      "vote": "unanimous",
+      "source_url": "https://www.bankofengland.co.uk/monetary-policy-summary-and-minutes/2019/august-2019",
+      "sha256": "547f6ad27253a5294e7cf9b16189dd9256ba8a38fc293bccdc3193a4e0691667",
+      "n_sentences": 43,
+      "n_scored_sentences": 3,
+      "hawkish_hits": 2,
+      "dovish_hits": 2,
+      "net_hawkishness": 0.0
+    },
+    {
+      "doc_id": "minutes-2019-09",
+      "type": "minutes",
+      "meeting_end": "2019-09-18",
+      "published": "2019-09-19",
+      "decision": "maintain Bank Rate at 0.75%",
+      "vote": "unanimous",
+      "source_url": "https://www.bankofengland.co.uk/monetary-policy-summary-and-minutes/2019/september-2019",
+      "sha256": "268b73b997d05768a276bc6e4966907b6b7f2968795167012a0b0dd7188cdd41",
+      "n_sentences": 38,
+      "n_scored_sentences": 3,
+      "hawkish_hits": 3,
+      "dovish_hits": 4,
+      "net_hawkishness": -0.1429
+    },
+    {
+      "doc_id": "minutes-2019-11",
+      "type": "minutes",
+      "meeting_end": "2019-11-06",
+      "published": "2019-11-07",
+      "decision": "maintain Bank Rate at 0.75%",
+      "vote": "7-2",
+      "source_url": "https://www.bankofengland.co.uk/monetary-policy-summary-and-minutes/2019/november-2019",
+      "sha256": "9644f20b8429d9579b3a9d6d2ce5bf9be9407fe726b31a575a8457f04c060b88",
+      "n_sentences": 27,
+      "n_scored_sentences": 4,
+      "hawkish_hits": 3,
+      "dovish_hits": 1,
+      "net_hawkishness": 0.5
+    },
+    {
+      "doc_id": "minutes-2019-12",
+      "type": "minutes",
+      "meeting_end": "2019-12-18",
+      "published": "2019-12-19",
+      "decision": "maintain Bank Rate at 0.75%",
+      "vote": "7-2",
+      "source_url": "https://www.bankofengland.co.uk/monetary-policy-summary-and-minutes/2019/december-2019",
+      "sha256": "39ec587cfad5373cc5317f4c80a532e0c870d81fed39300ad908cc3c5810af10",
+      "n_sentences": 29,
+      "n_scored_sentences": 4,
+      "hawkish_hits": 3,
+      "dovish_hits": 3,
+      "net_hawkishness": 0.0
+    },
+    {
+      "doc_id": "minutes-2020-01",
+      "type": "minutes",
+      "meeting_end": "2020-01-29",
+      "published": "2020-01-30",
+      "decision": "maintain Bank Rate at 0.75%",
+      "vote": "7-2",
+      "source_url": "https://www.bankofengland.co.uk/monetary-policy-summary-and-minutes/2020/january-2020",
+      "sha256": "da9df077bdd557b55bd96408e735f8f9038a9c867b6203468a7176b11d6bdf90",
+      "n_sentences": 36,
+      "n_scored_sentences": 6,
+      "hawkish_hits": 2,
+      "dovish_hits": 6,
+      "net_hawkishness": -0.5
+    },
+    {
+      "doc_id": "minutes-2020-03",
+      "type": "minutes",
+      "meeting_end": "2020-03-25",
+      "published": "2020-03-26",
+      "decision": "maintain Bank Rate at 0.1%",
+      "vote": "unanimous",
+      "source_url": "https://www.bankofengland.co.uk/monetary-policy-summary-and-minutes/2020/march-2020",
+      "sha256": "c5ce2e1399a09c06e31708de0c0563b289de5b10931561c02d4508fed48b2e0b",
+      "n_sentences": 68,
+      "n_scored_sentences": 2,
+      "hawkish_hits": 2,
+      "dovish_hits": 0,
+      "net_hawkishness": 1.0
+    },
+    {
+      "doc_id": "minutes-2020-05",
+      "type": "minutes",
+      "meeting_end": "2020-05-06",
+      "published": "2020-05-07",
+      "decision": "maintain Bank Rate at 0.1%",
+      "vote": "unanimous",
+      "source_url": "https://www.bankofengland.co.uk/monetary-policy-summary-and-minutes/2020/may-2020",
+      "sha256": "7c008e55059ff63f87a39eb4b85e210a7a55989354cd6c529c45cc04e9c57c95",
+      "n_sentences": 50,
+      "n_scored_sentences": 3,
+      "hawkish_hits": 1,
+      "dovish_hits": 4,
+      "net_hawkishness": -0.6
+    },
+    {
+      "doc_id": "minutes-2020-06",
+      "type": "minutes",
+      "meeting_end": "2020-06-17",
+      "published": "2020-06-18",
+      "decision": "maintain Bank Rate at 0.1%",
+      "vote": "unanimous",
+      "source_url": "https://www.bankofengland.co.uk/monetary-policy-summary-and-minutes/2020/june-2020",
+      "sha256": "a31e57eff3fc228f24b663f0035864dab1f792bf3c99988c3c18cca288444f97",
+      "n_sentences": 41,
+      "n_scored_sentences": 6,
+      "hawkish_hits": 0,
+      "dovish_hits": 8,
+      "net_hawkishness": -1.0
+    },
+    {
+      "doc_id": "minutes-2020-08",
+      "type": "minutes",
+      "meeting_end": "2020-08-04",
+      "published": "2020-08-05",
+      "decision": "maintain Bank Rate at 0.1%",
+      "vote": "unanimous",
+      "source_url": "https://www.bankofengland.co.uk/monetary-policy-summary-and-minutes/2020/august-2020",
+      "sha256": "390edb30cb0df4a414ef3ce587852942be0a808b53e60b8188f461117e115bce",
+      "n_sentences": 43,
+      "n_scored_sentences": 5,
+      "hawkish_hits": 2,
+      "dovish_hits": 6,
+      "net_hawkishness": -0.5
+    },
+    {
+      "doc_id": "minutes-2020-09",
+      "type": "minutes",
+      "meeting_end": "2020-09-16",
+      "published": "2020-09-17",
+      "decision": "maintain Bank Rate at 0.1%",
+      "vote": "unanimous",
+      "source_url": "https://www.bankofengland.co.uk/monetary-policy-summary-and-minutes/2020/september-2020",
+      "sha256": "e2a15c055264236c486eb908037b43d3e0bed45541ffa9725db5338e2e95c440",
+      "n_sentences": 37,
+      "n_scored_sentences": 2,
+      "hawkish_hits": 0,
+      "dovish_hits": 3,
+      "net_hawkishness": -1.0
+    },
+    {
+      "doc_id": "minutes-2020-11",
+      "type": "minutes",
+      "meeting_end": "2020-11-04",
+      "published": "2020-11-05",
+      "decision": "maintain Bank Rate at 0.1%",
+      "vote": "unanimous",
+      "source_url": "https://www.bankofengland.co.uk/monetary-policy-summary-and-minutes/2020/november-2020",
+      "sha256": "9b6359522ccbae4ef30778abf4ef7c32b1edcaf3bf3f90d6eaf54d834bee2379",
+      "n_sentences": 41,
+      "n_scored_sentences": 8,
+      "hawkish_hits": 0,
+      "dovish_hits": 10,
+      "net_hawkishness": -1.0
+    },
+    {
+      "doc_id": "minutes-2020-12",
+      "type": "minutes",
+      "meeting_end": "2020-12-16",
+      "published": "2020-12-17",
+      "decision": "maintain Bank Rate at 0.1%",
+      "vote": "unanimous",
+      "source_url": "https://www.bankofengland.co.uk/monetary-policy-summary-and-minutes/2020/december-2020",
+      "sha256": "f0ade47cb7814faf6117b25e8391bf94ef2a58fce93bc95bb3419fbed0bee6a5",
+      "n_sentences": 39,
+      "n_scored_sentences": 7,
+      "hawkish_hits": 1,
+      "dovish_hits": 7,
+      "net_hawkishness": -0.75
+    },
+    {
+      "doc_id": "minutes-2021-02",
+      "type": "minutes",
+      "meeting_end": "2021-02-03",
+      "published": "2021-02-04",
+      "decision": "maintain Bank Rate at 0.1%",
+      "vote": "unanimous",
+      "source_url": "https://www.bankofengland.co.uk/monetary-policy-summary-and-minutes/2021/february-2021",
+      "sha256": "c2be4533495d099142c185a2d90494a578222db855072e8dce995acae812cd9e",
+      "n_sentences": 39,
+      "n_scored_sentences": 5,
+      "hawkish_hits": 0,
+      "dovish_hits": 6,
+      "net_hawkishness": -1.0
+    },
+    {
+      "doc_id": "minutes-2021-03",
+      "type": "minutes",
+      "meeting_end": "2021-03-17",
+      "published": "2021-03-18",
+      "decision": "maintain Bank Rate at 0.1%",
+      "vote": "unanimous",
+      "source_url": "https://www.bankofengland.co.uk/monetary-policy-summary-and-minutes/2021/march-2021",
+      "sha256": "c0d328bbd076712b504e6f79b5ce10d40f63ec133879a7f4b6d249129c3cb782",
+      "n_sentences": 39,
+      "n_scored_sentences": 8,
+      "hawkish_hits": 0,
+      "dovish_hits": 9,
+      "net_hawkishness": -1.0
+    },
+    {
+      "doc_id": "minutes-2021-05",
+      "type": "minutes",
+      "meeting_end": "2021-05-05",
+      "published": "2021-05-06",
+      "decision": "maintain Bank Rate at 0.1%",
+      "vote": "unanimous",
+      "source_url": "https://www.bankofengland.co.uk/monetary-policy-summary-and-minutes/2021/may-2021",
+      "sha256": "d3d0595d82cc3fadd749325aae251979a067a57d8e907e8f5bde6b12c13e2728",
+      "n_sentences": 43,
+      "n_scored_sentences": 10,
+      "hawkish_hits": 3,
+      "dovish_hits": 8,
+      "net_hawkishness": -0.4545
+    },
+    {
+      "doc_id": "minutes-2021-06",
+      "type": "minutes",
+      "meeting_end": "2021-06-22",
+      "published": "2021-06-23",
+      "decision": "maintain Bank Rate at 0.1%",
+      "vote": "unanimous",
+      "source_url": "https://www.bankofengland.co.uk/monetary-policy-summary-and-minutes/2021/june-2021",
+      "sha256": "161fc34813af2759e861db05196eeb3ce8ab8dbdf544e35749bf82ef93ba8257",
+      "n_sentences": 45,
+      "n_scored_sentences": 9,
+      "hawkish_hits": 6,
+      "dovish_hits": 5,
+      "net_hawkishness": 0.0909
+    },
+    {
+      "doc_id": "minutes-2021-08",
+      "type": "minutes",
+      "meeting_end": "2021-08-04",
+      "published": "2021-08-05",
+      "decision": "maintain Bank Rate at 0.1%",
+      "vote": "unanimous",
+      "source_url": "https://www.bankofengland.co.uk/monetary-policy-summary-and-minutes/2021/august-2021",
+      "sha256": "760ee0e46bd0596559995562222edecd06a109d86216be6ea6e7048029dac7fd",
+      "n_sentences": 286,
+      "n_scored_sentences": 37,
+      "hawkish_hits": 29,
+      "dovish_hits": 19,
+      "net_hawkishness": 0.2083
+    },
+    {
+      "doc_id": "minutes-2021-09",
+      "type": "minutes",
+      "meeting_end": "2021-09-22",
+      "published": "2021-09-23",
+      "decision": "maintain Bank Rate at 0.1%",
+      "vote": "unanimous",
+      "source_url": "https://www.bankofengland.co.uk/monetary-policy-summary-and-minutes/2021/september-2021",
+      "sha256": "75b016b6e6db0d68f8536ff959271769576418542c50e0b2f88a009326eb5edf",
+      "n_sentences": 333,
+      "n_scored_sentences": 27,
+      "hawkish_hits": 23,
+      "dovish_hits": 9,
+      "net_hawkishness": 0.4375
+    },
+    {
+      "doc_id": "minutes-2021-11",
+      "type": "minutes",
+      "meeting_end": "2021-11-02",
+      "published": "2021-11-03",
+      "decision": "maintain Bank Rate at 0.1%",
+      "vote": "7-2",
+      "source_url": "https://www.bankofengland.co.uk/monetary-policy-summary-and-minutes/2021/november-2021",
+      "sha256": "6595fc5f92edd880cc20bc52f3ae4e767364bdb077c3d367e5f678199c92b043",
+      "n_sentences": 356,
+      "n_scored_sentences": 42,
+      "hawkish_hits": 26,
+      "dovish_hits": 23,
+      "net_hawkishness": 0.0612
+    },
+    {
+      "doc_id": "minutes-2021-12",
+      "type": "minutes",
+      "meeting_end": "2021-12-15",
+      "published": "2021-12-16",
+      "decision": "increase Bank Rate by 0.15 percentage points, to 0.25%",
+      "vote": "8-1",
+      "source_url": "https://www.bankofengland.co.uk/monetary-policy-summary-and-minutes/2021/december-2021",
+      "sha256": "f1e0b8b4c6919b7be323d7907fe4a123ef11ed202be24ce4cbf513cbc7b0d798",
+      "n_sentences": 311,
+      "n_scored_sentences": 40,
+      "hawkish_hits": 41,
+      "dovish_hits": 11,
+      "net_hawkishness": 0.5769
+    },
+    {
+      "doc_id": "minutes-2022-02",
+      "type": "minutes",
+      "meeting_end": "2022-02-02",
+      "published": "2022-02-03",
+      "decision": "increase Bank Rate by 0.25 percentage points, to 0.5%",
+      "vote": "5-4",
+      "source_url": "https://www.bankofengland.co.uk/monetary-policy-summary-and-minutes/2022/february-2022",
+      "sha256": "a90e56b665bb6530aac259eafd4a0742656079e6c5ef4af1a006ce852e1ff0ad",
+      "n_sentences": 396,
+      "n_scored_sentences": 45,
+      "hawkish_hits": 29,
+      "dovish_hits": 26,
+      "net_hawkishness": 0.0545
+    },
+    {
+      "doc_id": "minutes-2022-03",
+      "type": "minutes",
+      "meeting_end": "2022-03-16",
+      "published": "2022-03-17",
+      "decision": "increase Bank Rate by 0.25 percentage points, to 0.75%",
+      "vote": "8-1",
+      "source_url": "https://www.bankofengland.co.uk/monetary-policy-summary-and-minutes/2022/march-2022",
+      "sha256": "827c5f82e7acdd83c69ce4082e74394b706d92f31965b912fd2d4111ff831536",
+      "n_sentences": 285,
+      "n_scored_sentences": 27,
+      "hawkish_hits": 18,
+      "dovish_hits": 13,
+      "net_hawkishness": 0.1613
+    },
+    {
+      "doc_id": "minutes-2022-05",
+      "type": "minutes",
+      "meeting_end": "2022-05-04",
+      "published": "2022-05-05",
+      "decision": "increase Bank Rate by 0.25 percentage points, to 1%",
+      "vote": "6-3",
+      "source_url": "https://www.bankofengland.co.uk/monetary-policy-summary-and-minutes/2022/may-2022",
+      "sha256": "df929a732e070160b9b7a0f68065ac5d96c1f1d05b861393ec7596d3555212ed",
+      "n_sentences": 323,
+      "n_scored_sentences": 42,
+      "hawkish_hits": 39,
+      "dovish_hits": 17,
+      "net_hawkishness": 0.3929
+    },
+    {
+      "doc_id": "minutes-2022-06",
+      "type": "minutes",
+      "meeting_end": "2022-06-15",
+      "published": "2022-06-16",
+      "decision": "increase Bank Rate by 0.25 percentage points, to 1.25%",
+      "vote": "6-3",
+      "source_url": "https://www.bankofengland.co.uk/monetary-policy-summary-and-minutes/2022/june-2022",
+      "sha256": "5ea9fa80a08bce1ab08592b4f0a1515471a84b15df7b63c12def888b42b76c5d",
+      "n_sentences": 230,
+      "n_scored_sentences": 33,
+      "hawkish_hits": 31,
+      "dovish_hits": 9,
+      "net_hawkishness": 0.55
+    },
+    {
+      "doc_id": "minutes-2022-08",
+      "type": "minutes",
+      "meeting_end": "2022-08-03",
+      "published": "2022-08-04",
+      "decision": "increase Bank Rate by 0.5 percentage points, to 1.75%",
+      "vote": "8-1",
+      "source_url": "https://www.bankofengland.co.uk/monetary-policy-summary-and-minutes/2022/august-2022",
+      "sha256": "beaf020bfc115533c57ffd8325259b54c2d4db4558df40f2fe71b355d9d349e9",
+      "n_sentences": 263,
+      "n_scored_sentences": 39,
+      "hawkish_hits": 30,
+      "dovish_hits": 14,
+      "net_hawkishness": 0.3636
+    },
+    {
+      "doc_id": "minutes-2022-09",
+      "type": "minutes",
+      "meeting_end": "2022-09-21",
+      "published": "2022-09-22",
+      "decision": "increase Bank Rate by 0.5 percentage points, to 2.25%",
+      "vote": null,
+      "source_url": "https://www.bankofengland.co.uk/monetary-policy-summary-and-minutes/2022/september-2022",
+      "sha256": "b2ecda39334936a931639756f0875191f2df0d9737c840edb9aceb5d137b9830",
+      "n_sentences": 244,
+      "n_scored_sentences": 37,
+      "hawkish_hits": 29,
+      "dovish_hits": 15,
+      "net_hawkishness": 0.3182
+    },
+    {
+      "doc_id": "minutes-2022-11",
+      "type": "minutes",
+      "meeting_end": "2022-11-02",
+      "published": "2022-11-03",
+      "decision": "increase Bank Rate by 0.75 percentage points, to 3%",
+      "vote": "7-2",
+      "source_url": "https://www.bankofengland.co.uk/monetary-policy-summary-and-minutes/2022/november-2022",
+      "sha256": "9050f860f523fb22995867170e8c31500a21eb70f763fd444fcbb44f75c2a84a",
+      "n_sentences": 277,
+      "n_scored_sentences": 40,
+      "hawkish_hits": 30,
+      "dovish_hits": 24,
+      "net_hawkishness": 0.1111
+    },
+    {
+      "doc_id": "minutes-2022-12",
+      "type": "minutes",
+      "meeting_end": "2022-12-14",
+      "published": "2022-12-15",
+      "decision": "increase Bank Rate by 0.5 percentage points, to 3.5%",
+      "vote": "6-3",
+      "source_url": "https://www.bankofengland.co.uk/monetary-policy-summary-and-minutes/2022/december-2022",
+      "sha256": "1573b9803233415c68a8d632d805ecb347c4d8d1e24090ad38fbb8c79ae0c6e5",
+      "n_sentences": 271,
+      "n_scored_sentences": 49,
+      "hawkish_hits": 34,
+      "dovish_hits": 25,
+      "net_hawkishness": 0.1525
+    },
+    {
+      "doc_id": "minutes-2023-02",
+      "type": "minutes",
+      "meeting_end": "2023-02-01",
+      "published": "2023-02-02",
+      "decision": "increase Bank Rate by 0.5 percentage points, to 4%",
+      "vote": "7-2",
+      "source_url": "https://www.bankofengland.co.uk/monetary-policy-summary-and-minutes/2023/february-2023",
+      "sha256": "4121f07968640477cb34b45fbf44c390aa5b46ed9d1653b91a4b1cb5871bbb3f",
+      "n_sentences": 208,
+      "n_scored_sentences": 42,
+      "hawkish_hits": 27,
+      "dovish_hits": 23,
+      "net_hawkishness": 0.08
+    },
+    {
+      "doc_id": "minutes-2023-03",
+      "type": "minutes",
+      "meeting_end": "2023-03-22",
+      "published": "2023-03-23",
+      "decision": "increase Bank Rate by 0.25 percentage points, to 4.25%",
+      "vote": "7-2",
+      "source_url": "https://www.bankofengland.co.uk/monetary-policy-summary-and-minutes/2023/march-2023",
+      "sha256": "ab229ecbf3afa78fba5acf13f54b4a1d3d05a063731582a15b1d0b3ddd2d0bfa",
+      "n_sentences": 248,
+      "n_scored_sentences": 26,
+      "hawkish_hits": 15,
+      "dovish_hits": 15,
+      "net_hawkishness": 0.0
+    },
+    {
+      "doc_id": "minutes-2023-05",
+      "type": "minutes",
+      "meeting_end": "2023-05-10",
+      "published": "2023-05-11",
+      "decision": "increase Bank Rate by 0.25 percentage points, to 4.5%",
+      "vote": "7-2",
+      "source_url": "https://www.bankofengland.co.uk/monetary-policy-summary-and-minutes/2023/may-2023",
+      "sha256": "dd53c21b2ed13209cadd81b419b0a233ce1d847e38559823c8338f1d6b46ea39",
+      "n_sentences": 139,
+      "n_scored_sentences": 28,
+      "hawkish_hits": 16,
+      "dovish_hits": 16,
+      "net_hawkishness": 0.0
+    },
+    {
+      "doc_id": "minutes-2023-06",
+      "type": "minutes",
+      "meeting_end": "2023-06-21",
+      "published": "2023-06-22",
+      "decision": "increase Bank Rate by 0.5 percentage points, to 5%",
+      "vote": "7-2",
+      "source_url": "https://www.bankofengland.co.uk/monetary-policy-summary-and-minutes/2023/june-2023",
+      "sha256": "76dfac6e29d3eece042f368df1aede1506bc82f67c0b6e724b91211b9729da33",
+      "n_sentences": 201,
+      "n_scored_sentences": 24,
+      "hawkish_hits": 9,
+      "dovish_hits": 16,
+      "net_hawkishness": -0.28
+    },
+    {
+      "doc_id": "minutes-2023-08",
+      "type": "minutes",
+      "meeting_end": "2023-08-02",
+      "published": "2023-08-03",
+      "decision": "increase Bank Rate by 0.25 percentage points, to 5.25%",
+      "vote": "6-3",
+      "source_url": "https://www.bankofengland.co.uk/monetary-policy-summary-and-minutes/2023/august-2023",
+      "sha256": "3604b91f41c19e60f62e3b8954523b406c8746d45c10c2e5481d70f39e452fac",
+      "n_sentences": 144,
+      "n_scored_sentences": 39,
+      "hawkish_hits": 33,
+      "dovish_hits": 16,
+      "net_hawkishness": 0.3469
+    },
+    {
+      "doc_id": "minutes-2023-09",
+      "type": "minutes",
+      "meeting_end": "2023-09-20",
+      "published": "2023-09-21",
+      "decision": "maintain Bank Rate at 5.25%",
+      "vote": "5-4",
+      "source_url": "https://www.bankofengland.co.uk/monetary-policy-summary-and-minutes/2023/september-2023",
+      "sha256": "ebebb69725576a883a7b989ff26f6d099cfce82e4f2060c8dedc78be62c32afd",
+      "n_sentences": 249,
+      "n_scored_sentences": 55,
+      "hawkish_hits": 39,
+      "dovish_hits": 26,
+      "net_hawkishness": 0.2
+    },
+    {
+      "doc_id": "minutes-2023-11",
+      "type": "minutes",
+      "meeting_end": "2023-11-01",
+      "published": "2023-11-02",
+      "decision": "maintain Bank Rate at 5.25%",
+      "vote": "6-3",
+      "source_url": "https://www.bankofengland.co.uk/monetary-policy-summary-and-minutes/2023/november-2023",
+      "sha256": "6b00b1650e646cf5fe6f0c68e84dce5f663a0fe6f2fbbfdd619f12792b12902c",
+      "n_sentences": 145,
+      "n_scored_sentences": 46,
+      "hawkish_hits": 39,
+      "dovish_hits": 21,
+      "net_hawkishness": 0.3
+    },
+    {
+      "doc_id": "minutes-2023-12",
+      "type": "minutes",
+      "meeting_end": "2023-12-13",
+      "published": "2023-12-14",
+      "decision": "maintain Bank Rate at 5.25%",
+      "vote": "6-3",
+      "source_url": "https://www.bankofengland.co.uk/monetary-policy-summary-and-minutes/2023/december-2023",
+      "sha256": "e03bc5c75821d7d1c173729ce22eecfe05fb63412f86a7c9babd07fccfaf2671",
+      "n_sentences": 196,
+      "n_scored_sentences": 45,
+      "hawkish_hits": 35,
+      "dovish_hits": 19,
+      "net_hawkishness": 0.2963
+    },
+    {
+      "doc_id": "minutes-2024-02",
+      "type": "minutes",
+      "meeting_end": "2024-01-31",
+      "published": "2024-02-01",
+      "decision": "maintain Bank Rate at 5.25%",
+      "vote": "6-3",
+      "source_url": "https://www.bankofengland.co.uk/monetary-policy-summary-and-minutes/2024/february-2024",
+      "sha256": "c924190dc52bef4685fe58dd431a7c2f672fd0aadc095a0bafd1e52c23d6ce5d",
+      "n_sentences": 133,
+      "n_scored_sentences": 42,
+      "hawkish_hits": 27,
+      "dovish_hits": 26,
+      "net_hawkishness": 0.0189
+    },
+    {
+      "doc_id": "minutes-2024-03",
+      "type": "minutes",
+      "meeting_end": "2024-03-20",
+      "published": "2024-03-21",
+      "decision": "maintain Bank Rate at 5.25%",
+      "vote": "8-1",
+      "source_url": "https://www.bankofengland.co.uk/monetary-policy-summary-and-minutes/2024/march-2024",
+      "sha256": "79ae16c2176eecb087660a1a9284db2e4ff9d95cf95167bcd1ca5392505df91c",
+      "n_sentences": 203,
+      "n_scored_sentences": 45,
+      "hawkish_hits": 32,
+      "dovish_hits": 19,
+      "net_hawkishness": 0.2549
+    },
+    {
+      "doc_id": "minutes-2024-05",
+      "type": "minutes",
+      "meeting_end": "2024-05-08",
+      "published": "2024-05-09",
+      "decision": "maintain Bank Rate at 5.25%",
+      "vote": "7-2",
+      "source_url": "https://www.bankofengland.co.uk/monetary-policy-summary-and-minutes/2024/may-2024",
+      "sha256": "b4ee306d54d97f6541f2b5a2d98045e5fa2baa555c9bbd0f5f80932ff1e85d74",
+      "n_sentences": 126,
+      "n_scored_sentences": 45,
+      "hawkish_hits": 33,
+      "dovish_hits": 21,
+      "net_hawkishness": 0.2222
+    },
+    {
+      "doc_id": "minutes-2024-06",
+      "type": "minutes",
+      "meeting_end": "2024-06-19",
+      "published": "2024-06-20",
+      "decision": "maintain Bank Rate at 5.25%",
+      "vote": "7-2",
+      "source_url": "https://www.bankofengland.co.uk/monetary-policy-summary-and-minutes/2024/june-2024",
+      "sha256": "e69ea5eb90921cfa23ee159ee38cdd4650503409df912852a63cd3f7b8a762b6",
+      "n_sentences": 226,
+      "n_scored_sentences": 48,
+      "hawkish_hits": 34,
+      "dovish_hits": 22,
+      "net_hawkishness": 0.2143
+    },
+    {
+      "doc_id": "minutes-2024-08",
+      "type": "minutes",
+      "meeting_end": "2024-07-31",
+      "published": "2024-08-01",
+      "decision": "reduce Bank Rate by 0.25 percentage points, to 5%",
+      "vote": "5-4",
+      "source_url": "https://www.bankofengland.co.uk/monetary-policy-summary-and-minutes/2024/august-2024",
+      "sha256": "ee016bdaf6c26a155a9176805d4079976244265ea69b0a563ee432ce7055e453",
+      "n_sentences": 118,
+      "n_scored_sentences": 34,
+      "hawkish_hits": 31,
+      "dovish_hits": 8,
+      "net_hawkishness": 0.5897
+    },
+    {
+      "doc_id": "minutes-2024-09",
+      "type": "minutes",
+      "meeting_end": "2024-09-18",
+      "published": "2024-09-19",
+      "decision": "maintain Bank Rate at 5%",
+      "vote": "8-1",
+      "source_url": "https://www.bankofengland.co.uk/monetary-policy-summary-and-minutes/2024/september-2024",
+      "sha256": "cbb341259cce87b67a1fb32e78bf5d41313dc38f9995082788aaad343845d8a9",
+      "n_sentences": 196,
+      "n_scored_sentences": 36,
+      "hawkish_hits": 24,
+      "dovish_hits": 26,
+      "net_hawkishness": -0.04
+    },
+    {
+      "doc_id": "minutes-2024-11",
+      "type": "minutes",
+      "meeting_end": "2024-11-06",
+      "published": "2024-11-07",
+      "decision": "reduce Bank Rate by 0.25 percentage points, to 4.75%",
+      "vote": "8-1",
+      "source_url": "https://www.bankofengland.co.uk/monetary-policy-summary-and-minutes/2024/november-2024",
+      "sha256": "731225c633d8b2494fba70cce35d7058217bd35f1d4e38e0da053ffb4e27b753",
+      "n_sentences": 106,
+      "n_scored_sentences": 29,
+      "hawkish_hits": 17,
+      "dovish_hits": 21,
+      "net_hawkishness": -0.1053
+    },
+    {
+      "doc_id": "minutes-2024-12",
+      "type": "minutes",
+      "meeting_end": "2024-12-18",
+      "published": "2024-12-19",
+      "decision": "maintain Bank Rate at 4.75%",
+      "vote": "6-3",
+      "source_url": "https://www.bankofengland.co.uk/monetary-policy-summary-and-minutes/2024/december-2024",
+      "sha256": "0d5a2c772c195d1767eac02c32e08703ff018bd5300f3bbf2df156530f9d96ba",
+      "n_sentences": 185,
+      "n_scored_sentences": 32,
+      "hawkish_hits": 26,
+      "dovish_hits": 21,
+      "net_hawkishness": 0.1064
+    },
+    {
+      "doc_id": "minutes-2025-02",
+      "type": "minutes",
+      "meeting_end": "2025-02-05",
+      "published": "2025-02-06",
+      "decision": "reduce Bank Rate by 0.25 percentage points, to 4.5%",
+      "vote": "7-2",
+      "source_url": "https://www.bankofengland.co.uk/monetary-policy-summary-and-minutes/2025/february-2025",
+      "sha256": "705b4ae60406b34406efc4829e129114d8fc6ebcb7e1e0029ddd7542d59e6dde",
+      "n_sentences": 111,
+      "n_scored_sentences": 46,
+      "hawkish_hits": 35,
+      "dovish_hits": 32,
+      "net_hawkishness": 0.0448
+    },
+    {
+      "doc_id": "minutes-2025-03",
+      "type": "minutes",
+      "meeting_end": "2025-03-19",
+      "published": "2025-03-20",
+      "decision": "maintain Bank Rate at 4.5%",
+      "vote": "8-1",
+      "source_url": "https://www.bankofengland.co.uk/monetary-policy-summary-and-minutes/2025/march-2025",
+      "sha256": "894ffec605c289909a8496d59391ea4fd8f439d22dc9d57f80b68ee64e936a34",
+      "n_sentences": 220,
+      "n_scored_sentences": 47,
+      "hawkish_hits": 24,
+      "dovish_hits": 33,
+      "net_hawkishness": -0.1579
+    },
+    {
+      "doc_id": "minutes-2025-05",
+      "type": "minutes",
+      "meeting_end": "2025-05-07",
+      "published": "2025-05-08",
+      "decision": "reduce Bank Rate by 0.25 percentage points, to 4.25%",
+      "vote": "5-4",
+      "source_url": "https://www.bankofengland.co.uk/monetary-policy-summary-and-minutes/2025/may-2025",
+      "sha256": "d238f11bdadae1953d861b9d9e0e50eee80dd4abe58415057dbc3dc204dcb6a5",
+      "n_sentences": 133,
+      "n_scored_sentences": 26,
+      "hawkish_hits": 26,
+      "dovish_hits": 24,
+      "net_hawkishness": 0.04
+    },
+    {
+      "doc_id": "minutes-2025-06",
+      "type": "minutes",
+      "meeting_end": "2025-06-18",
+      "published": "2025-06-19",
+      "decision": "maintain Bank Rate at 4.25%",
+      "vote": "6-3",
+      "source_url": "https://www.bankofengland.co.uk/monetary-policy-summary-and-minutes/2025/june-2025",
+      "sha256": "dc7e216f17f3aed09a64a72b5d91ec1c706fe6a3fab0ba0ebf795a0b5ffd5048",
+      "n_sentences": 211,
+      "n_scored_sentences": 45,
+      "hawkish_hits": 20,
+      "dovish_hits": 41,
+      "net_hawkishness": -0.3443
+    },
+    {
+      "doc_id": "minutes-2025-08",
+      "type": "minutes",
+      "meeting_end": "2025-08-06",
+      "published": "2025-08-07",
+      "decision": "reduce Bank Rate by 0.25 percentage points, to 4%, rather than maintaining it at 4.25%",
+      "vote": "5-4",
+      "source_url": "https://www.bankofengland.co.uk/monetary-policy-summary-and-minutes/2025/august-2025",
+      "sha256": "1eb78ff7bf33084e48b10e851cf2bcb3ec970029e7581d5ad4105b044456cdb5",
+      "n_sentences": 131,
+      "n_scored_sentences": 42,
+      "hawkish_hits": 31,
+      "dovish_hits": 45,
+      "net_hawkishness": -0.1842
+    },
+    {
+      "doc_id": "minutes-2025-09",
+      "type": "minutes",
+      "meeting_end": "2025-09-17",
+      "published": "2025-09-18",
+      "decision": "maintain Bank Rate at 4%",
+      "vote": "7-2",
+      "source_url": "https://www.bankofengland.co.uk/monetary-policy-summary-and-minutes/2025/september-2025",
+      "sha256": "59aeb98fff4abca849fbc7c48fad1d5495d1ec06092c1eeea576843c855bcfd3",
+      "n_sentences": 197,
+      "n_scored_sentences": 42,
+      "hawkish_hits": 28,
+      "dovish_hits": 43,
+      "net_hawkishness": -0.2113
+    },
+    {
+      "doc_id": "minutes-2025-11",
+      "type": "minutes",
+      "meeting_end": "2025-11-05",
+      "published": "2025-11-06",
+      "decision": "maintain Bank Rate at 4%",
+      "vote": "5-4",
+      "source_url": "https://www.bankofengland.co.uk/monetary-policy-summary-and-minutes/2025/november-2025",
+      "sha256": "4e58ef9d2c87a5b05c84ecbcb130a54aca24d7764cc2a9494b21be77ed220d0d",
+      "n_sentences": 163,
+      "n_scored_sentences": 67,
+      "hawkish_hits": 44,
+      "dovish_hits": 68,
+      "net_hawkishness": -0.2143
+    },
+    {
+      "doc_id": "minutes-2025-12",
+      "type": "minutes",
+      "meeting_end": "2025-12-17",
+      "published": "2025-12-18",
+      "decision": "reduce Bank Rate by 0.25 percentage points, to 3.75%",
+      "vote": "5-4",
+      "source_url": "https://www.bankofengland.co.uk/monetary-policy-summary-and-minutes/2025/december-2025",
+      "sha256": "9739805ae7019eea5afeedd3212628779780db7861f2eb07e669b086811aa094",
+      "n_sentences": 223,
+      "n_scored_sentences": 84,
+      "hawkish_hits": 42,
+      "dovish_hits": 79,
+      "net_hawkishness": -0.3058
+    },
+    {
+      "doc_id": "minutes-2026-02",
+      "type": "minutes",
+      "meeting_end": "2026-02-04",
+      "published": "2026-02-05",
+      "decision": "maintain Bank Rate at 3.75%",
+      "vote": "5-4",
+      "source_url": "https://www.bankofengland.co.uk/monetary-policy-summary-and-minutes/2026/february-2026",
+      "sha256": "f5c1417018d938f3ac7ed6cd44295ad85e45ff47433636926d624221885ecf0d",
+      "n_sentences": 159,
+      "n_scored_sentences": 62,
+      "hawkish_hits": 31,
+      "dovish_hits": 64,
+      "net_hawkishness": -0.3474
+    },
+    {
+      "doc_id": "minutes-2026-03",
+      "type": "minutes",
+      "meeting_end": "2026-03-18",
+      "published": "2026-03-19",
+      "decision": "maintain Bank Rate at 3.75%",
+      "vote": "unanimous",
+      "source_url": "https://www.bankofengland.co.uk/monetary-policy-summary-and-minutes/2026/march-2026",
+      "sha256": "0e67f9bf27deaaabdf0b0cfa538e62683b6788a29008445b7a955ec8ef07b287",
+      "n_sentences": 213,
+      "n_scored_sentences": 41,
+      "hawkish_hits": 24,
+      "dovish_hits": 25,
+      "net_hawkishness": -0.0204
+    },
+    {
+      "doc_id": "minutes-2026-04",
+      "type": "minutes",
+      "meeting_end": "2026-04-29",
+      "published": "2026-04-30",
+      "decision": "maintain Bank Rate at 3.75%",
+      "vote": "8-1",
+      "source_url": "https://www.bankofengland.co.uk/monetary-policy-summary-and-minutes/2026/april-2026",
+      "sha256": "78f6e4b9e81a7157afbbd4ba9bf969e8303a37d7610af65c4a3520b706b8b2ea",
+      "n_sentences": 174,
+      "n_scored_sentences": 53,
+      "hawkish_hits": 40,
+      "dovish_hits": 32,
+      "net_hawkishness": 0.1111
+    },
     {
       "doc_id": "minutes-2026-06",
       "type": "minutes",
       "meeting_end": "2026-06-17",
       "published": "2026-06-18",
-      "decision": "hold at 3.75%",
-      "vote": "7-2 (two for +25bp)",
+      "decision": "maintain Bank Rate at 3.75%",
+      "vote": "7-2",
       "source_url": "https://www.bankofengland.co.uk/monetary-policy-summary-and-minutes/2026/june-2026",
-      "sha256": "cb8fa61e9ca6b9aabe7fe78eccd65b77d26270d4b8f91e85601b2ec673b3d6a8",
-      "n_sentences": 237,
+      "sha256": "a11a4d26aefd2b229d78a590a2dba1ebd4758c62498c344e27474f4757195687",
+      "n_sentences": 251,
       "n_scored_sentences": 71,
       "hawkish_hits": 48,
       "dovish_hits": 42,
@@ -20,6 +1385,456 @@
     }
   ],
   "series": [
+    {
+      "date": "2015-08-06",
+      "net_hawkishness": -0.5,
+      "doc_id": "minutes-2015-08"
+    },
+    {
+      "date": "2015-09-10",
+      "net_hawkishness": -0.6364,
+      "doc_id": "minutes-2015-09"
+    },
+    {
+      "date": "2015-11-05",
+      "net_hawkishness": -0.5,
+      "doc_id": "minutes-2015-11"
+    },
+    {
+      "date": "2015-12-10",
+      "net_hawkishness": -0.4286,
+      "doc_id": "minutes-2015-12"
+    },
+    {
+      "date": "2016-01-14",
+      "net_hawkishness": -0.4286,
+      "doc_id": "minutes-2016-01"
+    },
+    {
+      "date": "2016-02-04",
+      "net_hawkishness": -0.6667,
+      "doc_id": "minutes-2016-02"
+    },
+    {
+      "date": "2016-03-17",
+      "net_hawkishness": -0.3333,
+      "doc_id": "minutes-2016-03"
+    },
+    {
+      "date": "2016-04-14",
+      "net_hawkishness": -1.0,
+      "doc_id": "minutes-2016-04"
+    },
+    {
+      "date": "2016-05-12",
+      "net_hawkishness": -0.3333,
+      "doc_id": "minutes-2016-05"
+    },
+    {
+      "date": "2016-06-16",
+      "net_hawkishness": -1.0,
+      "doc_id": "minutes-2016-06"
+    },
+    {
+      "date": "2016-07-14",
+      "net_hawkishness": -0.6,
+      "doc_id": "minutes-2016-07"
+    },
+    {
+      "date": "2016-08-04",
+      "net_hawkishness": -0.4,
+      "doc_id": "minutes-2016-08"
+    },
+    {
+      "date": "2016-09-15",
+      "net_hawkishness": -1.0,
+      "doc_id": "minutes-2016-09"
+    },
+    {
+      "date": "2016-11-03",
+      "net_hawkishness": 0.3333,
+      "doc_id": "minutes-2016-11"
+    },
+    {
+      "date": "2016-12-15",
+      "net_hawkishness": -0.5,
+      "doc_id": "minutes-2016-12"
+    },
+    {
+      "date": "2017-02-02",
+      "net_hawkishness": -0.4286,
+      "doc_id": "minutes-2017-02"
+    },
+    {
+      "date": "2017-03-16",
+      "net_hawkishness": 0.0,
+      "doc_id": "minutes-2017-03"
+    },
+    {
+      "date": "2017-05-11",
+      "net_hawkishness": 0.2,
+      "doc_id": "minutes-2017-05"
+    },
+    {
+      "date": "2017-06-15",
+      "net_hawkishness": 0.2,
+      "doc_id": "minutes-2017-06"
+    },
+    {
+      "date": "2017-08-03",
+      "net_hawkishness": 0.0909,
+      "doc_id": "minutes-2017-08"
+    },
+    {
+      "date": "2017-09-14",
+      "net_hawkishness": -0.5,
+      "doc_id": "minutes-2017-09"
+    },
+    {
+      "date": "2017-11-02",
+      "net_hawkishness": 0.0,
+      "doc_id": "minutes-2017-11"
+    },
+    {
+      "date": "2017-12-14",
+      "net_hawkishness": 0.0,
+      "doc_id": "minutes-2017-12"
+    },
+    {
+      "date": "2018-02-08",
+      "net_hawkishness": 0.2,
+      "doc_id": "minutes-2018-02"
+    },
+    {
+      "date": "2018-03-22",
+      "net_hawkishness": 0.25,
+      "doc_id": "minutes-2018-03"
+    },
+    {
+      "date": "2018-05-10",
+      "net_hawkishness": -0.2,
+      "doc_id": "minutes-2018-05"
+    },
+    {
+      "date": "2018-06-21",
+      "net_hawkishness": -0.2,
+      "doc_id": "minutes-2018-06"
+    },
+    {
+      "date": "2018-08-02",
+      "net_hawkishness": 0.2,
+      "doc_id": "minutes-2018-08"
+    },
+    {
+      "date": "2018-09-13",
+      "net_hawkishness": -0.1429,
+      "doc_id": "minutes-2018-09"
+    },
+    {
+      "date": "2018-11-01",
+      "net_hawkishness": 0.0,
+      "doc_id": "minutes-2018-11"
+    },
+    {
+      "date": "2018-12-20",
+      "net_hawkishness": -0.3333,
+      "doc_id": "minutes-2018-12"
+    },
+    {
+      "date": "2019-02-07",
+      "net_hawkishness": -0.0909,
+      "doc_id": "minutes-2019-02"
+    },
+    {
+      "date": "2019-03-21",
+      "net_hawkishness": -0.6667,
+      "doc_id": "minutes-2019-03"
+    },
+    {
+      "date": "2019-05-02",
+      "net_hawkishness": 0.0,
+      "doc_id": "minutes-2019-05"
+    },
+    {
+      "date": "2019-06-20",
+      "net_hawkishness": -0.25,
+      "doc_id": "minutes-2019-06"
+    },
+    {
+      "date": "2019-08-01",
+      "net_hawkishness": 0.0,
+      "doc_id": "minutes-2019-08"
+    },
+    {
+      "date": "2019-09-19",
+      "net_hawkishness": -0.1429,
+      "doc_id": "minutes-2019-09"
+    },
+    {
+      "date": "2019-11-07",
+      "net_hawkishness": 0.5,
+      "doc_id": "minutes-2019-11"
+    },
+    {
+      "date": "2019-12-19",
+      "net_hawkishness": 0.0,
+      "doc_id": "minutes-2019-12"
+    },
+    {
+      "date": "2020-01-30",
+      "net_hawkishness": -0.5,
+      "doc_id": "minutes-2020-01"
+    },
+    {
+      "date": "2020-03-26",
+      "net_hawkishness": 1.0,
+      "doc_id": "minutes-2020-03"
+    },
+    {
+      "date": "2020-05-07",
+      "net_hawkishness": -0.6,
+      "doc_id": "minutes-2020-05"
+    },
+    {
+      "date": "2020-06-18",
+      "net_hawkishness": -1.0,
+      "doc_id": "minutes-2020-06"
+    },
+    {
+      "date": "2020-08-05",
+      "net_hawkishness": -0.5,
+      "doc_id": "minutes-2020-08"
+    },
+    {
+      "date": "2020-09-17",
+      "net_hawkishness": -1.0,
+      "doc_id": "minutes-2020-09"
+    },
+    {
+      "date": "2020-11-05",
+      "net_hawkishness": -1.0,
+      "doc_id": "minutes-2020-11"
+    },
+    {
+      "date": "2020-12-17",
+      "net_hawkishness": -0.75,
+      "doc_id": "minutes-2020-12"
+    },
+    {
+      "date": "2021-02-04",
+      "net_hawkishness": -1.0,
+      "doc_id": "minutes-2021-02"
+    },
+    {
+      "date": "2021-03-18",
+      "net_hawkishness": -1.0,
+      "doc_id": "minutes-2021-03"
+    },
+    {
+      "date": "2021-05-06",
+      "net_hawkishness": -0.4545,
+      "doc_id": "minutes-2021-05"
+    },
+    {
+      "date": "2021-06-23",
+      "net_hawkishness": 0.0909,
+      "doc_id": "minutes-2021-06"
+    },
+    {
+      "date": "2021-08-05",
+      "net_hawkishness": 0.2083,
+      "doc_id": "minutes-2021-08"
+    },
+    {
+      "date": "2021-09-23",
+      "net_hawkishness": 0.4375,
+      "doc_id": "minutes-2021-09"
+    },
+    {
+      "date": "2021-11-03",
+      "net_hawkishness": 0.0612,
+      "doc_id": "minutes-2021-11"
+    },
+    {
+      "date": "2021-12-16",
+      "net_hawkishness": 0.5769,
+      "doc_id": "minutes-2021-12"
+    },
+    {
+      "date": "2022-02-03",
+      "net_hawkishness": 0.0545,
+      "doc_id": "minutes-2022-02"
+    },
+    {
+      "date": "2022-03-17",
+      "net_hawkishness": 0.1613,
+      "doc_id": "minutes-2022-03"
+    },
+    {
+      "date": "2022-05-05",
+      "net_hawkishness": 0.3929,
+      "doc_id": "minutes-2022-05"
+    },
+    {
+      "date": "2022-06-16",
+      "net_hawkishness": 0.55,
+      "doc_id": "minutes-2022-06"
+    },
+    {
+      "date": "2022-08-04",
+      "net_hawkishness": 0.3636,
+      "doc_id": "minutes-2022-08"
+    },
+    {
+      "date": "2022-09-22",
+      "net_hawkishness": 0.3182,
+      "doc_id": "minutes-2022-09"
+    },
+    {
+      "date": "2022-11-03",
+      "net_hawkishness": 0.1111,
+      "doc_id": "minutes-2022-11"
+    },
+    {
+      "date": "2022-12-15",
+      "net_hawkishness": 0.1525,
+      "doc_id": "minutes-2022-12"
+    },
+    {
+      "date": "2023-02-02",
+      "net_hawkishness": 0.08,
+      "doc_id": "minutes-2023-02"
+    },
+    {
+      "date": "2023-03-23",
+      "net_hawkishness": 0.0,
+      "doc_id": "minutes-2023-03"
+    },
+    {
+      "date": "2023-05-11",
+      "net_hawkishness": 0.0,
+      "doc_id": "minutes-2023-05"
+    },
+    {
+      "date": "2023-06-22",
+      "net_hawkishness": -0.28,
+      "doc_id": "minutes-2023-06"
+    },
+    {
+      "date": "2023-08-03",
+      "net_hawkishness": 0.3469,
+      "doc_id": "minutes-2023-08"
+    },
+    {
+      "date": "2023-09-21",
+      "net_hawkishness": 0.2,
+      "doc_id": "minutes-2023-09"
+    },
+    {
+      "date": "2023-11-02",
+      "net_hawkishness": 0.3,
+      "doc_id": "minutes-2023-11"
+    },
+    {
+      "date": "2023-12-14",
+      "net_hawkishness": 0.2963,
+      "doc_id": "minutes-2023-12"
+    },
+    {
+      "date": "2024-02-01",
+      "net_hawkishness": 0.0189,
+      "doc_id": "minutes-2024-02"
+    },
+    {
+      "date": "2024-03-21",
+      "net_hawkishness": 0.2549,
+      "doc_id": "minutes-2024-03"
+    },
+    {
+      "date": "2024-05-09",
+      "net_hawkishness": 0.2222,
+      "doc_id": "minutes-2024-05"
+    },
+    {
+      "date": "2024-06-20",
+      "net_hawkishness": 0.2143,
+      "doc_id": "minutes-2024-06"
+    },
+    {
+      "date": "2024-08-01",
+      "net_hawkishness": 0.5897,
+      "doc_id": "minutes-2024-08"
+    },
+    {
+      "date": "2024-09-19",
+      "net_hawkishness": -0.04,
+      "doc_id": "minutes-2024-09"
+    },
+    {
+      "date": "2024-11-07",
+      "net_hawkishness": -0.1053,
+      "doc_id": "minutes-2024-11"
+    },
+    {
+      "date": "2024-12-19",
+      "net_hawkishness": 0.1064,
+      "doc_id": "minutes-2024-12"
+    },
+    {
+      "date": "2025-02-06",
+      "net_hawkishness": 0.0448,
+      "doc_id": "minutes-2025-02"
+    },
+    {
+      "date": "2025-03-20",
+      "net_hawkishness": -0.1579,
+      "doc_id": "minutes-2025-03"
+    },
+    {
+      "date": "2025-05-08",
+      "net_hawkishness": 0.04,
+      "doc_id": "minutes-2025-05"
+    },
+    {
+      "date": "2025-06-19",
+      "net_hawkishness": -0.3443,
+      "doc_id": "minutes-2025-06"
+    },
+    {
+      "date": "2025-08-07",
+      "net_hawkishness": -0.1842,
+      "doc_id": "minutes-2025-08"
+    },
+    {
+      "date": "2025-09-18",
+      "net_hawkishness": -0.2113,
+      "doc_id": "minutes-2025-09"
+    },
+    {
+      "date": "2025-11-06",
+      "net_hawkishness": -0.2143,
+      "doc_id": "minutes-2025-11"
+    },
+    {
+      "date": "2025-12-18",
+      "net_hawkishness": -0.3058,
+      "doc_id": "minutes-2025-12"
+    },
+    {
+      "date": "2026-02-05",
+      "net_hawkishness": -0.3474,
+      "doc_id": "minutes-2026-02"
+    },
+    {
+      "date": "2026-03-19",
+      "net_hawkishness": -0.0204,
+      "doc_id": "minutes-2026-03"
+    },
+    {
+      "date": "2026-04-30",
+      "net_hawkishness": 0.1111,
+      "doc_id": "minutes-2026-04"
+    },
     {
       "date": "2026-06-18",
       "net_hawkishness": 0.0667,
