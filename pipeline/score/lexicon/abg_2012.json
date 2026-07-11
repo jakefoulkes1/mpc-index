@@ -1,0 +1,34 @@
+{
+  "citation": "Apel, Mikael and Marianna Blix Grimaldi (2012), \"The Information Content of Central Bank Minutes\", Sveriges Riksbank Working Paper Series No. 261, April 2012.",
+  "source_pdf": "http://www.riksbank.se/Documents/Rapporter/Working_papers/2012/rap_wp261_120426.pdf",
+  "source_pdf_sha256_note": "26-page PDF, retrieved via S-WoPEc (https://swopec.hhs.se/rbnkwp/abs/rbnkwp0261.htm)",
+  "retrieved": "2026-07-18",
+  "notes": "Method: two-word noun+adjective combinations (e.g. \"higher inflation\" = hawkish, \"lower growth\" = dovish), NOT a single-word sentiment list. The original search was on the Swedish-language Riksbank minutes; the term set here is the paper's own English translation column from its Appendix (p.18), applied to English-language Bank of England minutes text - see DECISIONS.md for the cross-language-application caveat. Terms marked with a trailing '*' in the paper are wildcard stems (matching inflected/compound forms, e.g. inflation* matches 'inflation', 'inflation expectations', 'inflationary'); see DECISIONS.md for how stemming is implemented in this codebase.",
+  "nouns_core": {
+    "page_reference": "p.9 (prose) and p.18 (Appendix, English column, wildcard forms)",
+    "terms": ["inflation", "price", "wage", "oil price", "cyclical position", "growth", "development"]
+  },
+  "nouns_extended": {
+    "page_reference": "p.12, footnote 15",
+    "notes": "Used only for the paper's 'Net Index Extended' robustness check (Table 2, column iv), not the primary Net Index. Not used by this codebase's default index - see DECISIONS.md.",
+    "terms": ["employment", "unemployment", "recovery", "cost"]
+  },
+  "hawkish_adjectives": {
+    "page_reference": "p.9 (prose) and p.18 (Appendix Table, 'Hawkish' English column)",
+    "terms": ["high", "strong", "increasing", "increase", "fast"]
+  },
+  "dovish_adjectives": {
+    "page_reference": "p.9 (prose) and p.18 (Appendix Table, 'Dovish' English column)",
+    "terms": ["low", "weak", "decreasing", "decreas", "slow"]
+  },
+  "net_index_formula": {
+    "page_reference": "p.10",
+    "formula": "Net Index = [ (#hawk / (#hawk + #dove)) - (#dove / (#hawk + #dove)) ] + 1",
+    "notes": "#hawk and #dove are the total counts of hawkish and dovish two-word combinations in the document. Range is [0, 2]; 1 is neutral/balanced, confirmed by reading the equation image directly (pdfplumber's text layer does not extract it as text - see DECISIONS.md)."
+  },
+  "skew_formula": {
+    "page_reference": "p.13 (following Gerlach-Kristen 2004)",
+    "formula": "skew = average(r_j) - r",
+    "notes": "r_j is the rate MPC member j votes for; r is the decided (majority) rate. Used in Part B validation against the Bank's voting record, not in the text-based index itself."
+  }
+}

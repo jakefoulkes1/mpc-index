@@ -17,7 +17,8 @@ import json
 import re
 from pathlib import Path
 
-from pipeline.score.dictionary import load_lexicon, score_document, split_sentences
+from pipeline.score.abg import load_abg_lexicon, score_document as score_document_abg
+from pipeline.score.dictionary import split_sentences
 
 ROOT = Path(__file__).resolve().parents[1]
 RAW = ROOT / "data" / "raw"
@@ -139,7 +140,7 @@ def parse_entry(path: Path, source_kind: dict) -> dict | None:
 
 
 def main() -> None:
-    lexicon = load_lexicon()
+    abg_lexicon = load_abg_lexicon()
     source_kind = json.loads(SOURCE_KIND_PATH.read_text()) if SOURCE_KIND_PATH.exists() else {}
     documents, series = [], []
     for path in sorted(RAW.glob("*.txt")):
@@ -149,19 +150,19 @@ def main() -> None:
             continue
         text = path.read_text()
         entry["sha256"] = hashlib.sha256(text.encode()).hexdigest()
-        entry.update(score_document(text, lexicon))
+        entry.update(score_document_abg(text, abg_lexicon))
         documents.append(entry)
         if entry["published"]:
             series.append({
                 "date": entry["published"],
-                "net_hawkishness": entry["net_hawkishness"],
+                "abg_net_index": entry["abg_net_index"],
                 "doc_id": entry["doc_id"],
             })
 
     payload = {
-        "schema": "index-v0",
+        "schema": "index-v1",
         "generated_utc": dt.datetime.now(dt.timezone.utc).isoformat(timespec="seconds"),
-        "lexicon": "starter_v0 (plumbing only - see DECISIONS.md; A&BG replaces it)",
+        "lexicon": "abg_2012 (Apel & Blix Grimaldi 2012, verbatim - see pipeline/score/lexicon/abg_2012.json and DECISIONS.md). starter_v0 remains in the repo as plumbing only and is no longer used in any output.",
         "documents": documents,
         "series": sorted(series, key=lambda row: row["date"]),
     }

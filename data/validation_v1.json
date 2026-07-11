@@ -1,0 +1,35 @@
+{
+  "schema": "validation-v1",
+  "n_joined_meetings": 87,
+  "unmatched_corpus_dates": [
+    "2015-10-07",
+    "2020-08-05",
+    "2021-06-23",
+    "2021-11-03"
+  ],
+  "corr_abg_index_vs_skew": {
+    "pearson_r": 0.1811,
+    "spearman_r": 0.1427,
+    "n": 87
+  },
+  "corr_abg_index_vs_net_dissents": {
+    "pearson_r": 0.1983,
+    "spearman_r": 0.1523,
+    "n": 87
+  },
+  "mean_abg_index_by_decision": {
+    "hike": {
+      "mean_abg_net_index": 1.4354,
+      "n": 16
+    },
+    "hold": {
+      "mean_abg_net_index": 0.9723,
+      "n": 65
+    },
+    "cut": {
+      "mean_abg_net_index": 1.0,
+      "n": 6
+    }
+  },
+  "notes": "Contemporaneous only (meeting's own minutes vs that meeting's own vote/decision), not predictive of the next meeting. See DECISIONS.md."
+}

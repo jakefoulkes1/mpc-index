@@ -1,8 +1,13 @@
 from pathlib import Path
 
 from pipeline.build_index import parse_entry
+from pipeline.score.abg import score_document as score_document_abg
 
 FIX = Path(__file__).parent / "fixtures"
+
+# Fields index.html's renderChart() reads off each document with a
+# `published` date - see index.html's renderChart function.
+CHART_REQUIRED_FIELDS = {"doc_id", "published", "decision", "abg_net_index"}
 
 
 def test_parses_june_2026_manifest_fields(tmp_path):
@@ -35,3 +40,16 @@ def test_unrecognised_filename_returns_none(tmp_path):
     raw = tmp_path / "notes.txt"
     raw.write_text("irrelevant")
     assert parse_entry(raw, source_kind={}) is None
+
+
+def test_document_record_has_chart_required_fields(tmp_path):
+    text = (FIX / "june_2026_summary_excerpt.txt").read_text()
+    raw = tmp_path / "2026-06-minutes.txt"
+    raw.write_text(text)
+
+    entry = parse_entry(raw, source_kind={})
+    entry.update(score_document_abg(text))
+
+    assert CHART_REQUIRED_FIELDS <= entry.keys()
+    assert entry["published"] is not None
+    assert isinstance(entry["abg_net_index"], float)

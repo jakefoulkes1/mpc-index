@@ -142,3 +142,133 @@ Changes apply forward only; nothing is retrofitted. Locked calls are never touch
 - **Post-repair word counts: zero documents under 1,000 words** (previous
   low was 679; new low is 2,606, in the short 2024 minutes). No individual
   per-document explanations needed since none remain under threshold.
+
+## 2026-07-18 — A&BG (2012) baseline lexicon
+
+- **Source, retrieved and verified, not reconstructed from memory.** Apel &
+  Blix Grimaldi (2012), "The Information Content of Central Bank Minutes",
+  Sveriges Riksbank Working Paper No. 261. The SSRN/EconStor mirrors
+  bot-blocked our scraper; the actual PDF came from the original
+  riksbank.se URL listed on the paper's S-WoPEc/RePEc abstract page
+  (swopec.hhs.se/rbnkwp/abs/rbnkwp0261.htm). Saved verbatim, with page
+  references, to `pipeline/score/lexicon/abg_2012.json`.
+- **The Net Index formula (p.10) and the term appendix (p.18) are images/
+  table objects in the PDF, not extractable as plain text** - pdfplumber's
+  text layer renders the formula as `[( ) ( )]` with the interior blank, and
+  the appendix table's columns run together in plain-text extraction. Both
+  were confirmed by cropping the PDF region to an image and reading it
+  directly, not inferred: `Net Index = [(#hawk/(#hawk+#dove)) -
+  (#dove/(#hawk+#dove))] + 1`, range [0, 2], 1 = neutral.
+- **The paper's method is two-word noun+adjective bigrams, not a single-word
+  sentiment list and not sentence-level.** "Higher inflation" = hawkish,
+  "lower growth" = dovish. It counts over the whole document, with no
+  sentence splitting at all - the earlier task wording assumed
+  "(sentence-level)"; the paper itself does not do this, and "implement the
+  paper's index construction as described in the paper" takes priority, so
+  `pipeline/score/abg.py` matches the paper: no sentence splitting.
+- **Core noun list used for the primary index: 7 nouns** (inflation, price,
+  wage, oil price, cyclical position, growth, development), matching the
+  paper's main Net Index (Table 1/2, p.9-10). The paper's 4-noun extension
+  (employment, unemployment, recovery, cost) was only used for a robustness
+  check ("Net Index Extended") in the original paper, not its primary
+  result - stored in abg_2012.json for reference but not used by
+  `abg.py`'s default index.
+- **Adjective-noun adjacency and match direction: immediately adjacent,
+  adjective-then-noun** ("higher inflation", not "inflation is higher").
+  The paper doesn't state an explicit token window for the English
+  translation; adjacency in the stated direction is the most literal
+  reading of its own worked examples and is what's implemented. Logged as
+  an interpretation, not verbatim from the paper.
+- **No negation window, no sentence-level scoring, no other extras from
+  `pipeline/score/dictionary.py` (starter_v0's machinery) applied to the
+  A&BG index** - run plain, per instruction. `dictionary.py` and
+  `starter_v0.json` remain in the repo (starter_v0 is how the walking
+  skeleton was proven end-to-end) but are no longer used in `index.json` or
+  any other output from this point on. `abg_2012` is now the only index
+  used for analysis and claims, matching the original 2026-07-05 entry's
+  intent.
+- **index.json schema bumped to `index-v1`**: `net_hawkishness` /
+  `hawkish_hits` / `dovish_hits` / `n_sentences` / `n_scored_sentences`
+  (starter_v0 fields) replaced by `abg_hawk` / `abg_dove` /
+  `abg_net_index` on every document and in the series.
+
+## 2026-07-18 — voting-record parsing and reconciliation
+
+- **`data/votes.csv` join key is the sheet's own date column, which is the
+  meeting's PUBLISHED/announcement date, not `meeting_end`** - confirmed by
+  cross-checking known dates (e.g. the sheet's 2026-06-18 row matches
+  minutes-2026-06's `published` field exactly, while its `meeting_end` is
+  2026-06-17). `skew = average(all voting members' preferred rate) -
+  decided rate`, per the paper's own formula (p.13, after Gerlach-Kristen
+  2004): `skew = average(r_j) - r`. `hawkish_dissents`/`dovish_dissents`
+  count members whose preferred rate was above/below the decided rate.
+- **Every voting member's preferred rate is recorded every meeting they sat
+  on, not just dissenters'** - confirmed against a known case (June 2026:
+  the sheet shows 7 members at 3.75% and 2 at 4%, exactly matching the
+  corpus's own parsed "7-2" vote). This makes the per-member preferred-rate
+  column meaningful for all 9-ish sitting members each meeting, not just
+  the minority.
+- **Era filter applied (Aug 2015-Jun 2026), same as the text corpus.** A
+  few pre-2015 rows (not in our range) record a dissent as qualitative
+  "Increase"/"Decrease" text with no specific rate; these are sidestepped
+  by the era filter rather than needing special handling.
+- **Reconciliation against the text corpus (`published` date, exact match)
+  found only the same 4 one-day gaps already logged for the `meeting_end +
+  1 day` publication-date rule** (2015-10, 2020-08, 2021-06, 2021-11) -
+  independent confirmation from a second data source that the earlier
+  finding was real, not a fluke of parsing.
+- **One extra sheet-only date: 2020-03-19.** The voting sheet records the
+  19 March 2020 emergency cut as its own distinct decision (with its own
+  row and vote), even though the Bank's own minutes publication folded its
+  text into the 25 March combined document (see the 2026-07-18 corpus-audit
+  entry above, on why no separate 19 March text document was added). No
+  action taken - the voting record and the text corpus are allowed to
+  disagree on document boundaries; this is noted, not corrected.
+
+## 2026-07-18 — first validation pass (v1)
+
+- **Contemporaneous only, not predictive.** `pipeline/validate.py` compares
+  a meeting's own minutes (abg_net_index) against that SAME meeting's own
+  skew/dissents/decision - not the paper's own predictive framing (Net
+  Index at t vs the rate decision at t+1). Matches the task's explicit
+  scope ("do not build anything about... prediction yet - that is Stage
+  3"). A lagged/predictive version is future work for Stage 3.
+- **No scipy dependency added.** Pearson and Spearman implemented in plain
+  Python (`pipeline/validate.py:pearson/spearman/rank`) rather than adding
+  a new heavy dependency for two formulas.
+- **87 of 93 corpus meetings joined to a voting-sheet row** (published date
+  exact match). The 2020-03-10 special meeting and 2016-08 are excluded by
+  construction (their `decision` field is null, so `load_corpus_by_published`
+  never considers them a candidate at all). The other 4 unjoined are the
+  known one-day `meeting_end+1` mismatches already logged in the corpus-audit
+  and voting-record entries above (2015-10, 2020-08, 2021-06, 2021-11).
+- **v1 result: weak positive correlation.** r(abg_net_index, skew) =
+  0.181 (Pearson), 0.143 (Spearman), n=87. r(abg_net_index, net dissents)
+  = 0.198 (Pearson), 0.152 (Spearman), n=87. Mean abg_net_index by decision:
+  hike 1.44 (n=16), hold 0.97 (n=65), cut 1.00 (n=6) - directionally
+  sensible (hikes read more hawkish) but a small, noisy signal on this
+  first pass. Saved to `data/validation_v1.json`; not a claim of predictive
+  power, just the first descriptive checkpoint.
+
+## 2026-07-18 — site: A&BG chart, retiring starter_v0 fields from the UI
+
+- **Hand-rolled inline SVG, no chart library, no CDN.** The site is static
+  GitHub Pages with no build step; a CDN script is one more thing that can
+  fail to load or change behind our back. The chart is built directly in
+  `index.html`'s `renderChart()` from the same `data/index.json` fetch
+  already used by the latest-document card.
+- **Existing "latest scored document" card kept, but its JS updated to the
+  new schema** - it was still reading `net_hawkishness`/`hawkish_hits`/
+  `dovish_hits`/`n_sentences` (removed from index.json in the abg_2012
+  cutover above), which would have silently broken the card. Now reads
+  `abg_net_index`/`abg_hawk`/`abg_dove`.
+  Displayed on the paper's own 0-2 scale (1 = neutral) with the
+  hawkish/dovish colour and left/right position on the existing gradient
+  bar recentred (`net = abg_net_index - 1`) so the bar's existing -1..+1
+  visual language still works.
+  Footer's stale "current lexicon is a plumbing placeholder" line corrected
+  to name the A&BG citation.
+- **Chart decision markers use the same hike/hold/cut classification as
+  `pipeline/validate.py`** (first word of the `decision` field: "increase"
+  = hike, "reduce" = cut, holds unmarked) - one classification rule, not
+  two independently-maintained ones.
