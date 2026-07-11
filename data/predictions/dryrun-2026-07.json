@@ -1,0 +1,30 @@
+{
+  "schema": "prediction-v1",
+  "meeting_announcement": "2026-07-30",
+  "lock_timestamp": "2026-07-11T03:00:16+00:00",
+  "code_version": "32659bd4e2ab306cc90254bcfaa40a4f0bf0293b",
+  "input_hashes": {
+    "corpus_index_json_sha256": "aac5cb279cb1dbe4639feb73356d3d6e6a87b1f5babc73b14c92d4af6ebc416c",
+    "ois_snapshot_sha256": "9eb258c75b6a10c599830955fef8e487e8feb0bc46386456b083f8d0b8298220"
+  },
+  "m0_market_only": {
+    "meeting_date": "2026-07-30",
+    "curve_as_of": "2026-06-30",
+    "sonia_as_of": "2026-07-08",
+    "forward_rate_pct": 3.7299,
+    "sonia_pct": 3.7303,
+    "assumed_move_bp": 25.0,
+    "implied_change_bp": -0.04,
+    "p_hike": 0.0,
+    "p_hold": 0.9986,
+    "p_cut": 0.0014
+  },
+  "index_current": 1.7143,
+  "index_current_doc_id": "minutes-2026-06",
+  "index_trailing_mean": 1.0536,
+  "index_trailing_n": 4,
+  "point_call": null,
+  "rationale": "TODO(Jake) - written by me before lock",
+  "outcome": null,
+  "scores": null
+}

@@ -53,6 +53,28 @@
   footer { font: 13px system-ui, sans-serif; color: var(--muted); margin-top: 40px; }
   footer a { color: var(--muted); }
   #status { color: var(--muted); }
+
+  .call-card.dry-run {
+    border: 1px dashed #7a5f2e;
+    background: repeating-linear-gradient(135deg, var(--panel), var(--panel) 10px, #221d13 10px, #221d13 20px);
+  }
+  .call-card.locked { border: 1px solid var(--accent); }
+  .call-badge {
+    display: inline-block; font: 700 11px/1 system-ui, sans-serif;
+    letter-spacing: .12em; text-transform: uppercase; padding: 6px 10px;
+    border-radius: 4px; margin-bottom: 16px;
+  }
+  .call-badge.dry-run { background: #7a5f2e; color: #ffe9b3; }
+  .call-badge.locked { background: var(--accent); color: var(--bg); }
+  .call-heading { margin: 0 0 14px; font-size: 17px; }
+  .call-heading strong { color: var(--accent); font-weight: normal; }
+  .call-probs { display: flex; gap: 28px; margin: 4px 0 18px; }
+  .call-prob .n { font-size: 26px; }
+  .call-prob .l {
+    font: 12px system-ui, sans-serif; color: var(--muted);
+    text-transform: uppercase; letter-spacing: .08em;
+  }
+  .call-index-line { margin: 0 0 10px; }
 </style>
 </head>
 <body>
@@ -62,6 +84,15 @@
   <p class="thesis">Does the tone of Bank of England communication carry information
   about the next rate decision beyond what markets already price? Every call will be
   locked before the announcement, timestamped, and scored &mdash; including the misses.</p>
+
+  <div class="card call-card" id="call-card" style="display:none">
+    <div class="call-badge" id="call-badge"></div>
+    <p class="call-heading" id="call-heading"></p>
+    <div class="call-probs" id="call-probs"></div>
+    <p class="fine call-index-line" id="call-index-line"></p>
+    <p class="fine" id="call-fine"></p>
+  </div>
+  <div class="fine" id="call-status" style="margin:0 0 20px">Loading call card &hellip;</div>
 
   <div class="card">
     <h2>Latest scored document</h2>
@@ -82,13 +113,6 @@
     <div class="fine" id="chart-legend"></div>
   </div>
 
-  <div class="card">
-    <h2>Next: the call card</h2>
-    <p style="margin:0">First beta lock <strong style="color:var(--accent);font-weight:normal">28 July 2026, 12:00</strong>,
-    for the MPC announcement of 30 July. Two columns will appear here: what the market
-    prices (OIS-implied), and market&nbsp;+&nbsp;text. The gap between them is the thesis.</p>
-  </div>
-
   <footer>
     Method &amp; decisions log in the repository &middot; Source documents &copy; Bank of England,
     linked not republished &middot; Lexicon: Apel &amp; Blix Grimaldi (2012), implemented verbatim
@@ -97,6 +121,8 @@
 </div>
 
 <script>
+const PREDICTION_FILE = 'data/predictions/dryrun-2026-07.json';
+
 fetch('data/index.json')
   .then(r => { if (!r.ok) throw new Error(r.status); return r.json(); })
   .then(data => {
@@ -108,6 +134,53 @@ fetch('data/index.json')
     document.getElementById('status').textContent = msg;
     document.getElementById('chart-status').textContent = msg;
   });
+
+fetch(PREDICTION_FILE)
+  .then(r => { if (!r.ok) throw new Error(r.status); return r.json(); })
+  .then(renderCallCard)
+  .catch(err => {
+    document.getElementById('call-status').textContent =
+      'No prediction file yet (' + err.message + ').';
+  });
+
+function renderCallCard(p) {
+  const locked = p.point_call !== null && p.point_call !== undefined;
+  const card = document.getElementById('call-card');
+  const badge = document.getElementById('call-badge');
+  card.classList.add(locked ? 'locked' : 'dry-run');
+  badge.classList.add(locked ? 'locked' : 'dry-run');
+  badge.textContent = locked ? 'LOCKED CALL' : 'DRY RUN · NOT A FORECAST';
+
+  const announceDate = new Date(p.meeting_announcement).toLocaleDateString('en-GB', {
+    day: 'numeric', month: 'long', year: 'numeric',
+  });
+  document.getElementById('call-heading').innerHTML =
+    `Next announcement: <strong>${announceDate}</strong> &middot; ` +
+    (locked
+      ? `locked ${new Date(p.lock_timestamp).toUTCString()}`
+      : `beta lock scheduled 28 July 2026, 12:00`);
+
+  const m0 = p.m0_market_only;
+  const probRow = (label, value) =>
+    `<div class="call-prob"><div class="n">${(value * 100).toFixed(0)}%</div><div class="l">${label}</div></div>`;
+  document.getElementById('call-probs').innerHTML =
+    probRow('cut', m0.p_cut) + probRow('hold', m0.p_hold) + probRow('hike', m0.p_hike);
+
+  const vsTrailing = p.index_current - p.index_trailing_mean;
+  const vsWord = vsTrailing > 0 ? 'above' : (vsTrailing < 0 ? 'below' : 'equal to');
+  document.getElementById('call-index-line').innerHTML =
+    `A&amp;BG index (${p.index_current_doc_id}): <strong>${p.index_current.toFixed(3)}</strong> vs ` +
+    `trailing ${p.index_trailing_n}-document mean <strong>${p.index_trailing_mean.toFixed(3)}</strong> ` +
+    `(${Math.abs(vsTrailing).toFixed(3)} ${vsWord})`;
+
+  document.getElementById('call-fine').innerHTML = locked
+    ? `Point call: <strong>${p.point_call}</strong> &middot; ${p.rationale}`
+    : `m0 is a market-only reference (OIS forward curve vs SONIA, ${m0.assumed_move_bp}bp two-state assumption) ` +
+      `&mdash; not a call, and not the thesis. No point_call has been locked yet.`;
+
+  document.getElementById('call-status').style.display = 'none';
+  card.style.display = 'block';
+}
 
 function renderLatest(data) {
   const doc = data.documents[data.documents.length - 1];

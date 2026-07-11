@@ -413,3 +413,128 @@ Changes apply forward only; nothing is retrofitted. Locked calls are never touch
   (0/65) and vice versa (0/53) - dissenters who flip, flip to "with
   majority" first, never straight to the opposite direction, in this
   sample.
+
+## 2026-07-25 — market benchmark: OIS forward curve + SONIA
+
+- **Both sources parse cleanly - no hard stop triggered.** OIS:
+  bankofengland.co.uk/statistics/yield-curves -> "oisddata.zip" (daily OIS
+  data) -> sheet "1. fwds, short end" ("UK instantaneous OIS forward
+  curve"), row 3 = maturities in whole months (1-60), each subsequent row
+  one business day (date + forward rate per maturity, percent p.a.).
+  SONIA: the Bank's Interactive Statistical Database CSV export, series
+  code IUDSOIA.
+- **The OIS zip contains one .xlsx per era, and older eras use a different
+  sheet layout** (2009-2015's file has "1. fwd curve"/"2. spot curve", not
+  "1. fwds, short end" at all) - confirmed by trying, not assumed.
+  `latest_forward_curve()` tries every extracted file, skips (and logs)
+  any without the expected sheet, and picks whichever remaining file has
+  the most recent date - not a hardcoded filename like "2025 to
+  present.xlsx", since era boundaries will themselves move in future
+  years and a hardcoded name would silently go stale.
+  Hard-stops only if NONE of the era files have a usable sheet.
+- **The OIS file is a periodic snapshot, not literally live**: as of
+  writing, its latest row is 2026-06-30 while SONIA's CSV export is current
+  to 2026-07-08 - a real few-day publication lag between the two sources,
+  not a bug. `market_probs.py` (next entry) must not assume the two
+  `as_of_date`s match.
+- **`fetch_sonia`'s HTTP call and `parse_sonia_csv`'s parsing are separate
+  functions** (same pattern as `pipeline/build_votes.py`'s
+  load_member_columns/parse_meetings split) specifically so the parser can
+  be unit-tested against a fixture string without a live call - required
+  by the task ("Unit-test with synthetic curve fixtures - no live calls
+  inside tests"). Same reasoning applied to
+  `_read_forward_curve_sheet(path)`, which takes a path rather than doing
+  its own download, tested against a small synthetic workbook.
+- **Raw downloads cached under `data/raw/market/`** (gitignored, same
+  convention as `data/raw/` generally - only derived outputs are public).
+
+## 2026-07-25 — market_probs: two-state ±25bp assumption
+
+- **`pipeline/predict/market_probs.py` implements one documented,
+  deliberately simple mapping from implied rate change to {cut, hold,
+  hike} probabilities - not the only reasonable choice, and not fitted to
+  anything.** implied_change_bp = (forward rate at the maturity bucket
+  just after the meeting) - (current SONIA). A "two-state" assumption:
+  the market is assumed to price a single possible move in ONE direction
+  only (never a simultaneous hike probability and cut probability at the
+  same meeting), of a fixed size (`ASSUMED_MOVE_BP = 25`, the Bank's usual
+  step). `p_hike/p_cut = clip(|implied_change_bp| / 25, 0, 1)` in the
+  appropriate direction; the remainder is `p_hold`. Real market-implied
+  distributions can price partial/multi-directional moves or step sizes
+  other than 25bp - this is a simplification, stated as one, not hidden.
+- **"Maturity bucket just after the meeting"** = the first available
+  monthly maturity whose distance from the curve's `as_of_date` is >= the
+  distance to the meeting date (`bisect_left` on the sorted maturities
+  list), clipped to the longest available maturity if the meeting is
+  further out than the curve covers.
+- **Unit-tested entirely against synthetic curve/SONIA dicts - no live
+  HTTP calls in tests**, per instruction. `market_probs_for_meeting()`
+  takes plain dicts shaped like `ois.latest_forward_curve()` /
+  `ois.latest_sonia()`'s return values, not the fetch functions
+  themselves, so tests never touch the network.
+
+## 2026-07-25 — lock and scoring machinery
+
+- **Running `pipeline/predict/lock.py` is not itself "the lock".** It
+  writes a timestamped snapshot with `point_call`/`rationale` left as
+  `null`/a `TODO(Jake)` placeholder - filling those in by hand, then
+  committing the file, is what actually constitutes a locked call. The
+  script's job is just to freeze the market-only reference (`m0`) and the
+  index readings at a moment in time, reproducibly.
+- **Reproducibility fields**: `code_version` (`git rev-parse HEAD`) and
+  `input_hashes` (sha256 of `data/index.json` as it stood, plus a sha256
+  of the OIS curve + SONIA snapshot actually used) - so a later reviewer
+  can check exactly which corpus and market state a given lock was made
+  against, without needing git history archaeology.
+- **`index_trailing_mean` = mean of the last 4 documents' `abg_net_index`
+  in the corpus's own published order** - a simple recency-weighted
+  baseline for "how hawkish has tone been lately", not a fitted or
+  seasonally-adjusted average. 4 was chosen as roughly a year's worth of
+  the current 8-meetings-a-year schedule.
+- **`build_prediction(meeting_date, curve=None, sonia=None)` accepts
+  optional pre-fetched curve/sonia** so its output schema can be
+  unit-tested without a live call (same dependency-injection pattern as
+  `market_probs_for_meeting`) - defaults to live fetches when called from
+  the CLI.
+- **Brier score is the standard 3-class formula** (sum of squared
+  differences between predicted probability and the {0,1} actual outcome
+  indicator across all 3 classes), range [0, 2]. **Log score** is
+  `-log(p_actual)`, floored at `p >= 1e-9` to avoid `-log(0)` for a
+  confidently-wrong call.
+- **`always_hold_reference`** is a fixed `p_hold=1` forecast, not fitted
+  to the corpus's own hold/hike/cut base rates - the simplest possible
+  baseline (predict the modal, most common outcome always), which any
+  real forecast needs to beat. A base-rate-fitted reference is a
+  reasonable future addition but wasn't asked for here.
+
+## 2026-07-25 — site call card + dry run
+
+- **The call card's dry-run vs locked styling is data-driven, not a
+  hardcoded label.** `renderCallCard()` checks `point_call !== null`
+  to decide which CSS class/badge to apply - a hatched, dashed-border,
+  muted-gold "DRY RUN · NOT A FORECAST" badge when null, a solid gold
+  border and "LOCKED CALL" badge (showing the actual point call and
+  rationale) once a human fills `point_call` in. Same code renders both
+  states correctly; verified visually with a synthetic locked payload
+  before committing (not itself committed - see below).
+- **Card fetches a fixed path, `data/predictions/dryrun-2026-07.json`**,
+  not a directory listing (static GitHub Pages has no server-side
+  directory index). A later real lock will need either overwriting this
+  same path or updating the fetch path in index.html - a manual step, not
+  automated, consistent with "running lock.py is not itself the lock".
+- **Ran end-to-end with live data**: `python -m pipeline.predict.lock
+  2026-07-30 dryrun-2026-07`. Result: OIS curve as of 2026-06-30 (3.7299%
+  1-month forward) vs SONIA 3.7303% (2026-07-08) implies essentially no
+  priced move (-0.04bp) -> p_hold=0.999, p_cut=0.001, p_hike=0.0 for the
+  30 July announcement. A&BG index for the latest document (minutes-2026-06)
+  is 1.714, well above its trailing 4-document mean of 1.054 (+0.661) -
+  tone reads considerably more hawkish than its recent average, while the
+  market itself prices almost no chance of a near-term move. This
+  divergence is exactly the kind of gap the site's thesis is about - noted
+  here as an observation, not a call. No point_call was made; this is
+  m0 (market-only) only, per the task's explicit "DRY RUN and no locks
+  today" instruction.
+- **No `lock-*` named files, no git tag created** - the dry-run output is
+  named `dryrun-2026-07.json`, distinguishing it structurally (not just
+  by content) from any future actual locked call, which would need its
+  own deliberately-named file.
