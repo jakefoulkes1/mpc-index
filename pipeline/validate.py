@@ -6,16 +6,28 @@ same meeting's own skew/dissents/decision. Not a predictive (index_t vs
 decision_t+1) test; that, and any OIS/market benchmark, is out of scope for
 this pass (see DECISIONS.md / task scope: Stage 3).
 
+Join key: the voting sheet's own announcement date is canonical (it is a
+single, consistent convention), not our own `published` field (meeting_end
++ 1 day, a uniform rule that is off by 1 day for a handful of real
+documents - 3 weekend/holiday slippages plus the 19 March 2020 special,
+which was announced same-day rather than the next day - see
+DECISIONS.md). Each corpus document is matched to its NEAREST voting-sheet
+date within a small tolerance; every document that can't be matched within
+tolerance is excluded and individually logged, not silently dropped.
+
 Computes, with no scipy dependency (pure Python, matching the rest of the
 pipeline):
 - Pearson and Spearman correlation of abg_net_index with skew (r, n)
 - Pearson and Spearman correlation of abg_net_index with net dissents
   (hawkish_dissents - dovish_dissents) (r, n)
+- The same two correlations for delta_index (change in abg_net_index since
+  the previous document in the corpus), not just the level.
 - Mean abg_net_index grouped by decision (hike/hold/cut)
 
 Run:  python -m pipeline.validate
 """
 import csv
+import datetime as dt
 import json
 import statistics as st
 from pathlib import Path
@@ -26,6 +38,9 @@ VOTES_PATH = ROOT / "data" / "votes.csv"
 OUT = ROOT / "data" / "validation_v1.json"
 
 DECISION_LABELS = {"increase": "hike", "maintain": "hold", "reduce": "cut"}
+# Largest known real gap is 1 day (see DECISIONS.md); allow a little more
+# headroom before treating a document as unmatched.
+MAX_DAY_TOLERANCE = 3
 
 
 def pearson(xs: list[float], ys: list[float]) -> float | None:
@@ -60,18 +75,37 @@ def spearman(xs: list[float], ys: list[float]) -> float | None:
     return pearson(rank(xs), rank(ys))
 
 
-def load_corpus_by_published() -> dict[str, dict]:
+def corr_pair(xs: list[float], ys: list[float]) -> dict:
+    return {
+        "pearson_r": round(r, 4) if (r := pearson(xs, ys)) is not None else None,
+        "spearman_r": round(r, 4) if (r := spearman(xs, ys)) is not None else None,
+        "n": len(xs),
+    }
+
+
+def load_corpus_documents() -> list[dict]:
+    """All documents with both a published date and a parsed decision,
+    in published order, with delta_index vs the previous document in that
+    order (not the previous *matched* one - the corpus's own sequence)."""
     data = json.loads(INDEX_PATH.read_text())
-    by_date = {}
-    for d in data["documents"]:
-        if d["published"] and d["decision"]:
-            verb = d["decision"].split()[0].lower()
-            by_date[d["published"]] = {
-                "doc_id": d["doc_id"],
-                "abg_net_index": d["abg_net_index"],
-                "decision_label": DECISION_LABELS.get(verb),
-            }
-    return by_date
+    docs = sorted(
+        (d for d in data["documents"] if d["published"] and d["decision"]),
+        key=lambda d: d["published"],
+    )
+    prev_index = None
+    out = []
+    for d in docs:
+        verb = d["decision"].split()[0].lower()
+        delta = d["abg_net_index"] - prev_index if prev_index is not None else None
+        out.append({
+            "doc_id": d["doc_id"],
+            "published": d["published"],
+            "abg_net_index": d["abg_net_index"],
+            "delta_index": delta,
+            "decision_label": DECISION_LABELS.get(verb),
+        })
+        prev_index = d["abg_net_index"]
+    return out
 
 
 def load_votes_by_date() -> dict[str, dict]:
@@ -85,27 +119,41 @@ def load_votes_by_date() -> dict[str, dict]:
     return by_date
 
 
+def join_to_votes(docs: list[dict], votes: dict[str, dict]) -> tuple[list[dict], list[dict]]:
+    vote_dates = sorted(dt.date.fromisoformat(d) for d in votes)
+    joined, unmatched = [], []
+    for doc in docs:
+        pub = dt.date.fromisoformat(doc["published"])
+        nearest = min(vote_dates, key=lambda v: abs((v - pub).days))
+        gap = abs((nearest - pub).days)
+        if gap > MAX_DAY_TOLERANCE:
+            unmatched.append({"doc_id": doc["doc_id"], "published": doc["published"],
+                               "nearest_votes_date": nearest.isoformat(), "gap_days": gap})
+            continue
+        joined.append({**doc, **votes[nearest.isoformat()], "votes_date": nearest.isoformat(), "gap_days": gap})
+    return joined, unmatched
+
+
 def main() -> None:
-    corpus = load_corpus_by_published()
+    docs = load_corpus_documents()
     votes = load_votes_by_date()
-    joined = [{**corpus[date], **votes[date], "date": date}
-              for date in sorted(corpus) if date in votes]
-    unmatched = sorted(set(corpus) - set(votes))
-    print(f"joined {len(joined)} meetings; {len(unmatched)} corpus dates with no voting-sheet match: {unmatched}")
+    joined, unmatched = join_to_votes(docs, votes)
 
-    index_vals = [r["abg_net_index"] for r in joined]
-    skew_vals = [r["skew"] for r in joined]
-    dissent_vals = [r["net_dissents"] for r in joined]
+    print(f"joined {len(joined)} of {len(docs)} candidate documents (published + decision) "
+          f"to a voting-sheet row within {MAX_DAY_TOLERANCE} day(s)")
+    for u in unmatched:
+        print(f"log: {u['doc_id']}: no voting-sheet row within {MAX_DAY_TOLERANCE} day(s) "
+              f"(published {u['published']}, nearest sheet date {u['nearest_votes_date']}, "
+              f"{u['gap_days']} day(s) away) - excluded from validation")
 
-    corr_skew = {
-        "pearson_r": pearson(index_vals, skew_vals),
-        "spearman_r": spearman(index_vals, skew_vals),
-        "n": len(joined),
-    }
-    corr_dissents = {
-        "pearson_r": pearson(index_vals, dissent_vals),
-        "spearman_r": spearman(index_vals, dissent_vals),
-        "n": len(joined),
+    level_rows = joined
+    delta_rows = [r for r in joined if r["delta_index"] is not None]
+
+    corr = {
+        "level_vs_skew": corr_pair([r["abg_net_index"] for r in level_rows], [r["skew"] for r in level_rows]),
+        "level_vs_net_dissents": corr_pair([r["abg_net_index"] for r in level_rows], [r["net_dissents"] for r in level_rows]),
+        "delta_vs_skew": corr_pair([r["delta_index"] for r in delta_rows], [r["skew"] for r in delta_rows]),
+        "delta_vs_net_dissents": corr_pair([r["delta_index"] for r in delta_rows], [r["net_dissents"] for r in delta_rows]),
     }
 
     by_decision = {}
@@ -117,22 +165,20 @@ def main() -> None:
         }
 
     payload = {
-        "schema": "validation-v1",
+        "schema": "validation-v2",
+        "join_key": "voting-sheet announcement date, nearest match within tolerance",
+        "max_day_tolerance": MAX_DAY_TOLERANCE,
+        "n_candidate_documents": len(docs),
         "n_joined_meetings": len(joined),
-        "unmatched_corpus_dates": unmatched,
-        "corr_abg_index_vs_skew": corr_skew,
-        "corr_abg_index_vs_net_dissents": corr_dissents,
+        "unmatched_documents": unmatched,
+        "correlations": corr,
         "mean_abg_index_by_decision": by_decision,
-        "notes": "Contemporaneous only (meeting's own minutes vs that meeting's own vote/decision), not predictive of the next meeting. See DECISIONS.md.",
+        "notes": "Contemporaneous only (meeting's own minutes vs that meeting's own vote/decision), not predictive of the next meeting. delta_index is abg_net_index minus the previous document's, in corpus order. See DECISIONS.md.",
     }
-    for key in ("corr_abg_index_vs_skew", "corr_abg_index_vs_net_dissents"):
-        for stat in ("pearson_r", "spearman_r"):
-            if payload[key][stat] is not None:
-                payload[key][stat] = round(payload[key][stat], 4)
 
     OUT.write_text(json.dumps(payload, indent=2) + "\n")
     print(f"wrote {OUT}")
-    print(json.dumps(payload, indent=2))
+    print(json.dumps({"correlations": corr, "mean_abg_index_by_decision": by_decision}, indent=2))
 
 
 if __name__ == "__main__":

@@ -1,0 +1,191 @@
+{
+  "schema": "member-behaviour-v1",
+  "notes": "Descriptive counts only, no modelling. States: hawkish_dissent (preferred > decided), with_majority (preferred == decided), dovish_dissent (preferred < decided). Transition matrix is P(state at a member's NEXT voted meeting | state now), pooled across all members. Seeds Stage 4's member-level predictor; not a predictor itself.",
+  "member_dissent_frequency": {
+    "Swati Dhingra": {
+      "n_meetings": 31,
+      "dissent_frequency": 0.6774,
+      "hawkish_dissent_frequency": 0.0,
+      "dovish_dissent_frequency": 0.6774
+    },
+    "Ian McCafferty": {
+      "n_meetings": 29,
+      "dissent_frequency": 0.4138,
+      "hawkish_dissent_frequency": 0.4138,
+      "dovish_dissent_frequency": 0.0
+    },
+    "Catherine L Mann": {
+      "n_meetings": 39,
+      "dissent_frequency": 0.4103,
+      "hawkish_dissent_frequency": 0.3846,
+      "dovish_dissent_frequency": 0.0256
+    },
+    "Alan Taylor": {
+      "n_meetings": 15,
+      "dissent_frequency": 0.4,
+      "hawkish_dissent_frequency": 0.0,
+      "dovish_dissent_frequency": 0.4
+    },
+    "Megan Greene": {
+      "n_meetings": 24,
+      "dissent_frequency": 0.2917,
+      "hawkish_dissent_frequency": 0.2917,
+      "dovish_dissent_frequency": 0.0
+    },
+    "Michael Saunders": {
+      "n_meetings": 50,
+      "dissent_frequency": 0.26,
+      "hawkish_dissent_frequency": 0.2,
+      "dovish_dissent_frequency": 0.06
+    },
+    "Jonathan Haskel": {
+      "n_meetings": 50,
+      "dissent_frequency": 0.26,
+      "hawkish_dissent_frequency": 0.2,
+      "dovish_dissent_frequency": 0.06
+    },
+    "Silvana Tenreyro": {
+      "n_meetings": 50,
+      "dissent_frequency": 0.16,
+      "hawkish_dissent_frequency": 0.0,
+      "dovish_dissent_frequency": 0.16
+    },
+    "Huw Pill": {
+      "n_meetings": 39,
+      "dissent_frequency": 0.1538,
+      "hawkish_dissent_frequency": 0.1538,
+      "dovish_dissent_frequency": 0.0
+    },
+    "Kristin Forbes": {
+      "n_meetings": 20,
+      "dissent_frequency": 0.15,
+      "hawkish_dissent_frequency": 0.15,
+      "dovish_dissent_frequency": 0.0
+    },
+    "Dave Ramsden": {
+      "n_meetings": 73,
+      "dissent_frequency": 0.137,
+      "hawkish_dissent_frequency": 0.0411,
+      "dovish_dissent_frequency": 0.0959
+    },
+    "Clare Lombardelli": {
+      "n_meetings": 16,
+      "dissent_frequency": 0.125,
+      "hawkish_dissent_frequency": 0.125,
+      "dovish_dissent_frequency": 0.0
+    },
+    "Sarah Breeden": {
+      "n_meetings": 22,
+      "dissent_frequency": 0.0909,
+      "hawkish_dissent_frequency": 0.0,
+      "dovish_dissent_frequency": 0.0909
+    },
+    "Jon Cunliffe": {
+      "n_meetings": 72,
+      "dissent_frequency": 0.0417,
+      "hawkish_dissent_frequency": 0.0139,
+      "dovish_dissent_frequency": 0.0278
+    },
+    "Andrew Haldane": {
+      "n_meetings": 54,
+      "dissent_frequency": 0.0185,
+      "hawkish_dissent_frequency": 0.0185,
+      "dovish_dissent_frequency": 0.0
+    },
+    "Gertjan Vlieghe": {
+      "n_meetings": 54,
+      "dissent_frequency": 0.0185,
+      "hawkish_dissent_frequency": 0.0,
+      "dovish_dissent_frequency": 0.0185
+    },
+    "Ben Broadbent": {
+      "n_meetings": 78,
+      "dissent_frequency": 0.0,
+      "hawkish_dissent_frequency": 0.0,
+      "dovish_dissent_frequency": 0.0
+    },
+    "David Miles": {
+      "n_meetings": 1,
+      "dissent_frequency": 0.0,
+      "hawkish_dissent_frequency": 0.0,
+      "dovish_dissent_frequency": 0.0
+    },
+    "Mark Carney": {
+      "n_meetings": 42,
+      "dissent_frequency": 0.0,
+      "hawkish_dissent_frequency": 0.0,
+      "dovish_dissent_frequency": 0.0
+    },
+    "Martin Weale": {
+      "n_meetings": 13,
+      "dissent_frequency": 0.0,
+      "hawkish_dissent_frequency": 0.0,
+      "dovish_dissent_frequency": 0.0
+    },
+    "Nemat Shafik": {
+      "n_meetings": 17,
+      "dissent_frequency": 0.0,
+      "hawkish_dissent_frequency": 0.0,
+      "dovish_dissent_frequency": 0.0
+    },
+    "Charlotte Hogg": {
+      "n_meetings": 1,
+      "dissent_frequency": 0.0,
+      "hawkish_dissent_frequency": 0.0,
+      "dovish_dissent_frequency": 0.0
+    },
+    "Andrew Bailey": {
+      "n_meetings": 52,
+      "dissent_frequency": 0.0,
+      "hawkish_dissent_frequency": 0.0,
+      "dovish_dissent_frequency": 0.0
+    }
+  },
+  "transition_matrix": {
+    "hawkish_dissent": {
+      "n": 65,
+      "probabilities": {
+        "hawkish_dissent": 0.4462,
+        "with_majority": 0.5538,
+        "dovish_dissent": 0.0
+      },
+      "counts": {
+        "hawkish_dissent": 29,
+        "with_majority": 36,
+        "dovish_dissent": 0
+      }
+    },
+    "with_majority": {
+      "n": 701,
+      "probabilities": {
+        "hawkish_dissent": 0.0571,
+        "with_majority": 0.9058,
+        "dovish_dissent": 0.0371
+      },
+      "counts": {
+        "hawkish_dissent": 40,
+        "with_majority": 635,
+        "dovish_dissent": 26
+      }
+    },
+    "dovish_dissent": {
+      "n": 53,
+      "probabilities": {
+        "hawkish_dissent": 0.0,
+        "with_majority": 0.4906,
+        "dovish_dissent": 0.5094
+      },
+      "counts": {
+        "hawkish_dissent": 0,
+        "with_majority": 26,
+        "dovish_dissent": 27
+      }
+    }
+  },
+  "dissent_stickiness": {
+    "p_dissent_again_given_dissented": 0.4746,
+    "n_given_dissented": 118,
+    "p_dissent_given_with_majority": 0.0942,
+    "n_given_with_majority": 701
+  }
+}

@@ -272,3 +272,144 @@ Changes apply forward only; nothing is retrofitted. Locked calls are never touch
   `pipeline/validate.py`** (first word of the `decision` field: "increase"
   = hike, "reduce" = cut, holds unmarked) - one classification rule, not
   two independently-maintained ones.
+
+## 2026-07-25 — 19 March 2020 special meeting added
+
+- **Diffing `data/votes.csv` against the corpus found exactly one genuinely
+  missing meeting: 19 March 2020**, the second Covid-19 emergency decision
+  (Bank Rate cut 0.25%->0.1%, +£200bn asset purchases). The raw diff showed
+  5 votes-only dates, but 4 were already-known 1-day `meeting_end+1`
+  mismatches (each paired with a corpus-only date exactly 1 day earlier) -
+  excluding those pairs left exactly one unpaired date, confirming the
+  expectation.
+- **Re-verified, not assumed, that this meeting has no separate minutes
+  PDF**, despite the task's premise that it does: re-fetched the live page
+  (no `.pdf` link at all) and re-searched the Bank's sitemap for any
+  19-March-specific minutes document - none exists. The page's own text
+  confirms why: "The minutes of today's special meeting will be released
+  at the same time" as the 25 March meeting's minutes - i.e. folded into
+  the combined document we already have as `minutes-2020-03`, consistent
+  with the 2026-07-18 entry's finding and decision not to duplicate that
+  text under a second doc_id.
+- **Added as its own document anyway**, using the Bank's brief "Monetary
+  Policy Summary for the special Monetary Policy Committee meeting on 19
+  March 2020" page (563 words, no full minutes) - a real, distinct,
+  citable published document for this specific decision, not a duplicate
+  of the 25 March text. `doc_id minutes-2020-03-19-special`, `type
+  special_minutes`, `source_kind html`. Word count is genuinely low
+  (563 < 1,000) for the same reason logged for every other pre-Aug-2021
+  Summary-only page - no fuller text exists to backfill from here, since
+  there is no PDF at all.
+- **`MEETING_END_RE` broadened for a third real phrasing variant**: this
+  page's only date-bearing heading reads "special Monetary Policy
+  Committee meeting on 19 March 2020" (no "ending"). Added as an
+  alternative prefix in the same regex, alongside the existing "meeting
+  ending (on) <date>" pattern - not a new mechanism, same category of fix
+  as the earlier "ending" vs "ending on" and case-insensitivity fixes.
+- **`decision` field is a compound, verbatim sentence** ("increase [asset
+  purchases]... and to reduce Bank Rate by 15 basis points to 0.1%") since
+  the source sentence itself bundles an asset-purchase vote and a Bank
+  Rate vote under one "voted unanimously to..." clause. Left as-is
+  (accurate and unfabricated, just verbose) rather than hand-splitting it,
+  consistent with not writing per-document special-case text.
+- **`published` computed by the same uniform `meeting_end+1` rule as every
+  other document (2020-03-20), not hand-corrected to the sheet's same-day
+  announcement (2020-03-19).** The field-level rule stays uniform, applied
+  forward only; the resulting known 1-day gap is handled at the join layer
+  instead (`pipeline/validate.py`, see below), not by carving out a
+  per-document exception in `build_index.py`.
+- **New test: `test_date_reconciliation.py`.** Corpus `published` dates and
+  `data/votes.csv` meeting dates now match one-to-one within a 1-day
+  tolerance for the whole Aug 2015-Jun 2026 era (5 known 1-day gaps: the 4
+  already-logged `meeting_end+1` mismatches plus this new special meeting,
+  all real and individually explained above and in the 2026-07-18 entries
+  - none silently absorbed).
+
+## 2026-07-25 — validation join fixed: voting-sheet date is canonical
+
+- **`pipeline/validate.py` no longer joins on exact match against our own
+  `published` field.** It now treats each corpus document's `published`
+  date as an approximate label and matches it to its NEAREST voting-sheet
+  date, within a `MAX_DAY_TOLERANCE` of 3 days (comfortably above the
+  largest known real gap of 1 day - see the two entries above). Every
+  document that still can't be matched within tolerance is excluded AND
+  individually logged (`join_to_votes` returns an `unmatched` list with the
+  gap that caused the exclusion), not silently dropped.
+- **Result: 92 of 92 candidate documents joined (0 unmatched)**, up from
+  87 of 91 under the old exact-match join. The `index.json` `published`
+  field itself is unchanged (still the uniform `meeting_end+1` rule,
+  applied forward only) - only the validation join's matching logic
+  changed.
+- **Validation output filename stays `data/validation_v1.json`** (not
+  renumbered) even though the internal `schema` field is now
+  `validation-v2`, reflecting the join-logic and delta-index additions -
+  the file is overwritten by each `python -m pipeline.validate` run either
+  way, so a new filename would only be warranted for a result meant to
+  stand alongside the old one for comparison, which isn't the case here.
+- **Added `delta_index`**: `abg_net_index` minus the previous document's,
+  in the corpus's own chronological order (not the previous *matched*
+  document - the corpus's own sequence). Correlated against skew and net
+  dissents the same way as the level. First document in the corpus has no
+  `delta_index` (nothing to difference against) and is excluded only from
+  the delta correlations, not the level ones.
+- **Level vs delta result: level correlates weakly with skew/dissents
+  (r=0.18/0.20, n=92); delta correlates barely at all (r=0.07/0.06,
+  n=91).** The tone's absolute level in a given meeting's minutes is a
+  (weak) better read on that meeting's own dissent pattern than the
+  *change* in tone since the previous meeting is. Reported side by side in
+  `data/validation_v1.json`, not chosen between - both are genuinely small
+  effects at this stage, not evidence either framing is "the right one".
+
+## 2026-07-25 — neutral_value published in index.json
+
+- **Formula and range re-confirmed against the paper, unchanged**: Net
+  Index = [(#hawk/(#hawk+#dove)) - (#dove/(#hawk+#dove))] + 1 (p.10,
+  `pipeline/score/lexicon/abg_2012.json`), a ratio-type measure with a
+  fixed theoretical range of [0, 2] and neutral at 1.0 (the ratio's own
+  midpoint when hawk and dove counts are equal, not a fitted or sample
+  statistic). No change to the formula itself - only its neutral point is
+  now surfaced as data.
+- **`NEUTRAL_VALUE = 1.0` added as a named constant in
+  `pipeline/score/abg.py`** (used for both the empty-document fallback and
+  as the source of truth for `index.json`'s new top-level `neutral_value`
+  field), rather than a bare `1.0` scattered across `abg.py`,
+  `build_index.py`, and `index.html`'s JS. The chart's neutral gridline
+  and the latest-document card's recentring (`net = abg_net_index -
+  neutral`) both now read `data.neutral_value` instead of a hardcoded `1`,
+  so a future change to the formula's neutral point (there isn't one
+  planned) wouldn't require hunting down every hardcoded copy.
+
+## 2026-07-25 — member-behaviour table (seeds Stage 4)
+
+- **Three-state coding, not binary.** Each member-meeting from
+  `data/votes.csv` is coded `hawkish_dissent` (preferred > decided),
+  `dovish_dissent` (preferred < decided), or `with_majority` (equal) -
+  keeping direction distinguishable rather than collapsing to a plain
+  dissent/no-dissent flag, since the paper's own `skew` measure and this
+  repo's `hawkish_dissents`/`dovish_dissents` fields already treat
+  direction as meaningful.
+  A single "dissent" headline (`dissent_stickiness`) is still reported by
+  collapsing the two dissent states together, since that's the plain-
+  English number asked for - but the underlying 3-state matrix is what's
+  saved, not thrown away.
+- **Transition matrix is "next meeting this member actually voted at",
+  not "next calendar meeting".** A member's own row-to-row sequence in
+  `data/votes.csv`, sorted by date - naturally handles the (rare) case of
+  a member missing a meeting, without needing to special-case gaps.
+- **Pooled across all members, not computed per-member.** Most members sit
+  for a few dozen meetings at most; a 3x3 transition matrix per member
+  would have single-digit or zero counts in most cells. Pooling loses the
+  "is member X personally sticky" question (deferred to Stage 4, which is
+  explicitly what this table is seeding) but keeps every reported n
+  large enough to read as a real proportion, not noise.
+- **Descriptive only, explicitly**: no smoothing, no confidence intervals,
+  no model fit. `dissent_stickiness` and the transition matrix are counts
+  and empirical proportions from `data/votes.csv`, nothing else. Saved to
+  `data/member_behaviour_v1.json`.
+- **Headline result: dissent is genuinely sticky.** P(dissent again |
+  dissented) = 0.475 (n=118) vs P(dissent | currently with majority) =
+  0.094 (n=701) - roughly a 5x difference. Directionally sticky too:
+  hawkish dissenters transition straight to dovish dissent 0% of the time
+  (0/65) and vice versa (0/53) - dissenters who flip, flip to "with
+  majority" first, never straight to the opposite direction, in this
+  sample.

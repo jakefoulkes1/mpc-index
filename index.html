@@ -111,7 +111,8 @@ fetch('data/index.json')
 
 function renderLatest(data) {
   const doc = data.documents[data.documents.length - 1];
-  const net = doc.abg_net_index - 1; // paper's index is 0..2 (1 = neutral); recentre to -1..+1 for display
+  const neutral = data.neutral_value;
+  const net = doc.abg_net_index - neutral; // recentre paper's [0,2] scale to -1..+1 for display
   const cls = net > 0 ? 'sign-hawk' : (net < 0 ? 'sign-dove' : '');
   const word = net > 0 ? 'net hawkish' : (net < 0 ? 'net dovish' : 'neutral');
   document.getElementById('docline').innerHTML =
@@ -119,7 +120,7 @@ function renderLatest(data) {
     ` &middot; decision: ${doc.decision} &middot; vote ${doc.vote}`;
   document.getElementById('score').innerHTML =
     `<span class="${cls}">${doc.abg_net_index.toFixed(3)}</span>` +
-    ` <span style="font-size:16px;color:var(--muted)">${word} (A&amp;BG Net Index, 0&ndash;2 scale, 1 = neutral)</span>`;
+    ` <span style="font-size:16px;color:var(--muted)">${word} (A&amp;BG Net Index, 0&ndash;2 scale, ${neutral} = neutral)</span>`;
   document.getElementById('marker').style.left = `${50 + net * 50}%`;
   document.getElementById('detail').innerHTML =
     `${doc.abg_hawk} hawkish vs ${doc.abg_dove} dovish noun+adjective hits &middot; ` +
@@ -140,6 +141,7 @@ function renderChart(data) {
   }
 
   const W = 700, H = 260, PAD_L = 34, PAD_R = 12, PAD_T = 14, PAD_B = 24;
+  const neutral = data.neutral_value;
   const t0 = new Date(docs[0].published).getTime();
   const t1 = new Date(docs[docs.length - 1].published).getTime();
   const x = t => PAD_L + (W - PAD_L - PAD_R) * ((new Date(t).getTime() - t0) / (t1 - t0));
@@ -155,14 +157,14 @@ function renderChart(data) {
     return node;
   };
 
-  // neutral gridline at index = 1
+  // neutral gridline, at data.neutral_value (the paper's fixed ratio midpoint, p.10)
   svg.appendChild(el('line', {
-    x1: PAD_L, x2: W - PAD_R, y1: y(1), y2: y(1),
+    x1: PAD_L, x2: W - PAD_R, y1: y(neutral), y2: y(neutral),
     stroke: '#2a2f3a', 'stroke-width': 1, 'stroke-dasharray': '3,3',
   }));
   svg.appendChild(el('text', {
-    x: PAD_L, y: y(1) - 4, fill: '#9aa0ab', 'font-size': 10, 'font-family': 'system-ui, sans-serif',
-  })).textContent = 'neutral (1.0)';
+    x: PAD_L, y: y(neutral) - 4, fill: '#9aa0ab', 'font-size': 10, 'font-family': 'system-ui, sans-serif',
+  })).textContent = `neutral (${neutral})`;
 
   // y-axis labels
   [0, 1, 2].forEach(v => {

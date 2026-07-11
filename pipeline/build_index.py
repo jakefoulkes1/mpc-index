@@ -17,7 +17,7 @@ import json
 import re
 from pathlib import Path
 
-from pipeline.score.abg import load_abg_lexicon, score_document as score_document_abg
+from pipeline.score.abg import NEUTRAL_VALUE, load_abg_lexicon, score_document as score_document_abg
 from pipeline.score.dictionary import split_sentences
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -32,9 +32,15 @@ SPECIAL_FILENAME_RE = re.compile(r"^(\d{4})-(\d{2})-(\d{2})-special-minutes\.txt
 # this table if more are found reconciling other eras. See DECISIONS.md.
 SPECIAL_SOURCE_URLS = {
     "2020-03-10": "https://www.bankofengland.co.uk/monetary-policy-summary-and-minutes/2020/13march-2020",
+    "2020-03-19": "https://www.bankofengland.co.uk/monetary-policy-summary-and-minutes/2020/monetary-policy-summary-for-the-special-monetary-policy-committee-meeting-on-19-march-2020",
 }
 # "ending on <date>" is the usual phrasing; a few 2016 pages drop the "on".
-MEETING_END_RE = re.compile(r"meeting ending (?:on )?(\d{1,2} [A-Za-z]+ \d{4})")
+# The 19 March 2020 special-meeting summary uses neither - it has no full
+# minutes text at all (see DECISIONS.md), only a page title reading
+# "special Monetary Policy Committee meeting on <date>".
+MEETING_END_RE = re.compile(
+    r"(?:meeting ending (?:on )?|special Monetary Policy Committee meeting on )(\d{1,2} [A-Za-z]+ \d{4})"
+)
 # Vote split uses an ASCII hyphen in older pages, an en dash (–) in newer ones.
 # "by a majority of A-B" is the usual phrasing; some 2017 summary pages drop
 # it and just say "voted A-B to ...". The majority/unanimously qualifier is
@@ -163,6 +169,9 @@ def main() -> None:
         "schema": "index-v1",
         "generated_utc": dt.datetime.now(dt.timezone.utc).isoformat(timespec="seconds"),
         "lexicon": "abg_2012 (Apel & Blix Grimaldi 2012, verbatim - see pipeline/score/lexicon/abg_2012.json and DECISIONS.md). starter_v0 remains in the repo as plumbing only and is no longer used in any output.",
+        # Net Index = [(#hawk/(#hawk+#dove)) - (#dove/(#hawk+#dove))] + 1 (paper
+        # p.10); ratio-type, fixed midpoint, range [0,2]. See DECISIONS.md.
+        "neutral_value": NEUTRAL_VALUE,
         "documents": documents,
         "series": sorted(series, key=lambda row: row["date"]),
     }

@@ -1,7 +1,8 @@
 {
   "schema": "index-v1",
-  "generated_utc": "2026-07-11T02:26:57+00:00",
+  "generated_utc": "2026-07-11T02:49:24+00:00",
   "lexicon": "abg_2012 (Apel & Blix Grimaldi 2012, verbatim - see pipeline/score/lexicon/abg_2012.json and DECISIONS.md). starter_v0 remains in the repo as plumbing only and is no longer used in any output.",
+  "neutral_value": 1.0,
   "documents": [
     {
       "doc_id": "minutes-2015-08",
@@ -671,6 +672,22 @@
       "source_kind": "pdf",
       "word_count": 4016,
       "sha256": "f5016293a517a822bbf3a69ab8d4a99efd4dbc2719109d5615c9840007639090",
+      "abg_hawk": 0,
+      "abg_dove": 0,
+      "abg_net_index": 1.0
+    },
+    {
+      "doc_id": "minutes-2020-03-19-special",
+      "type": "special_minutes",
+      "meeting_end": "2020-03-19",
+      "published": "2020-03-20",
+      "decision": "increase the Bank of England\u2019s holdings of UK government bonds and sterling non-financial investment-grade corporate bonds by \u00a3200 billion to a total of \u00a3645 billion, financed by the issuance of central bank reserves, and to reduce Bank Rate by 15 basis points to 0.1%",
+      "vote": "unanimous",
+      "raw_vote_text": "It therefore voted unanimously to increase the Bank of England\u2019s holdings of UK government bonds and sterling non-financial investment-grade corporate bonds by \u00a3200 billion to a total of \u00a3645 billion, financed by the issuance of central bank reserves, and to reduce Bank Rate by 15 basis points to 0.1%.",
+      "source_url": "https://www.bankofengland.co.uk/monetary-policy-summary-and-minutes/2020/monetary-policy-summary-for-the-special-monetary-policy-committee-meeting-on-19-march-2020",
+      "source_kind": "html",
+      "word_count": 563,
+      "sha256": "ce36d0c04479e469bb30af2fd14a53a0ff54c250c9ba17885f6728cdc7f95013",
       "abg_hawk": 0,
       "abg_dove": 0,
       "abg_net_index": 1.0
@@ -1702,6 +1719,11 @@
       "date": "2020-03-11",
       "abg_net_index": 1.0,
       "doc_id": "minutes-2020-03-10-special"
+    },
+    {
+      "date": "2020-03-20",
+      "abg_net_index": 1.0,
+      "doc_id": "minutes-2020-03-19-special"
     },
     {
       "date": "2020-03-26",

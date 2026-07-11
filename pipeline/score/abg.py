@@ -23,6 +23,10 @@ from pathlib import Path
 
 LEXICON_PATH = Path(__file__).parent / "lexicon" / "abg_2012.json"
 
+# Net Index = [(#hawk/(#hawk+#dove)) - (#dove/(#hawk+#dove))] + 1 (paper p.10).
+# Theoretical range [0, 2]; this is the ratio's fixed midpoint, not fitted.
+NEUTRAL_VALUE = 1.0
+
 _TOKEN = re.compile(r"[a-z']+")
 
 
@@ -62,7 +66,7 @@ def score_document(text: str, lex: dict | None = None) -> dict:
                 break
 
     total = hawk + dove
-    net_index = ((hawk / total) - (dove / total)) + 1 if total else 1.0
+    net_index = ((hawk / total) - (dove / total)) + 1 if total else NEUTRAL_VALUE
     return {
         "abg_hawk": hawk,
         "abg_dove": dove,
