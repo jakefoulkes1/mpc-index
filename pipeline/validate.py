@@ -32,12 +32,13 @@ import json
 import statistics as st
 from pathlib import Path
 
+from pipeline.decision_label import classify_decision
+
 ROOT = Path(__file__).resolve().parent.parent
 INDEX_PATH = ROOT / "data" / "index.json"
 VOTES_PATH = ROOT / "data" / "votes.csv"
 OUT = ROOT / "data" / "validation_v1.json"
 
-DECISION_LABELS = {"increase": "hike", "maintain": "hold", "reduce": "cut"}
 # Largest known real gap is 1 day (see DECISIONS.md); allow a little more
 # headroom before treating a document as unmatched.
 MAX_DAY_TOLERANCE = 3
@@ -95,14 +96,13 @@ def load_corpus_documents() -> list[dict]:
     prev_index = None
     out = []
     for d in docs:
-        verb = d["decision"].split()[0].lower()
         delta = d["abg_net_index"] - prev_index if prev_index is not None else None
         out.append({
             "doc_id": d["doc_id"],
             "published": d["published"],
             "abg_net_index": d["abg_net_index"],
             "delta_index": delta,
-            "decision_label": DECISION_LABELS.get(verb),
+            "decision_label": classify_decision(d["decision"]),
         })
         prev_index = d["abg_net_index"]
     return out

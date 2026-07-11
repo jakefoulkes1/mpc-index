@@ -39,6 +39,9 @@ HEADERS = {"User-Agent": "mpc-index research scraper (contact: jakefoulkes@aol.c
 
 OIS_ZIP_URL = "https://www.bankofengland.co.uk/-/media/boe/files/statistics/yield-curves/oisddata.zip"
 FORWARD_SHEET_NAME = "1. fwds, short end"
+# The 2009-2015 era file names the same sheet (identical structure -
+# checked by hand) "1. fwd curve" instead. Both are tried.
+FORWARD_SHEET_NAMES = (FORWARD_SHEET_NAME, "1. fwd curve")
 SONIA_SERIES_CODE = "IUDSOIA"
 SONIA_CSV_URL = (
     "https://www.bankofengland.co.uk/boeapps/iadb/fromshowcolumns.asp"
@@ -59,20 +62,24 @@ def download_ois_zip() -> Path:
     return CACHE_DIR / "oisddata"
 
 
-def _read_forward_curve_sheet(xlsx_path: Path) -> tuple[list[float], list[tuple[dt.date, list[float]]]] | None:
-    """Returns (maturities_months, [(date, [rate per maturity]), ...]), or
-    None if this era file doesn't have the expected sheet (older era files
-    use a different layout - not every era file is expected to match)."""
+def _read_forward_curve_sheet(
+    xlsx_path: Path, sheet_names: tuple[str, ...] = (FORWARD_SHEET_NAME,)
+) -> tuple[str, list[float], list[tuple[dt.date, list[float]]]] | None:
+    """Returns (sheet_name_used, maturities_months, [(date, [rate per
+    maturity]), ...]), or None if this file has none of sheet_names
+    (older era files use a different layout - not every era file is
+    expected to match every name)."""
     wb = openpyxl.load_workbook(xlsx_path, data_only=True)
-    if FORWARD_SHEET_NAME not in wb.sheetnames:
-        print(f"log: {xlsx_path.name}: no '{FORWARD_SHEET_NAME}' sheet "
+    sheet_name = next((n for n in sheet_names if n in wb.sheetnames), None)
+    if sheet_name is None:
+        print(f"log: {xlsx_path.name}: none of {sheet_names} found as a sheet "
               f"(sheets present: {wb.sheetnames}) - skipping this era file")
         return None
-    ws = wb[FORWARD_SHEET_NAME]
+    ws = wb[sheet_name]
     months_row = [c.value for c in ws[3]]
     if months_row[0] != "months:" or not isinstance(months_row[1], (int, float)):
         raise ValueError(
-            f"HARD STOP: expected row 3 of '{FORWARD_SHEET_NAME}' to start with "
+            f"HARD STOP: expected row 3 of '{sheet_name}' in {xlsx_path.name} to start with "
             f"'months:' followed by numeric maturities, got {months_row[:3]!r}"
         )
     maturities = [float(m) for m in months_row[1:] if isinstance(m, (int, float))]
@@ -87,8 +94,8 @@ def _read_forward_curve_sheet(xlsx_path: Path) -> tuple[list[float], list[tuple[
             continue  # incomplete row (e.g. a holiday placeholder)
         rows.append((date.date(), [float(v) for v in rates]))
     if not rows:
-        raise ValueError(f"HARD STOP: no complete data rows found in {xlsx_path.name}::{FORWARD_SHEET_NAME}")
-    return maturities, rows
+        raise ValueError(f"HARD STOP: no complete data rows found in {xlsx_path.name}::{sheet_name}")
+    return sheet_name, maturities, rows
 
 
 def latest_forward_curve() -> dict:
@@ -105,7 +112,7 @@ def latest_forward_curve() -> dict:
         parsed = _read_forward_curve_sheet(path)
         if parsed is None:
             continue
-        maturities, rows = parsed
+        _sheet_name, maturities, rows = parsed
         last_date, last_rates = rows[-1]
         if best is None or last_date > best[0]:
             best = (last_date, maturities, last_rates, path.name)

@@ -2,43 +2,43 @@
   "schema": "validation-v2",
   "join_key": "voting-sheet announcement date, nearest match within tolerance",
   "max_day_tolerance": 3,
-  "n_candidate_documents": 92,
-  "n_joined_meetings": 92,
+  "n_candidate_documents": 94,
+  "n_joined_meetings": 94,
   "unmatched_documents": [],
   "correlations": {
     "level_vs_skew": {
       "pearson_r": 0.1816,
-      "spearman_r": 0.1496,
-      "n": 92
+      "spearman_r": 0.1503,
+      "n": 94
     },
     "level_vs_net_dissents": {
-      "pearson_r": 0.2011,
-      "spearman_r": 0.1583,
-      "n": 92
+      "pearson_r": 0.2014,
+      "spearman_r": 0.1587,
+      "n": 94
     },
     "delta_vs_skew": {
-      "pearson_r": 0.0745,
-      "spearman_r": 0.0631,
-      "n": 91
+      "pearson_r": 0.0747,
+      "spearman_r": 0.0643,
+      "n": 93
     },
     "delta_vs_net_dissents": {
-      "pearson_r": 0.0616,
-      "spearman_r": 0.0552,
-      "n": 91
+      "pearson_r": 0.0618,
+      "spearman_r": 0.0565,
+      "n": 93
     }
   },
   "mean_abg_index_by_decision": {
     "hike": {
-      "mean_abg_net_index": 1.4098,
-      "n": 17
+      "mean_abg_net_index": 1.4354,
+      "n": 16
     },
     "hold": {
       "mean_abg_net_index": 1.0053,
       "n": 69
     },
     "cut": {
-      "mean_abg_net_index": 1.0,
-      "n": 6
+      "mean_abg_net_index": 0.963,
+      "n": 9
     }
   },
   "notes": "Contemporaneous only (meeting's own minutes vs that meeting's own vote/decision), not predictive of the next meeting. delta_index is abg_net_index minus the previous document's, in corpus order. See DECISIONS.md."

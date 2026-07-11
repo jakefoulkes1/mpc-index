@@ -42,6 +42,40 @@ def test_unrecognised_filename_returns_none(tmp_path):
     assert parse_entry(raw, source_kind={}) is None
 
 
+def test_proposition_fallback_recovers_package_of_measures_decision(tmp_path):
+    text = (
+        "At its meeting ending on 3 August 2016 the Committee discussed a package of measures. "
+        "The Governor invited the Committee to vote on the propositions that: "
+        "Bank Rate be reduced by 25 basis points to 0.25%; "
+        "The Bank of England introduce a Term Funding Scheme. "
+        "The Committee voted unanimously in favour of the propositions on Bank Rate and the Term Funding Scheme."
+    )
+    raw = tmp_path / "2016-08-minutes.txt"
+    raw.write_text(text)
+
+    entry = parse_entry(raw, source_kind={})
+
+    assert entry["decision"] == "reduce Bank Rate by 25 basis points to 0.25%"
+    assert entry["vote"] == "unanimous"
+    assert "propositions that" in entry["raw_vote_text"]
+
+
+def test_proposition_fallback_requires_both_halves(tmp_path):
+    # Proposition stated but never confirmed adopted - must stay null, not guess.
+    text = (
+        "meeting ending on 3 August 2016 "
+        "The Governor invited the Committee to vote on the propositions that: "
+        "Bank Rate be reduced by 25 basis points to 0.25%."
+    )
+    raw = tmp_path / "2016-08-minutes.txt"
+    raw.write_text(text)
+
+    entry = parse_entry(raw, source_kind={})
+
+    assert entry["decision"] is None
+    assert entry["vote"] is None
+
+
 def test_document_record_has_chart_required_fields(tmp_path):
     text = (FIX / "june_2026_summary_excerpt.txt").read_text()
     raw = tmp_path / "2026-06-minutes.txt"

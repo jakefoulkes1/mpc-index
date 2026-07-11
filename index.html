@@ -253,9 +253,14 @@ function renderChart(data) {
   }));
 
   // decision markers: hike (red, up triangle) / cut (blue, down triangle)
+  // Verb adjacent to "Bank Rate", not just the first word of the decision
+  // string - some decisions are compound (e.g. asset purchases mentioned
+  // first, Bank Rate second); see pipeline/decision_label.py / DECISIONS.md.
   docs.forEach(d => {
     if (!d.decision) return;
-    const verb = d.decision.split(' ')[0].toLowerCase();
+    const match = d.decision.match(/(increase|reduce|maintain)\w*\s+Bank Rate/i);
+    if (!match) return;
+    const verb = match[1].toLowerCase();
     if (verb !== 'increase' && verb !== 'reduce') return;
     const cx = x(d.published), cy = y(d.abg_net_index);
     const hawk = verb === 'increase';

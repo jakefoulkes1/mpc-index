@@ -33,9 +33,19 @@ def _sample_forward_curve_workbook(tmp_path, sheet_name="1. fwds, short end"):
 
 def test_read_forward_curve_sheet_happy_path(tmp_path):
     path = _sample_forward_curve_workbook(tmp_path)
-    maturities, rows = _read_forward_curve_sheet(path)
+    sheet_name, maturities, rows = _read_forward_curve_sheet(path)
+    assert sheet_name == "1. fwds, short end"
     assert maturities == [1.0, 2.0, 3.0]
     assert rows[-1] == (dt.date(2026, 6, 30), [3.73, 3.77, 3.81])
+
+
+def test_read_forward_curve_sheet_tries_alternate_sheet_names(tmp_path):
+    path = _sample_forward_curve_workbook(tmp_path, sheet_name="1. fwd curve")
+    sheet_name, maturities, rows = _read_forward_curve_sheet(
+        path, sheet_names=("1. fwds, short end", "1. fwd curve")
+    )
+    assert sheet_name == "1. fwd curve"
+    assert maturities == [1.0, 2.0, 3.0]
 
 
 def test_read_forward_curve_sheet_returns_none_for_wrong_layout(tmp_path):

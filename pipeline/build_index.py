@@ -50,6 +50,21 @@ MEETING_END_RE = re.compile(
 VOTE_RE = re.compile(
     r"voted(?: (?:(?:by a majority of )?(\d+[-–—]\d+)|(unanimously)))? to (.+)"
 )
+# Fallback for "package of measures" style meetings (e.g. 2016-08, the
+# 2020-03-10 special) where the Bank Rate decision is stated as one of
+# several Governor's propositions, confirmed later by a plain "voted ...
+# in favour of the propositions" sentence that doesn't itself restate the
+# rate - so VOTE_RE finds no single "voted ... to X" clause. Recovers real
+# text, doesn't fabricate: only fires if BOTH the proposition statement
+# AND its adoption are found. See DECISIONS.md.
+PROPOSITION_RE = re.compile(
+    r"propositions? that:\s*Bank Rate (?:should be |be )?(reduced|increased) by "
+    r"(\d+(?:\.\d+)?) basis points?,? to (\d+(?:\.\d+)?)%"
+)
+PROPOSITION_CONFIRMED_RE = re.compile(
+    r"voted (?:by a majority of (\d+[-–—]\d+)|(unanimously)) in favour of "
+    r"(?:all (?:\w+ )?propositions?|the propositions?)"
+)
 MONTH_NAMES = ["january", "february", "march", "april", "may", "june",
                "july", "august", "september", "october", "november", "december"]
 
@@ -62,6 +77,26 @@ def source_url(year: int, month_num: int) -> str:
     month = MONTH_NAMES[month_num - 1]
     slug = f"mpc-{month}-{year}" if year <= PREFIXED_SLUG_LAST_YEAR else f"{month}-{year}"
     return f"https://www.bankofengland.co.uk/monetary-policy-summary-and-minutes/{year}/{slug}"
+
+
+def try_proposition_fallback(text: str) -> dict | None:
+    """Recovers decision/vote from a Governor's-proposition + adoption
+    pair when no single "voted ... to X" sentence exists. Returns None if
+    either half of the pair isn't found - never guesses from one alone."""
+    prop_m = PROPOSITION_RE.search(text)
+    if not prop_m:
+        return None
+    confirm_m = PROPOSITION_CONFIRMED_RE.search(text)
+    if not confirm_m:
+        return None
+    verb_past, magnitude, level = prop_m.groups()
+    verb = "reduce" if verb_past == "reduced" else "increase"
+    vote = re.sub(r"[–—]", "-", confirm_m.group(1)) if confirm_m.group(1) else "unanimous"
+    return {
+        "decision": f"{verb} Bank Rate by {magnitude} basis points to {level}%",
+        "vote": vote,
+        "raw_vote_text": f"{prop_m.group(0).strip()} [...] {confirm_m.group(0).strip()}",
+    }
 
 
 def find_vote_sentence(text: str) -> str | None:
@@ -124,23 +159,30 @@ def parse_entry(path: Path, source_kind: dict) -> dict | None:
         print(f"log: {path.name}: 'meeting ending on' date unparseable (likely missing year in source text) - meeting_end/published left null")
 
     sentence = find_vote_sentence(text)
-    if sentence is None:
-        print(f"log: {path.name}: no vote sentence found - decision/vote left null")
-        return entry
-    entry["raw_vote_text"] = sentence.strip()
-
-    vote_m = VOTE_RE.search(sentence)
-    if vote_m:
-        entry["decision"] = vote_m.group(3).strip().rstrip(".")
-        if vote_m.group(1):
-            # Normalise en/em dash vote splits to a plain hyphen for a consistent field.
-            entry["vote"] = re.sub(r"[–—]", "-", vote_m.group(1))
-        elif vote_m.group(2):
-            entry["vote"] = "unanimous"
+    if sentence is not None:
+        entry["raw_vote_text"] = sentence.strip()
+        vote_m = VOTE_RE.search(sentence)
+        if vote_m:
+            entry["decision"] = vote_m.group(3).strip().rstrip(".")
+            if vote_m.group(1):
+                # Normalise en/em dash vote splits to a plain hyphen for a consistent field.
+                entry["vote"] = re.sub(r"[–—]", "-", vote_m.group(1))
+            elif vote_m.group(2):
+                entry["vote"] = "unanimous"
+            else:
+                print(f"log: {path.name}: decision parsed but vote split not stated as majority/unanimous (likely a multi-way split described in prose) - vote left null")
         else:
-            print(f"log: {path.name}: decision parsed but vote split not stated as majority/unanimous (likely a multi-way split described in prose) - vote left null")
+            print(f"log: {path.name}: vote/decision clause unparseable - trying proposition fallback")
     else:
-        print(f"log: {path.name}: vote/decision clause unparseable - left null")
+        print(f"log: {path.name}: no vote sentence found - trying proposition fallback")
+
+    if entry["decision"] is None:
+        fallback = try_proposition_fallback(text)
+        if fallback:
+            entry.update(fallback)
+            print(f"log: {path.name}: recovered decision/vote via Governor's-proposition fallback")
+        else:
+            print(f"log: {path.name}: decision/vote left null - no proposition fallback pattern found either")
 
     return entry
 

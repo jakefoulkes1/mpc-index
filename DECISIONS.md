@@ -538,3 +538,322 @@ Changes apply forward only; nothing is retrofitted. Locked calls are never touch
   named `dryrun-2026-07.json`, distinguishing it structurally (not just
   by content) from any future actual locked call, which would need its
   own deliberately-named file.
+
+## 2026-08-01 — smoothed-curve bias: quantified, offset convention chosen
+
+- **Known limitation confirmed and quantified, not just asserted.** The
+  Bank's published OIS forward curve is a fitted spline across maturities,
+  which smooths over the discrete jump that actually happens in Bank Rate
+  on a meeting date - the curve's value exactly AT the meeting understates
+  the priced move and biases `implied_probs` toward hold. Quantified on
+  today's live curve (2026-06-30) for the three upcoming meetings:
+  implied_change_bp at-meeting vs +3 days vs 2-week-average was -0.04 /
+  0.25 / 0.76 (30 Jul), 5.70 / 6.08 / 6.66 (17 Sep), 12.44 / 12.86 / 13.50
+  (5 Nov) - a small but real and monotonic effect in the expected
+  direction under today's fairly flat curve; expected to be larger under
+  more steeply sloped historical curves (e.g. the 2021-2023 hiking cycle),
+  to be confirmed once Part B's historical build runs.
+- **Convention chosen: forward rate 3 days after the meeting date
+  (`LOCK_OFFSET_DAYS = 3`), linearly interpolated between the curve's
+  adjacent whole-month buckets - not a 2-week average, and not the
+  meeting date itself.** The 2-week-average alternative was computed and
+  rejected: it recovers slightly more of the bias (see numbers above), but
+  during the Aug 2015-2016 monthly-MPC era a 2-week window is roughly HALF
+  the inter-meeting gap, risking real contamination from the NEXT
+  meeting's own priced expectations - a bigger problem for a benchmark
+  that must run across that entire era than the extra ~0.5-0.6bp of bias
+  correction is worth. +3 days is safely inside even the shortest
+  historical gap (~4 weeks).
+- **Interpolation is required for either convention to mean anything, not
+  optional.** The curve's maturities are whole months only; "nearest
+  bucket after" (the previous implementation) would make a 3-day shift
+  either do nothing (if the meeting isn't near a bucket boundary) or jump
+  an entire month's worth of curve (if it is) - neither reflects a "3 days
+  later" quantity. `interpolated_forward_rate()` now does linear
+  interpolation between the two adjacent whole-month buckets for an
+  arbitrary real-valued maturity; `forward_rate_for_date()` evaluates it
+  at `meeting_date + 3 days`, converted to months via the existing
+  average-days-per-month convention. Same data source as before (the
+  Bank's own OIS spreadsheet) - only the evaluation point within that
+  curve changed, per instruction ("do not switch data sources").
+- **Applied everywhere**: this is the only forward-rate lookup function in
+  the codebase (`pipeline/predict/market_probs.py`), used by both the
+  live dry-run card and (from here on) the historical backtest in Part B
+  - one convention, not two parallel implementations.
+- **`lock_offset_days` added to `market_probs_for_meeting()`'s output**
+  so any consumer (site, CSV, tests) can see which convention a given
+  probability was computed under, without needing to read this entry.
+- **Diagnostic table run against today's live data (2026-06-30 curve,
+  SONIA 3.7303% as of 2026-07-08) found NO horizon-indexing bug**: hike
+  probability increases monotonically and sensibly with horizon (0.0% at
+  30 Jul, ~29-31% at 17 Sep, ~63-65% at 5 Nov, varying slightly by
+  convention above) - the anticipated failure mode ("hike probability ~0
+  even at November despite an upward-sloping curve") was checked for and
+  not found; bucket selection was also spot-checked across a 0.5-24 month
+  range and confirmed monotonic. No fix was needed for this; the
+  investigation is recorded so the check isn't silently skipped.
+
+## 2026-08-01 — 2 null-decision documents recovered
+
+- **The 94-corpus/94-voting-sheet join reporting only 92 candidates was
+  exactly the 2 already-logged null-decision documents** (`minutes-2016-08`
+  and `minutes-2020-03-10-special`) - both excluded from
+  `load_corpus_documents()` by construction (it requires both `published`
+  and `decision`). No undocumented exclusion existed; confirmed by
+  listing every document with `decision is None` and finding exactly
+  these two, matching 94 - 2 = 92.
+- **Both recovered from a real, shared pattern, not guessed.** Both are
+  "package of measures" meetings (2016-08's post-Brexit stimulus; 2020-03-10's
+  first Covid-19 emergency cut) where the actual VOTE_RE-matched sentence
+  ("voted unanimously in favour of the propositions") never restates the
+  rate, but an earlier sentence does: "The Governor invited the Committee
+  to vote on the propositions that: Bank Rate [should be/be] reduced by N
+  basis points to X%". `try_proposition_fallback()` in `build_index.py`
+  only fires when BOTH halves of this pair are found - the proposition
+  statement AND a later "voted (unanimously | by a majority of A-B) in
+  favour of ... propositions" confirming it was adopted - so it can't
+  attach a rate to a proposition that was never actually put to a vote,
+  or vice versa. Tested for both the happy path and the "proposition
+  stated but never confirmed" case explicitly staying null.
+- **Result: 2016-08 = "reduce Bank Rate by 25 basis points to 0.25%",
+  unanimous. 2020-03-10-special = "reduce Bank Rate by 50 basis points to
+  0.25%", unanimous.** Both match known history. Validation join now
+  covers all 94 of 94 candidate documents (up from 92 of 92, since the
+  candidate pool itself grew by the 2 recovered documents).
+- **This is a general mechanism, not two special cases hardcoded per
+  document** - if a future meeting uses the same Governor's-proposition
+  phrasing, it will be recovered automatically without a code change.
+
+## 2026-08-01 — historical market benchmark: data/market_history.csv
+
+- **"Archive files ... by year" turned out to be one multi-era zip, not
+  one file per calendar year** - confirmed by re-reading the yield curves
+  page's own text ("Daily overnight index swap curve: archive data")
+  rather than assumed: it's the same `oisddata.zip` already used for the
+  live dry-run, containing "2009 to 2015", "2016 to 2024", "2025 to
+  present" era files. No new download endpoint was needed.
+- **The 2009-2015 era file names its forward-curve sheet "1. fwd curve"
+  instead of "1. fwds, short end"** (used by the 2016+ files) - checked
+  by hand and confirmed structurally identical (same maturity-months row,
+  same layout). `pipeline/market/ois.py`'s `_read_forward_curve_sheet`
+  now accepts a tuple of candidate sheet names and tries each in order,
+  used with both names for the full-history build and just the current
+  name for the live lookup.
+- **Full history requires every era file to parse - hard stop, not skip.**
+  `latest_forward_curve()` (live lookup) can safely skip an era file with
+  neither known sheet name, since it only needs the most recent one. The
+  new `load_full_curve_history()` (Part B) hard-stops instead if any era
+  file matches neither name - a full Aug 2015-present history silently
+  missing a whole era would be a much worse failure than the live lookup
+  skipping old data it was never going to use anyway.
+- **Lock date = announcement - 2 calendar days**, walked back one day at a
+  time if that date isn't present in the curve data (a weekend or bank
+  holiday is simply absent as a row - no separate UK holiday calendar was
+  built; the data itself is the trading calendar). Same mechanism used
+  for the SONIA lookup at the lock date. `find_nearest_available_date()`
+  in `pipeline/market/ois_history.py`, capped at a 10-day walk-back before
+  hard-stopping (never silently substitutes an arbitrarily old date).
+- **In practice, zero walk-backs occurred across all 94 meetings.** MPC
+  announcements are (with rare exception) Thursdays, so announcement-2d
+  lands on a Tuesday - essentially never a UK bank holiday, and December
+  meetings land well clear of Christmas/New Year (checked by hand:
+  earliest Dec lock date across the corpus is 8 Dec, latest 18 Dec).
+  Confirmed this is a real property of the MPC calendar, not a silent
+  bug in the walk-back logic (also unit-tested directly with a synthetic
+  weekend gap).
+- **`forward_rate_for_date` from `pipeline/predict/market_probs.py` is
+  reused unchanged** for the historical build (curve `as_of_date` = lock
+  date, `meeting_date` = announcement) - one implementation of the
+  LOCK_OFFSET_DAYS=3 convention for both the live card and the historical
+  backtest, per the earlier instruction not to have two parallel
+  conventions.
+- **`build_rows()` is a pure function** (curve/SONIA history passed in,
+  no I/O) so it's unit-tested against synthetic fixtures including an
+  explicit weekend-gap walk-back case, without a live call; `main()`
+  wires it to the real downloads. `data/market_history.csv` columns:
+  `meeting, lock_date, sonia, forward, implied_change_bp, p_cut, p_hold,
+  p_hike, source_file`.
+- **Result: all 94 corpus meetings covered, no hard stops.** Notable
+  sanity spot-check: Dec 2022 (height of the 2022 hiking cycle) shows
+  `p_hike = 1.0` (implied change 62.31bp, well over the assumed 25bp
+  move, clipped) - the kind of result that should show up at the extremes
+  and does.
+
+## 2026-08-01 — decision classifier bug found and fixed: Bank-Rate-adjacent verb, not first word
+
+- **Found while running the Part-B sanity checks, not before**: the
+  "5 most-wrong meetings" table initially put `minutes-2020-03-19-special`
+  in 2nd place as a supposed "hike" the market gave 0% probability to -
+  but that meeting was actually a CUT (Bank Rate 0.25%->0.1%). Its
+  `decision` text is a compound sentence - "increase the Bank of
+  England's holdings of [assets] ... and to reduce Bank Rate by 15 basis
+  points to 0.1%" - and every classifier in the codebase
+  (`pipeline/validate.py`, index.html's chart markers) took the FIRST
+  WORD of the decision string ("increase") rather than the verb actually
+  adjacent to "Bank Rate" ("reduce"). One document, out of all 94, was
+  affected - checked by running the new classifier against every
+  document's decision text and diffing against the old first-word
+  result: exactly this one mismatch, no others.
+- **Fixed with one shared function, not three separate patches.**
+  `pipeline/decision_label.py:classify_decision()` finds the verb
+  immediately before "Bank Rate" via regex
+  (`(increase|reduce|maintain)\w*\s+Bank Rate`), not the first word of
+  the string. `pipeline/validate.py` and index.html's chart-marker JS
+  both now use this one rule (the JS re-implements the same regex, since
+  it can't import Python) instead of two independently-maintained
+  first-word copies that could drift apart again.
+- **Downstream corrections**: `mean_abg_index_by_decision.cut.n` in
+  `data/validation_v1.json` went from 6 to 9 (the 2 decisions recovered
+  earlier this session plus this reclassification), `hike.n` unaffected.
+  The "5 most-wrong" sanity check (below) now correctly shows Nov and Dec
+  2021, as expected, instead of being pushed down by this misclassified
+  entry.
+
+## 2026-08-01 — Part B sanity checks
+
+- **(a) Mean p_hike at lock across the 14 consecutive hikes (Dec 2021 -
+  Aug 2023): 0.9225** - far above the corpus-wide hike base rate of
+  0.1702 (16 of 94 meetings), as expected: the market correctly priced
+  near-certain hikes through most of the cycle (12 of 14 meetings show
+  p_hike = 1.0, i.e. an implied change >= the assumed 25bp move size).
+  The two exceptions are informative, not noise: Dec 2021 (p_hike=0.29,
+  the first hike of the cycle, not yet fully anticipated - see below) and
+  Mar 2023 (p_hike=0.625, during the SVB/Credit Suisse banking-stress
+  week, when a hike was less certain).
+- **(b) Five most-wrong meetings (highest 1 - p(actual outcome)):**
+  1. `minutes-2016-07` (actual hold, p_cut=1.0, p_actual=0.0) - the
+     market was CERTAIN of a post-referendum cut that didn't arrive until
+     August's "package of measures" the following month.
+  2. `minutes-2023-09` (actual hold, p_hike=0.889, p_actual=0.111) - the
+     Bank held for the first time after 14 straight hikes; the market
+     hadn't caught up to the pause.
+  3. `minutes-2021-12` (actual hike, p_hold=0.710, p_actual=0.290) - the
+     first hike of the cycle, one meeting after the market had just been
+     burned by November's hold (below) - underpriced.
+  4. `minutes-2021-11` (actual hold, p_hike=0.688, p_actual=0.312) - the
+     well-known "dovish surprise": the market had priced a near-certain
+     hike and the Committee held.
+  5. `minutes-2020-03-19-special` (actual cut, p_hold=0.612,
+     p_actual=0.388) - the second Covid-19 emergency cut, days after the
+     first; the two-state model's 25bp assumed-move size understates how
+     large emergency moves can be (this one was 15bp, priced against a
+     0.1%-away curve reading that had just also absorbed the 10 March
+     cut - a genuinely unusual week, not a fitting error).
+  Nov 2021 and Dec 2021 both appear, as expected. All five are real,
+  independently-recognisable market surprises, not artefacts.
+
+## 2026-08-01 — scipy added, for the ordered logit models only
+
+- **scipy added as a dependency, deliberately narrower in scope than it
+  sounds.** The earlier choice (2026-07-25) to implement Pearson/Spearman
+  by hand rather than add scipy still stands for those - they're
+  closed-form formulas, not worth a dependency. An ordered logistic
+  regression MLE fit (L2/L3 in the benchmark ladder) is a different order
+  of complexity: a numerically stable iterative optimizer with a genuine
+  convergence/non-convergence distinction (which the task's own wording
+  anticipates - "if an ordered-logit window fails to converge"). Writing
+  a bespoke Newton-Raphson/IRLS implementation by hand would be
+  re-deriving what scipy.optimize already does robustly, with more risk
+  of a subtle numerical bug than the dependency is worth.
+- **`pipeline/predict/ordered_logit.py`: proportional-odds model, 3
+  classes (cut/hold/hike), fit by direct MLE** (`scipy.optimize.minimize`,
+  BFGS) rather than an existing statsmodels/sklearn ordinal-regression
+  implementation - kept to the one additional dependency, not two.
+  Cutpoint ordering (tau_0 < tau_1) is enforced by reparameterising
+  tau_1 = tau_0 + exp(delta) and fitting unconstrained.
+- **Convergence check is two-part, not just scipy's own success flag.**
+  Tested against synthetic data: a hard, noiseless 3-class threshold (no
+  overlap anywhere) is a genuine quasi-complete-separation case where the
+  optimizer can keep improving the likelihood by pushing a cutpoint
+  towards +-infinity - it reports `success=True` while landing on a
+  degenerate fit. Added a second check (`|any fitted parameter| > 50`) to
+  catch this specifically; a fit failing either check is `converged =
+  False`. Verified this actually fires on the deterministic-threshold
+  test case and does NOT fire on realistic noisy synthetic data or a
+  well-separated-but-still-noisy case (unit-tested for both).
+
+## 2026-08-01 — the benchmark ladder (first real backtest), L0-L4
+
+- **Outcomes coded by SIGN only, magnitude ignored**, per instruction: a
+  50bp move counts the same as a 15bp move in the same direction. Uses
+  the same `classify_decision()` as everywhere else in the codebase (one
+  classifier, see the earlier 2026-08-01 entry on the first-word bug).
+- **Evaluation window: Jan 2019-present, 62 meetings.** Training starts
+  from the very first corpus document (Aug 2015) for every evaluation
+  meeting - "fit on strictly prior meetings only" means the training set
+  grows with each step (`records[:i]`), never using meeting i or later.
+- **L3's `index_level` and `skew` are BOTH the PREVIOUS meeting's values,
+  not the target's own - a judgment call, not a literal reading of the
+  task text, and flagged prominently (module docstring, this entry, and
+  the final report).** The task's wording explicitly lags skew ("last
+  meeting's vote skew") but not index_level. A meeting's own minutes (and
+  therefore its own `abg_net_index`) are published SIMULTANEOUSLY with
+  its own decision - using them to "forecast" that same decision would
+  not be a real forecast, and would be a fundamentally different (leaky)
+  use of the index than everywhere else in this project
+  (`pipeline/validate.py` is explicitly contemporaneous-not-predictive).
+  Lagging both features uniformly, the same way skew already is, is the
+  reading applied here. If a literal (unlagged) reading was actually
+  intended, this is where to look to change it -
+  `pipeline/ladder.py:l3_market_index_skew_logit`.
+- **scipy added for L2/L3's ordered logit** - see the separate 2026-08-01
+  "scipy added" entry above for the full reasoning and the two-part
+  convergence check.
+- **Feature standardisation (z-score, fit on training data only) was
+  necessary, not optional - found by running the ladder, not assumed.**
+  The first real run flagged 61 of 62 L3 windows as "degenerate"
+  (`|param| > 50`), which turned out to be a scale artefact, not genuine
+  non-convergence: `skew`'s raw values are ~1e-3, `implied_change_bp`'s
+  are ~1e1, so a perfectly healthy fit needs wildly different-magnitude
+  coefficients across features, easily tripping a threshold calibrated
+  for unit-scale inputs. Standardising each feature column (subtract
+  training mean, divide by training std - never touching the target
+  during the standardisation itself, only applying the same
+  transformation to it afterwards) fixed this: fallbacks dropped from 61
+  of 62 to 11 of 62, and the remaining 11 are all evaluation meetings
+  BEFORE March 2020 - the corpus's first-ever cut. Before that date, any
+  training window has literally zero cut examples, which is exactly the
+  "rare cuts early on" non-convergence the task itself anticipated -
+  confirmed as a real, expected fallback, not a bug, by checking that
+  every remaining fallback date precedes the first cut.
+- **L4 member-level model, several judgment calls, all logged**
+  (`pipeline/ladder.py` module docstring has the full reasoning):
+  - Pooled transition matrix (not per-member - same reasoning as
+    `pipeline/member_behaviour.py`), refit at each evaluation step on
+    strictly prior votes only.
+  - Each member's "previous state" = their own most recent state before
+    the target meeting (from the expanding-window-filtered voting
+    history), not their state AT the target meeting (that would be the
+    answer being predicted).
+  - "Plus implied_change_bp" implemented as an equal-weight (0.5/0.5)
+    blend of the transition-matrix distribution and the same two-state
+    +-25bp market-implied distribution already used for `m0`, reused at
+    the per-member level (`hawkish_dissent<->hike`,
+    `with_majority<->hold`, `dovish_dissent<->cut`). No new fitted
+    parameter introduced beyond what's listed.
+  - "Members with no history default to majority": implemented literally
+    as a deterministic 100% with_majority/hold distribution for a
+    member's first-ever appearance, with no market blending (nothing to
+    blend against) - tested explicitly.
+  - Committee-level distribution: Monte Carlo simulation (5,000 trials,
+    fixed seed = 42) of all voting members' independent draws, aggregated
+    by plurality with ties split equally among tied leaders - the task's
+    own wording ("simulate the nine votes") points at simulation rather
+    than an exact combinatorial calculation, and a fixed seed makes it
+    exactly reproducible (tested).
+- **Result: L0/L1 as expected (L1 far ahead of always-hold); L2, L3, L4
+  all score WORSE than L1 (market-only) on this first pass** - negative
+  skill for all three (L2 -0.30, L3 -0.59, L4 -0.95). Not treated as a
+  bug or "fixed" further: this is a legitimate finding for a genuinely
+  first backtest, and consistent with the project's own null-result
+  framing (market efficiency). L1's mapping from implied_change_bp to
+  probabilities is correct by construction (the same clipped-linear rule
+  IS how m0 itself is built); L2 has to re-discover an equivalent
+  relationship from a modest, noisy sample via MLE, so underperforming a
+  correct-by-construction baseline on Brier score over 62 meetings is
+  expected, not surprising. L4 carries by far the most compounded
+  modelling assumptions (pooled transition matrix estimated on a limited
+  sample, an invented 0.5/0.5 blend weight, Monte Carlo sampling
+  variance) and its larger underperformance is consistent with that.
+  Saved to `data/ladder_v1.json`; explicitly NOT published to the site,
+  per instruction - for review first.
