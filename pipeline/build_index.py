@@ -22,8 +22,16 @@ from pipeline.score.dictionary import load_lexicon, score_document, split_senten
 ROOT = Path(__file__).resolve().parents[1]
 RAW = ROOT / "data" / "raw"
 OUT = ROOT / "data" / "index.json"
+SOURCE_KIND_PATH = RAW / "source_kind.json"
 
 FILENAME_RE = re.compile(r"^(\d{4})-(\d{2})-minutes\.txt$")
+SPECIAL_FILENAME_RE = re.compile(r"^(\d{4})-(\d{2})-(\d{2})-special-minutes\.txt$")
+# Emergency/special meetings live at ad-hoc URLs, not the month-slug pattern -
+# found by reconciling against the Bank's own sitemap, not guessed. Extend
+# this table if more are found reconciling other eras. See DECISIONS.md.
+SPECIAL_SOURCE_URLS = {
+    "2020-03-10": "https://www.bankofengland.co.uk/monetary-policy-summary-and-minutes/2020/13march-2020",
+}
 # "ending on <date>" is the usual phrasing; a few 2016 pages drop the "on".
 MEETING_END_RE = re.compile(r"meeting ending (?:on )?(\d{1,2} [A-Za-z]+ \d{4})")
 # Vote split uses an ASCII hyphen in older pages, an en dash (–) in newer ones.
@@ -51,28 +59,53 @@ def source_url(year: int, month_num: int) -> str:
 
 def find_vote_sentence(text: str) -> str | None:
     """First sentence stating the Bank Rate vote. Usually the same sentence as
-    "meeting ending on", but some eras (e.g. 2021) split them in two."""
+    "meeting ending on", but some eras (e.g. 2021) split them in two. Case-
+    insensitive: some PDF extractions render it "Bank rate" (lowercase r)."""
     for sentence in split_sentences(text):
-        if "voted" in sentence and "Bank Rate" in sentence:
+        if "voted" in sentence and "bank rate" in sentence.lower():
             return sentence
     return None
 
 
-def parse_entry(path: Path) -> dict | None:
+def parse_entry(path: Path, source_kind: dict) -> dict | None:
     m = FILENAME_RE.match(path.name)
-    if not m:
+    special_m = SPECIAL_FILENAME_RE.match(path.name) if not m else None
+    if not m and not special_m:
         return None
-    year, month_num = int(m.group(1)), int(m.group(2))
+
+    if m:
+        year, month_num = int(m.group(1)), int(m.group(2))
+        doc_id = f"minutes-{year:04d}-{month_num:02d}"
+        doc_type = "minutes"
+        url = source_url(year, month_num)
+    else:
+        year, month_num, day = int(special_m.group(1)), int(special_m.group(2)), int(special_m.group(3))
+        doc_id = f"minutes-{year:04d}-{month_num:02d}-{day:02d}-special"
+        doc_type = "special_minutes"
+        key = f"{year:04d}-{month_num:02d}-{day:02d}"
+        url = SPECIAL_SOURCE_URLS.get(key)
+        if url is None:
+            print(f"log: {path.name}: no known source_url for special meeting {key} - source_url left null")
+
     text = path.read_text()
 
     entry = {
-        "doc_id": f"minutes-{year:04d}-{month_num:02d}",
-        "type": "minutes",
+        "doc_id": doc_id,
+        "type": doc_type,
         "meeting_end": None,
         "published": None,
         "decision": None,
         "vote": None,
-        "source_url": source_url(year, month_num),
+        # Verbatim sentence the decision/vote were parsed from, whenever one is
+        # found - kept even when decision/vote don't fully parse (e.g. a
+        # multi-way split not representable as "A-B") so no information is lost.
+        "raw_vote_text": None,
+        "source_url": url,
+        # "pdf" where the HTML page was Summary-only and full minutes were
+        # backfilled from the Bank's PDF (pipeline/scrape/backfill_pdf.py);
+        # "html" where the HTML page already had the full minutes inline.
+        "source_kind": source_kind.get(path.name, "html"),
+        "word_count": len(text.split()),
     }
 
     date_m = MEETING_END_RE.search(text)
@@ -87,6 +120,7 @@ def parse_entry(path: Path) -> dict | None:
     if sentence is None:
         print(f"log: {path.name}: no vote sentence found - decision/vote left null")
         return entry
+    entry["raw_vote_text"] = sentence.strip()
 
     vote_m = VOTE_RE.search(sentence)
     if vote_m:
@@ -106,9 +140,10 @@ def parse_entry(path: Path) -> dict | None:
 
 def main() -> None:
     lexicon = load_lexicon()
+    source_kind = json.loads(SOURCE_KIND_PATH.read_text()) if SOURCE_KIND_PATH.exists() else {}
     documents, series = [], []
     for path in sorted(RAW.glob("*.txt")):
-        entry = parse_entry(path)
+        entry = parse_entry(path, source_kind)
         if entry is None:
             print(f"skip (unrecognised filename): {path.name}")
             continue
