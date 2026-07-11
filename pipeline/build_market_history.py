@@ -9,6 +9,12 @@ announcement): announcement - LOCK_DATE_OFFSET_DAYS (2) calendar days; if
 that isn't a trading day (weekend/holiday - simply absent from the data),
 walks back to the nearest one that is, logged.
 
+`scheduled` (bool): False for special_minutes (emergency meetings, e.g.
+the March 2020 Covid cuts) - at "lock time" nobody could have registered
+a forecast for a meeting whose existence wasn't yet announced, so these
+can't be treated as ordinary pre-registered forecasts. True for every
+regular minutes document. See DECISIONS.md, 2026-08-08.
+
 Run:  python -m pipeline.build_market_history
 """
 import csv
@@ -27,7 +33,7 @@ ROOT = Path(__file__).resolve().parents[1]
 INDEX_PATH = ROOT / "data" / "index.json"
 OUT = ROOT / "data" / "market_history.csv"
 LOCK_DATE_OFFSET_DAYS = 2
-FIELDNAMES = ["meeting", "lock_date", "sonia", "forward", "implied_change_bp",
+FIELDNAMES = ["meeting", "scheduled", "lock_date", "sonia", "forward", "implied_change_bp",
               "p_cut", "p_hold", "p_hike", "source_file"]
 
 
@@ -55,6 +61,7 @@ def build_rows(meetings: list[dict], curve_history: dict[dt.date, dict], sonia_h
 
         rows.append({
             "meeting": doc["doc_id"],
+            "scheduled": doc.get("type", "minutes") == "minutes",
             "lock_date": lock_date.isoformat(),
             "sonia": sonia_pct,
             "forward": round(rate, 4),

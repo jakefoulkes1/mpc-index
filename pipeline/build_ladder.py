@@ -21,7 +21,7 @@ from pipeline.ladder import (
     load_raw_votes,
     load_records,
 )
-from pipeline.predict.score_outcomes import brier_score, log_score
+from pipeline.predict.score_outcomes import LOG_SCORE_EPSILON, brier_score, log_score
 
 ROOT = Path(__file__).resolve().parent.parent
 OUT = ROOT / "data" / "ladder_v1.json"
@@ -66,7 +66,10 @@ def run_evaluation(records: list[dict] | None = None, votes_by_date: dict | None
             l4_probs = preds["L1"]
         preds["L4"] = l4_probs
 
-        per_meeting.append({"doc_id": target["doc_id"], "date": target["date"], "actual": actual, "predictions": preds})
+        per_meeting.append({
+            "doc_id": target["doc_id"], "date": target["date"], "scheduled": target["scheduled"],
+            "actual": actual, "predictions": preds,
+        })
 
     for line in fallback_log:
         print("log:", line)
@@ -75,6 +78,8 @@ def run_evaluation(records: list[dict] | None = None, votes_by_date: dict | None
 
 
 def score_models(per_meeting: list[dict]) -> dict:
+    if not per_meeting:
+        return {model: {"mean_brier": None, "mean_log_score": None, "n": 0} for model in MODELS}
     scores = {}
     for model in MODELS:
         briers = [brier_score(m["predictions"][model], m["actual"]) for m in per_meeting]
@@ -90,30 +95,57 @@ def score_models(per_meeting: list[dict]) -> dict:
     return scores
 
 
+def print_table(title: str, scores: dict) -> None:
+    print(f"\n{title}")
+    print(f"{'model':6}{'mean_brier':13}{'mean_log':11}{'skill_vs_L1':13}{'n':5}")
+    for model in MODELS:
+        s = scores[model]
+        if s["n"] == 0:
+            print(f"{model:6}{'-':<13}{'-':<11}{'-':<13}{0:<5}")
+            continue
+        skill = f"{s['skill_vs_l1']:.4f}" if s.get("skill_vs_l1") is not None else "-"
+        print(f"{model:6}{s['mean_brier']:<13}{s['mean_log_score']:<11}{skill:<13}{s['n']:<5}")
+
+
 def main() -> None:
     result = run_evaluation()
-    scores = score_models(result["per_meeting"])
+    per_meeting = result["per_meeting"]
+    scheduled_only = [m for m in per_meeting if m["scheduled"]]
+    specials_only = [m for m in per_meeting if not m["scheduled"]]
+
+    headline_scores = score_models(scheduled_only)
+    specials_scores = score_models(specials_only)
 
     payload = {
         "schema": "ladder-v1",
         "eval_start": EVAL_START,
-        "n_meetings": len(result["per_meeting"]),
-        "scores": scores,
+        "n_meetings": len(per_meeting),
+        "n_scheduled": len(scheduled_only),
+        "n_specials": len(specials_only),
+        "log_score_probability_clip": LOG_SCORE_EPSILON,
+        "headline_scores_scheduled_only": headline_scores,
+        "specials_robustness_scores": specials_scores,
         "fallback_log": result["fallback_log"],
-        "per_meeting": result["per_meeting"],
+        "per_meeting": per_meeting,
         "notes": ("3-class outcomes coded by sign only (a 50bp+ move counts the same as a "
                   "smaller move in the same direction). L3's index_level and skew are both "
                   "the PREVIOUS meeting's values, not the target's own - see DECISIONS.md, "
-                  "2026-08-01, for why. NOT published to the site - for review first."),
+                  "2026-08-01, for why. HEADLINE evaluation is scheduled meetings only - "
+                  "special/emergency meetings (e.g. the March 2020 Covid cuts) could not have "
+                  "been pre-registered forecasts, since at lock time nobody knew they'd occur; "
+                  "they're reported separately as a robustness check, not blended into the "
+                  "headline. log_score_probability_clip is the floor applied to p(actual "
+                  "outcome) before taking -log(p), to avoid -log(0) for a confidently-wrong "
+                  "call - see pipeline/predict/score_outcomes.py. NOT published to the site - "
+                  "for review first."),
     }
     OUT.write_text(json.dumps(payload, indent=2) + "\n")
 
-    print(f"\nwrote {OUT} ({len(result['per_meeting'])} evaluation meetings, {len(result['fallback_log'])} fallbacks)")
-    print(f"\n{'model':6}{'mean_brier':13}{'mean_log':11}{'skill_vs_L1':13}{'n':5}")
-    for model in MODELS:
-        s = scores[model]
-        skill = f"{s['skill_vs_l1']:.4f}" if s.get("skill_vs_l1") is not None else "-"
-        print(f"{model:6}{s['mean_brier']:<13}{s['mean_log_score']:<11}{skill:<13}{s['n']:<5}")
+    print(f"\nwrote {OUT} ({len(per_meeting)} evaluation meetings: "
+          f"{len(scheduled_only)} scheduled, {len(specials_only)} special; "
+          f"{len(result['fallback_log'])} fallbacks; log_score_probability_clip={LOG_SCORE_EPSILON})")
+    print_table("HEADLINE (scheduled meetings only):", headline_scores)
+    print_table("Specials robustness line (NOT blended into headline):", specials_scores)
 
 
 if __name__ == "__main__":

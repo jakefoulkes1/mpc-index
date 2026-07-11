@@ -1,10 +1,10 @@
 {
   "schema": "prediction-v1",
   "meeting_announcement": "2026-07-30",
-  "lock_timestamp": "2026-07-11T17:40:05+00:00",
+  "lock_timestamp": "2026-07-11T17:38:16+00:00",
   "code_version": "329a5a9ecbe07369cea1a493b77e11a09af628c4",
   "input_hashes": {
-    "corpus_index_json_sha256": "eb2ae9be6a838b14f9bc062ee8a3ea184f718d3e656ce6cbdb501af3c9e3f38e",
+    "corpus_index_json_sha256": "7ebb5ec2f9771f0a2253ea530cef83ec0ec0558740b40cff6383ab8f0d33d675",
     "ois_snapshot_sha256": "cf1e4e3420d6dfd836b500ac63627b313c98c6ef2cc0a9538f0240903cca1155"
   },
   "m0_market_only": {

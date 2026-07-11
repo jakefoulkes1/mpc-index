@@ -1,6 +1,6 @@
 {
   "schema": "index-v1",
-  "generated_utc": "2026-07-11T11:21:56+00:00",
+  "generated_utc": "2026-07-11T17:39:31+00:00",
   "lexicon": "abg_2012 (Apel & Blix Grimaldi 2012, verbatim - see pipeline/score/lexicon/abg_2012.json and DECISIONS.md). starter_v0 remains in the repo as plumbing only and is no longer used in any output.",
   "neutral_value": 1.0,
   "documents": [

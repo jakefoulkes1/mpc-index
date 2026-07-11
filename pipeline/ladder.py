@@ -101,6 +101,7 @@ def load_records() -> list[dict]:
         records.append({
             "doc_id": doc["doc_id"],
             "date": doc["published"],
+            "scheduled": m0_row["scheduled"] == "True",
             "outcome": classify_decision(doc["decision"]),
             "implied_change_bp": float(m0_row["implied_change_bp"]),
             "m0_probs": {"p_cut": float(m0_row["p_cut"]), "p_hold": float(m0_row["p_hold"]), "p_hike": float(m0_row["p_hike"])},

@@ -16,6 +16,7 @@ def _fixture_records(n: int, seed: int = 3) -> list[dict]:
         records.append({
             "doc_id": f"minutes-fixture-{i:03d}",
             "date": f"{year}-{month:02d}-15",
+            "scheduled": rng.random() > 0.1,  # a few unscheduled/special fixtures too
             "outcome": outcome,
             "implied_change_bp": bp,
             "m0_probs": {"p_cut": max(0.0, -bp / 25), "p_hold": 1 - min(1.0, abs(bp) / 25), "p_hike": max(0.0, bp / 25)},

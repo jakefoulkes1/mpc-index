@@ -75,6 +75,19 @@
     text-transform: uppercase; letter-spacing: .08em;
   }
   .call-index-line { margin: 0 0 10px; }
+
+  .results-framing {
+    font: 14px/1.7 Georgia, 'Times New Roman', serif; color: var(--text);
+    background: #1c2029; border-left: 3px solid var(--accent);
+    padding: 12px 16px; margin: 0 0 20px; border-radius: 0 6px 6px 0;
+  }
+  #ladder-table { width: 100%; border-collapse: collapse; font: 14px system-ui, sans-serif; }
+  #ladder-table th, #ladder-table td {
+    text-align: left; padding: 8px 12px; border-bottom: 1px solid var(--line);
+    white-space: nowrap;
+  }
+  #ladder-table th { color: var(--muted); font-weight: 600; font-size: 12px; text-transform: uppercase; letter-spacing: .06em; }
+  #ladder-table tr.model-l1 td { color: var(--accent); }
 </style>
 </head>
 <body>
@@ -113,6 +126,38 @@
     <div class="fine" id="chart-legend"></div>
   </div>
 
+  <div class="card">
+    <h2 id="ladder-heading">Results: benchmark ladder</h2>
+    <div id="ladder-status" class="fine">Loading&hellip;</div>
+    <div id="ladder-content" style="display:none">
+      <p class="fine" id="ladder-meta"></p>
+      <p class="results-framing">
+        <em>[DRAFT &mdash; Jake to rewrite this paragraph in his own words before this is
+        considered final. Placeholder framing: this table compares five models' ability to
+        forecast each MPC decision ahead of time, evaluated only on meetings that could
+        actually have been pre-registered (scheduled meetings; two 2020 emergency meetings
+        are reported separately, since nobody could have forecast them in advance). Lower
+        Brier and log scores are better. Skill is measured against L1, the market-only
+        benchmark &mdash; not against always-hold.]</em>
+      </p>
+      <div style="overflow-x:auto">
+        <table id="ladder-table">
+          <thead>
+            <tr><th>Model</th><th>Mean Brier</th><th>Mean log score</th><th>Skill vs L1</th><th>n</th></tr>
+          </thead>
+          <tbody id="ladder-tbody"></tbody>
+        </table>
+      </div>
+      <p class="fine">
+        <strong>Standing caveat: the market benchmark (L1) is the bar.</strong> L2&ndash;L4
+        must show genuine skill above L1 to be worth anything &mdash; matching or beating
+        L0 (always-hold) is not the test, since L1 already does that easily. See
+        DECISIONS.md for every modelling choice and the full per-meeting breakdown in
+        <code>data/ladder_v1.json</code>.
+      </p>
+    </div>
+  </div>
+
   <footer>
     Method &amp; decisions log in the repository &middot; Source documents &copy; Bank of England,
     linked not republished &middot; Lexicon: Apel &amp; Blix Grimaldi (2012), implemented verbatim
@@ -122,6 +167,37 @@
 
 <script>
 const PREDICTION_FILE = 'data/predictions/dryrun-2026-07.json';
+
+fetch('data/ladder_v1.json')
+  .then(r => { if (!r.ok) throw new Error(r.status); return r.json(); })
+  .then(renderLadder)
+  .catch(err => {
+    document.getElementById('ladder-status').textContent =
+      'Could not load data/ladder_v1.json (' + err.message + ').';
+  });
+
+function renderLadder(d) {
+  document.getElementById('ladder-heading').textContent =
+    `Results: benchmark ladder (${d.schema})`;
+  document.getElementById('ladder-meta').innerHTML =
+    `Scheduled meetings only, evaluated ${d.eval_start} &rarr; present ` +
+    `(<strong>n=${d.n_scheduled}</strong>) &middot; ${d.n_specials} special meeting(s) reported ` +
+    `separately, not blended in &middot; log-score probability floor ${d.log_score_probability_clip}.`;
+
+  const tbody = document.getElementById('ladder-tbody');
+  const scores = d.headline_scores_scheduled_only;
+  ['L0', 'L1', 'L2', 'L3', 'L4'].forEach(model => {
+    const s = scores[model];
+    const tr = document.createElement('tr');
+    if (model === 'L1') tr.className = 'model-l1';
+    const skill = (s.skill_vs_l1 === undefined || s.skill_vs_l1 === null) ? '&mdash;' : s.skill_vs_l1.toFixed(4);
+    tr.innerHTML = `<td>${model}</td><td>${s.mean_brier}</td><td>${s.mean_log_score}</td><td>${skill}</td><td>${s.n}</td>`;
+    tbody.appendChild(tr);
+  });
+
+  document.getElementById('ladder-status').style.display = 'none';
+  document.getElementById('ladder-content').style.display = 'block';
+}
 
 fetch('data/index.json')
   .then(r => { if (!r.ok) throw new Error(r.status); return r.json(); })

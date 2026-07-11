@@ -857,3 +857,218 @@ Changes apply forward only; nothing is retrofitted. Locked calls are never touch
   variance) and its larger underperformance is consistent with that.
   Saved to `data/ladder_v1.json`; explicitly NOT published to the site,
   per instruction - for review first.
+
+## 2026-08-08 — curve freshness fix
+
+- **Root cause of the stale 2026-06-30 curve: `ois.py` only ever read
+  `oisddata.zip`, the multi-year ARCHIVE - which the Bank's own FAQ says
+  is only refreshed "by close of business of the second working day of
+  each month".** There is a SEPARATE file, "latest-yield-curve-data.zip"
+  ("Latest yield curve data" on the yield curves page), updated daily,
+  containing "OIS daily data current month.xlsx" with the current
+  month's business days. `latest_forward_curve()` now downloads BOTH and
+  picks the single freshest date across all candidate files - the same
+  "pick by actual date, not by assumed filename" principle already used
+  to choose among era files, just extended to a second source.
+- **The latest-month zip bundles 4 different curve types that share a
+  sheet NAME but not a row structure** (GLC Nominal/Real/Inflation gilt
+  curves + OIS) - found by actually running it, not assumed: the GLC
+  files have blank/formula-error cells for some dates in this snapshot,
+  which isn't a malformed OIS file, it's simply not an OIS file. Filtered
+  to filenames containing "OIS" for this specific zip (the era archive
+  doesn't have this problem, its files are unambiguously OIS-only, so no
+  filter was needed there).
+- **`pick_freshest_curve(xlsx_files)` extracted as a pure function**
+  (given a file list, no I/O beyond reading them) so the actual bug -
+  "does the freshest file win regardless of which one happens to be
+  checked first" - is directly unit-tested with two small fixture
+  workbooks, one deliberately stale, one fresh.
+- **`lock.py` freshness assertion**: `assert_curve_is_fresh(curve_as_of,
+  today)` refuses (raises) if the curve is more than
+  `MAX_CURVE_STALENESS_BUSINESS_DAYS = 2` business days old. Checked
+  right before the file WRITE in `main()`, not inside
+  `build_prediction()` - `build_prediction()` stays usable in tests with
+  an arbitrary injected curve date without also needing to fake "today".
+  Business-day counting (Mon-Fri) has no UK bank-holiday calendar, same
+  limitation as `ois_history.py`'s walk-back logic elsewhere in this
+  codebase - a holiday inside the window is silently counted as a
+  business day, which makes this an UNDERcount of true staleness, never
+  an overcount, so the check stays conservative in the safe direction.
+  Fixture-tested for both the pass and hard-stop paths, using the actual
+  stale/fresh dates from this real incident.
+
+## 2026-08-08 — scheduled vs special meetings split; probability-clip logged
+
+- **`scheduled` (bool) added to `data/market_history.csv` and every ladder
+  record**: False for `special_minutes` (the two March 2020 emergency
+  meetings), True otherwise. At lock time - 2 business days before the
+  announcement - nobody could have pre-registered a forecast for a
+  meeting whose existence hadn't been announced yet, so treating specials
+  as ordinary pre-registered forecasts would overstate how "surprising"
+  the market's miss on them really was (they weren't scheduled to be
+  forecastable at all).
+- **Headline ladder evaluation = scheduled meetings only (60 of 62);
+  specials are a separate, clearly-labelled robustness line, never
+  blended into the headline scores.** `pipeline/build_ladder.py` now
+  reports `headline_scores_scheduled_only` and
+  `specials_robustness_scores` as two distinct tables in
+  `data/ladder_v1.json`, both computed by the same `score_models()`
+  function on filtered subsets - one scoring function, not two.
+- **`log_score_probability_clip` (the `LOG_SCORE_EPSILON = 1e-9` floor
+  applied to p(actual outcome) before `-log(p)`, to avoid `-log(0)` for a
+  confidently-wrong call) is now a top-level field in
+  `data/ladder_v1.json`**, not just a constant buried in
+  `pipeline/predict/score_outcomes.py` - a reader of the ladder output
+  can now see exactly what floor the log scores were computed under
+  without reading the source.
+
+## 2026-08-08 — live site investigation: false alarm, contract test added anyway
+
+- **Investigated thoroughly before concluding anything, per instruction not
+  to assume.** Compared: (1) the live deployed `index.html` byte-for-byte
+  against the local committed file (curl diff - identical); (2) the live
+  `data/index.json` schema against what index.html's JS reads (every
+  field present: doc_id, meeting_end, published, decision, vote,
+  abg_net_index, abg_hawk, abg_dove, sha256, source_url, neutral_value,
+  lexicon); (3) rendered the exact deployed HTML+JSON with a real
+  JS-executing browser (this repo's own preview tooling, pointed at the
+  identical content) - the call card, latest-document card, and chart all
+  render correctly, zero console errors, zero failed network requests.
+- **Root cause of the apparent "stuck on Loading..." symptom: WebFetch
+  (used for the initial live-page check) doesn't execute JavaScript.**
+  It was reading the STATIC placeholder text ("Loading data/index.json
+  …", "Loading call card …") that exists in the raw HTML before any
+  script runs, which is indistinguishable from a genuinely broken page to
+  a non-JS-executing crawler. A false alarm, not a real bug - the
+  underlying site is fine right now.
+- **Contract test added anyway** (`pipeline/tests/test_site_contract.py`),
+  since the RISK this test guards against is real even though no bug
+  currently exists: this project already broke this exact contract once
+  before, silently, during the starter_v0 -> abg_2012 schema cutover
+  (2026-07-18 entries) - the "latest scored document" card was reading
+  fields (`net_hawkishness`, `hawkish_hits`, `dovish_hits`) that had been
+  removed from `index.json`, caught only by manual review, not a test.
+  Asserts every field index.html's JS actually reads exists in the
+  REAL committed `data/index.json` and `data/predictions/dryrun-2026-07.json`
+  - not a synthetic fixture, so it catches drift in the actual published
+  data, not just the parsing logic.
+
+## 2026-08-08 — data/surprises.csv
+
+- **`surprise_bp = actual_change_bp - implied_change_bp`**, scheduled
+  meetings only (91 of 94 - excludes the 2 specials and the very first
+  corpus meeting, which has no preceding decision to diff against).
+  `implied_change_bp` reuses `data/market_history.csv`'s value, i.e. the
+  same LOCK_OFFSET_DAYS=3 convention (see DECISIONS.md, 2026-08-01) - one
+  implied-change number used everywhere, not recomputed differently here.
+- **The actual rate-change HISTORY doesn't skip special meetings, only
+  the output rows do.** If a scheduled meeting immediately follows a
+  special one (as with 25 March 2020, immediately after the 19 March
+  special cut), its `actual_change_bp` is correctly computed against the
+  special meeting's decided rate, not silently against whatever scheduled
+  meeting came before that - the rate itself doesn't know or care whether
+  the previous decision was "schedulable"; only which forecasts could
+  have been pre-registered is scheduling-dependent. Tested explicitly
+  (a scheduled meeting's prev-rate reference correctly points at an
+  intervening special meeting's rate).
+
+## 2026-08-08 — the headline inference (Spec 3 OLS + Spec 2 ordered-logit LR test)
+
+- **statsmodels added as a new dependency, specifically and only for
+  Newey-West HAC standard errors.** Not something worth hand-deriving
+  (unlike the plain Pearson/Spearman kept dependency-free earlier) - HAC
+  covariance estimation has enough subtlety (lag-length choice, small-
+  sample corrections) that a well-tested library implementation is the
+  right call here, same reasoning as adding scipy for the ordered logit.
+- **`NEWEY_WEST_MAXLAGS = 4`**: roughly half a year of overlap at the
+  MPC's current ~8-meetings/year cadence. A documented choice, not the
+  only reasonable one - kept the same for both the full sample (n=91) and
+  the smaller fragility subsample (n=23), rather than re-tuning per
+  sample, so the two results are at least comparable on that axis.
+- **Lagged features (`lagged_index`, `lagged_skew`) use the PREVIOUS
+  meeting's value**, identical convention and identical reasoning to the
+  benchmark ladder's L3 (2026-08-01 entry) - a meeting's own minutes
+  publish simultaneously with its own decision, so using them unlagged
+  wouldn't reflect information available before that meeting's outcome
+  was known.
+- **Spec 2's ordered-logit LR test needed its own minimum-sample guard**
+  (`MIN_OBSERVATIONS_FOR_LR_TEST = 10`, same threshold and same reasoning
+  as `pipeline/ladder.py`'s `MIN_TRAINING_EXAMPLES`) - found while writing
+  the fragility-check test: without it, a 1-observation fit could report
+  a spurious `converged=True` (trivially "successful" only because
+  there's too little data to fail on), which would have made the
+  Sep-2023-present subsample's report misleadingly confident rather than
+  correctly flagged as too-small-to-fit.
+- **Results, full sample (n=91 scheduled meetings, Aug 2015-present):**
+  Spec 3 (surprise_bp ~ lagged_index): coefficient -2.16, t=-2.15,
+  **p=0.032** - nominally significant at 5%. Sign is negative: a more
+  hawkish lagged index is associated with a MORE NEGATIVE surprise (the
+  actual decision came in more dovish than the market had priced),
+  reported as observed, not interpreted further here. Adding lagged skew
+  barely moves the index coefficient (still p=0.037) and skew itself is
+  not significant (p=0.469). Spec 2 (ordered logit of the 3-class
+  decision, with vs without the lagged index): LR=0.47, **p=0.49** - NOT
+  significant. The two specs disagree (OLS on the continuous surprise
+  finds something; the ordered logit on the discrete decision does not) -
+  both reported, neither suppressed to make a cleaner story.
+- **Fragility check (Sep 2023-present, n=23, post-hiking-cycle): the
+  full-sample Spec 3 result does NOT replicate.** Coefficient -3.44,
+  t=-1.47, p=0.142 - not significant at any conventional threshold. Spec
+  2's ordered logit didn't even converge at this sample size (correctly
+  caught by the new guard above, not silently reported as a
+  success). This is exactly the kind of check that should be run before
+  treating the full-sample p=0.032 as a stable finding, and it doesn't
+  survive - reported honestly, not hidden or explained away.
+- **Saved to `data/inference_v1.json`, NOT referenced anywhere in
+  index.html or otherwise published** - confirmed by grep - per
+  instruction, for review first.
+
+## 2026-08-08 — Results section published to the site (ladder v1)
+
+- **New "Results: benchmark ladder" card**, fetching `data/ladder_v1.json`
+  and rendering the SCHEDULED-ONLY headline table (L0-L4: mean Brier,
+  mean log score, skill vs L1, n) - the specials robustness line and the
+  full per-meeting breakdown stay in the JSON file, not duplicated on the
+  site (linked via `data/ladder_v1.json` in the caveat text instead).
+- **Framing paragraph is a deliberately visible draft, not a finished
+  one.** Wrapped in `<em>` with an explicit "[DRAFT - Jake to rewrite ...]"
+  prefix, per instruction that this paragraph gets rewritten in his own
+  words - the placeholder text describes what the table shows factually
+  (mechanically, not persuasively) so it's usable as a starting point,
+  but is unambiguously marked as not final.
+- **Standing caveat text is permanent, not part of the draft**: "the
+  market benchmark (L1) is the bar... matching or beating L0 is not the
+  test" - stays regardless of how the framing paragraph above it gets
+  rewritten, since it's a methodological statement about how to read the
+  table, not commentary on the specific numbers.
+- **Contract test extended** (`test_ladder_json_has_every_field_the_results_section_reads`)
+  to cover the new card's fields, same pattern as the existing index.json/
+  prediction-file contract tests - the Results section can't silently
+  break from schema drift either.
+- **Visually verified with a real JS-executing browser** (this repo's own
+  preview tooling) before considering this done: table renders correctly,
+  L1's row highlighted in accent colour, zero console errors, zero failed
+  network requests.
+
+## 2026-08-08 — lock rehearsal (dry run, fresh curve)
+
+- **`python -m pipeline.predict.lock 2026-07-30 rehearsal-2026-07`** run
+  end to end with the now-fixed fresh-curve pipeline. Curve as of
+  2026-07-09 (1 business day old at run time) - the freshness assertion
+  passed without needing to be bypassed, the first real end-to-end proof
+  the freshness fix works outside of fixture tests.
+  Result: `p_hold=0.9729`, `p_hike=0.0271`, `p_cut=0.0`
+  (`implied_change_bp=0.68`) for the 30 July announcement.
+- **Saved as `data/predictions/rehearsal-2026-07.json`** - not `lock-*`,
+  no git tag - this is a rehearsal of the machinery, not a locked call.
+  The site's `PREDICTION_FILE` constant still points at
+  `dryrun-2026-07.json`, unchanged; the rehearsal file exists
+  independently to prove the process works, not to replace what the live
+  card displays.
+- **Confirmed the call card renders it correctly in dry-run styling**
+  without changing what the live site actually displays: fetched
+  `rehearsal-2026-07.json` and ran it through the site's own unmodified
+  `renderCallCard()` function in a real browser - `dry-run` classes and
+  the "DRY RUN - NOT A FORECAST" badge applied correctly (same code path
+  already used for `dryrun-2026-07.json`, since both files share the same
+  `point_call: null` schema).

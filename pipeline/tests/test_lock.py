@@ -1,7 +1,9 @@
 import datetime as dt
 import json
 
-from pipeline.predict.lock import build_prediction, index_stats
+import pytest
+
+from pipeline.predict.lock import assert_curve_is_fresh, build_prediction, business_days_between, index_stats
 
 SYNTHETIC_CURVE = {
     "as_of_date": "2026-06-30",
@@ -56,3 +58,22 @@ def test_build_prediction_schema_no_live_calls(tmp_path, monkeypatch):
     assert payload["rationale"].startswith("TODO(Jake)")
     assert set(payload["input_hashes"].keys()) == {"corpus_index_json_sha256", "ois_snapshot_sha256"}
     assert payload["m0_market_only"]["meeting_date"] == "2026-08-15"
+
+
+def test_business_days_between_skips_weekends():
+    # Fri 3 Jul -> Mon 6 Jul 2026 is 1 business day, despite spanning a weekend.
+    assert business_days_between(dt.date(2026, 7, 3), dt.date(2026, 7, 6)) == 1
+    assert business_days_between(dt.date(2026, 7, 6), dt.date(2026, 7, 3)) == -1
+    assert business_days_between(dt.date(2026, 7, 6), dt.date(2026, 7, 6)) == 0
+
+
+def test_assert_curve_is_fresh_passes_within_limit():
+    # Curve from Tuesday, checked as of Thursday of the same week -> 2 business days.
+    assert_curve_is_fresh("2026-07-07", today=dt.date(2026, 7, 9))
+
+
+def test_assert_curve_is_fresh_hard_stops_when_stale():
+    # Same stale case that motivated this fix: curve from end of June,
+    # checked well into July.
+    with pytest.raises(ValueError, match="HARD STOP"):
+        assert_curve_is_fresh("2026-06-30", today=dt.date(2026, 7, 11))
