@@ -1,0 +1,34 @@
+{
+  "schema": "track-record-v1",
+  "first_pre_registered_call": "2026-07-30",
+  "records": [
+    {
+      "filename": "dryrun-2026-07.json",
+      "kind": "dryrun",
+      "meeting_announcement": "2026-07-30",
+      "lock_timestamp": "2026-07-11T17:40:05+00:00",
+      "point_call": null,
+      "m0_market_only": {
+        "p_cut": 0.0,
+        "p_hold": 0.9729,
+        "p_hike": 0.0271
+      },
+      "outcome": null,
+      "brier_m0": null
+    },
+    {
+      "filename": "rehearsal-2026-07.json",
+      "kind": "rehearsal",
+      "meeting_announcement": "2026-07-30",
+      "lock_timestamp": "2026-07-11T17:38:16+00:00",
+      "point_call": null,
+      "m0_market_only": {
+        "p_cut": 0.0,
+        "p_hold": 0.9729,
+        "p_hike": 0.0271
+      },
+      "outcome": null,
+      "brier_m0": null
+    }
+  ]
+}

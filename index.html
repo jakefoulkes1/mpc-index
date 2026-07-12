@@ -137,6 +137,28 @@
   #ladder-table tbody tr:last-child td { border-bottom: 0; }
   #ladder-table tr.model-l1 td { color: var(--accent); }
 
+  /* ---------- track record ---------- */
+  #track-table { width: 100%; border-collapse: collapse; font: 14px var(--sans); }
+  #track-table th, #track-table td {
+    text-align: right; padding: 9px 14px; border-bottom: 1px solid var(--line);
+    white-space: nowrap; font-variant-numeric: tabular-nums;
+  }
+  #track-table th:first-child, #track-table td:first-child { text-align: left; }
+  #track-table th {
+    color: var(--muted); font-weight: 600; font-size: 12px;
+    text-transform: uppercase; letter-spacing: .06em;
+  }
+  #track-table tbody tr:last-child td { border-bottom: 0; }
+  #track-table tr.kind-locked { color: var(--text); }
+  #track-table tr.kind-locked td:first-child { border-left: 2px solid var(--accent); padding-left: 12px; }
+  #track-table tr.kind-dryrun, #track-table tr.kind-rehearsal { color: var(--muted); }
+  .track-badge {
+    display: inline-block; font: 700 10px/1 var(--sans); letter-spacing: .08em;
+    text-transform: uppercase; padding: 3px 7px; border-radius: 4px; margin-left: 8px;
+  }
+  .track-badge.locked { background: var(--accent); color: var(--bg); }
+  .track-badge.dryrun, .track-badge.rehearsal { background: var(--accent-dim); color: #ffe9b3; }
+
   /* ---------- methodology + footer ---------- */
   .methodology {
     display: flex; flex-wrap: wrap; gap: 10px 22px; align-items: baseline;
@@ -360,6 +382,27 @@
     </div>
   </section>
 
+  <!-- 3b. Track record -->
+  <section class="card">
+    <h2>Track record</h2>
+    <p class="fine" style="margin-top:-6px">Every pre-registered call, dry runs and rehearsals
+    included &mdash; locked calls are marked and can never be edited after the fact. Brier is
+    for the m0 market-only reference (a locked point call has no probability distribution of
+    its own to score against).</p>
+    <div id="track-status" class="fine">Loading&hellip;</div>
+    <div id="track-content" style="display:none">
+      <div class="table-scroll">
+        <table id="track-table">
+          <thead>
+            <tr><th>Meeting</th><th>Locked</th><th>Call</th><th>Cut</th><th>Hold</th><th>Hike</th><th>Outcome</th><th>Brier (m0)</th></tr>
+          </thead>
+          <tbody id="track-tbody"></tbody>
+        </table>
+      </div>
+      <p class="fine" id="track-empty-note" style="display:none"></p>
+    </div>
+  </section>
+
   <!-- 4. Episodes (hand-written annotations) -->
   <section class="card">
     <h2>Episodes</h2>
@@ -479,6 +522,47 @@ fetchJSON('data/annotations.json')
     document.getElementById('episodes-status').textContent =
       'Could not load episodes (' + err.message + '). Run: python -m pipeline.build_annotations';
   });
+
+fetchJSON('data/track_record.json')
+  .then(renderTrackRecord)
+  .catch(err => {
+    document.getElementById('track-status').textContent =
+      'Could not load track record (' + err.message + '). Run: python -m pipeline.build_track_record';
+  });
+
+function renderTrackRecord(d) {
+  const tbody = document.getElementById('track-tbody');
+  tbody.innerHTML = '';
+  const pct = v => (v * 100).toFixed(0) + '%';
+  const badgeLabel = { locked: 'Locked', dryrun: 'Dry run', rehearsal: 'Rehearsal', other: 'Other' };
+
+  d.records.forEach(r => {
+    const tr = document.createElement('tr');
+    tr.className = `kind-${r.kind}`;
+    const badge = `<span class="track-badge ${r.kind}">${badgeLabel[r.kind] || r.kind}</span>`;
+    const m0 = r.m0_market_only;
+    tr.innerHTML =
+      `<td>${fmtDate(r.meeting_announcement)}</td>` +
+      `<td>${badge}</td>` +
+      `<td>${r.point_call || '&mdash;'}</td>` +
+      `<td>${pct(m0.p_cut)}</td>` +
+      `<td>${pct(m0.p_hold)}</td>` +
+      `<td>${pct(m0.p_hike)}</td>` +
+      `<td>${r.outcome || '&mdash;'}</td>` +
+      `<td>${r.brier_m0 === null || r.brier_m0 === undefined ? '&mdash;' : r.brier_m0.toFixed(4)}</td>`;
+    tbody.appendChild(tr);
+  });
+
+  const hasLocked = d.records.some(r => r.kind === 'locked');
+  const note = document.getElementById('track-empty-note');
+  if (!hasLocked) {
+    note.textContent = `First pre-registered call: ${fmtDate(d.first_pre_registered_call, { day: 'numeric', month: 'long', year: 'numeric' })}.`;
+    note.style.display = 'block';
+  }
+
+  document.getElementById('track-status').style.display = 'none';
+  document.getElementById('track-content').style.display = 'block';
+}
 
 function renderCallCard(p) {
   const locked = p.point_call !== null && p.point_call !== undefined;

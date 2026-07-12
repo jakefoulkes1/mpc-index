@@ -1142,3 +1142,64 @@ read-only and only ever writes NEW json files.
   helper unit tests (bank-rate dedup, era-file year parsing, gilt 12-month
   windowing, OIS-path shape, annotation header parsing incl. the HARD-STOP
   path) - none make live calls.
+
+## 2026-07-12 - evidence inspector (`pipeline/inspect.py`)
+- New tooling module for drafting/inspection only, never read by the site.
+  Imports `pipeline/score/abg.py`'s tokeniser (`_TOKEN`), lexicon loader
+  (`load_abg_lexicon`) and noun-matcher (`_noun_matches_at`) verbatim rather
+  than reimplementing the matching logic, so its per-term breakdown can never
+  silently drift from the scorer's own aggregate counts. A test
+  (`pipeline/tests/test_inspect.py`) asserts this reconciliation on both a
+  synthetic string (portable, no dependency on local raw text) and, when raw
+  text is present locally, the real corpus against `data/index.json`'s
+  `abg_hawk`/`abg_dove` fields - the task brief referred to these as
+  `hawkish_hits`/`dovish_hits`, which was the retired `starter_v0`/
+  `dictionary.py` field naming; checked the actual current schema rather than
+  writing a test against field names that no longer exist.
+- **"Trailing N documents" for this module means strictly the N documents
+  published *before* the target**, not including it. This is a deliberate
+  choice distinct from `pipeline/predict/lock.py`'s own `index_trailing_mean`
+  convention (last N documents including the current one, used on the site's
+  call card) - lock.py is off-limits this session (`pipeline/predict`) and is
+  unchanged. For `inspect.py`'s purpose (does this document look unusual
+  against its own recent history?) including the document in its own
+  baseline would dilute the comparison, so a strictly-prior window was used
+  instead, for both the trailing-mean display and the `--vs-trailing`
+  frequency comparison.
+- `--vs-trailing` is descriptive only (raw counts and deltas vs a simple
+  average) - no significance testing, per instruction.
+
+## 2026-07-12 - Track record section (`data/track_record.json`, `index.html`)
+- New `pipeline/build_track_record.py` (site layer, additive) reads
+  `data/predictions/*.json` (never writes to them) and writes a flat summary
+  to `data/track_record.json`, which a new "Track record" section on the
+  site fetches - same build-step pattern as `pipeline/build_annotations.py`,
+  needed because static GitHub Pages has no directory index to discover the
+  prediction files on its own.
+- **"Locked" is determined purely by filename prefix (`lock-`)**, matching
+  the existing project convention in `CLAUDE.md` ("Files under
+  `data/predictions/lock-*` are never modified once written"). Any other
+  filename (`dryrun-*`, `rehearsal-*`, anything else) renders as a
+  non-locked draft with a distinct badge. This means any future `lock-*.json`
+  file picks up the locked styling automatically, with no code change
+  needed.
+- **Brier column shows `scores.m0_market_only.brier_score`, not a
+  point-call-specific score.** Checked `pipeline/predict/score_outcomes.py`:
+  it only scores the m0 market-only reference and an always-hold baseline -
+  `point_call` is a categorical single guess with no probability
+  distribution of its own, so there is currently no Brier defined for it.
+  Rather than fabricate one (e.g. treating the point call as a degenerate
+  100%-confidence forecast), the site labels the column "Brier (m0)" and the
+  section's framing text says why. Revisit if/when Jake decides how a point
+  call should be converted into a scoreable distribution - that's a
+  methodological choice for `pipeline/predict`, out of scope this session.
+- Empty-state note ("First pre-registered call: 30 July 2026.") shows
+  whenever no record has `kind == "locked"` yet - both current files
+  (`dryrun-2026-07.json`, `rehearsal-2026-07.json`) are drafts, so it
+  currently always shows alongside the two draft rows, not instead of them.
+- New tests: `pipeline/tests/test_build_track_record.py` (unit tests on
+  synthetic prediction files + a contract test on the real
+  `data/track_record.json`, same pattern as `test_build_annotations.py`).
+  Verified rendering locally in a real browser (`preview_*` tools): both
+  draft rows render with correct badges/values, empty-state note shows, no
+  console errors.
