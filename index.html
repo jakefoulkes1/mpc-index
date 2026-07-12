@@ -3,130 +3,332 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>MPC Communication Index</title>
+<title>MPC Communication Index — does BoE tone predict the next rate move?</title>
+<meta name="description" content="A pre-registered probabilistic call for each Bank of England MPC rate decision, locked and timestamped before the announcement and scored after — testing whether the tone of MPC communication carries information beyond what markets already price.">
+<meta name="author" content="Jake Foulkes">
+<meta name="theme-color" content="#0f1115">
+<meta property="og:type" content="website">
+<meta property="og:title" content="MPC Communication Index">
+<meta property="og:description" content="Does the tone of Bank of England MPC communication predict the next Bank Rate decision beyond what markets already price? Calls locked before each announcement, scored after — including the misses.">
+<link rel="icon" href="data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='0%200%2032%2032'%3E%3Crect%20width='32'%20height='32'%20rx='7'%20fill='%230f1115'/%3E%3Cpolyline%20points='4,22%2011,14%2016,18%2022,7%2028,12'%20fill='none'%20stroke='%23c9a34e'%20stroke-width='2.6'%20stroke-linecap='round'%20stroke-linejoin='round'/%3E%3C/svg%3E">
 <style>
   :root {
-    --bg: #0f1115; --panel: #171a21; --line: #2a2f3a;
-    --text: #e8e6e1; --muted: #9aa0ab;
-    --hawk: #d16a5a; --dove: #5a8fd1; --accent: #c9a34e;
+    --bg: #0f1115; --panel: #171a21; --panel-2: #1c2029; --line: #2a2f3a;
+    --text: #e8e6e1; --muted: #9aa0ab; --faint: #6b7280;
+    --hawk: #d16a5a; --dove: #5a8fd1; --accent: #c9a34e; --accent-dim: #7a5f2e;
+    --rate: #7fb0a0; --gilt: #a98fd1;
+    --serif: Georgia, 'Times New Roman', serif;
+    --sans: system-ui, -apple-system, 'Segoe UI', sans-serif;
+    --radius: 12px;
+    --shadow: 0 1px 2px rgba(0,0,0,.4), 0 8px 24px rgba(0,0,0,.25);
   }
   * { box-sizing: border-box; }
+  html { -webkit-text-size-adjust: 100%; }
   body {
     margin: 0; background: var(--bg); color: var(--text);
-    font: 16px/1.6 Georgia, 'Times New Roman', serif;
+    font: 17px/1.65 var(--serif);
+    -webkit-font-smoothing: antialiased; text-rendering: optimizeLegibility;
   }
-  .wrap { max-width: 720px; margin: 0 auto; padding: 48px 20px 80px; }
+  .wrap { max-width: 760px; margin: 0 auto; padding: 56px 22px 72px; }
+
+  /* ---------- masthead ---------- */
+  .masthead { margin-bottom: 40px; }
   .beta {
-    display: inline-block; font: 700 11px/1 system-ui, sans-serif;
-    letter-spacing: .12em; color: var(--bg); background: var(--accent);
+    display: inline-block; font: 700 11px/1 var(--sans);
+    letter-spacing: .13em; color: var(--bg); background: var(--accent);
     padding: 5px 9px; border-radius: 4px; text-transform: uppercase;
   }
-  h1 { font-size: 30px; margin: 14px 0 6px; font-weight: normal; }
-  .thesis { color: var(--muted); font-style: italic; margin: 0 0 36px; }
+  h1 {
+    font: normal 34px/1.15 var(--serif); margin: 16px 0 10px;
+    letter-spacing: -.01em;
+  }
+  .thesis {
+    color: var(--muted); font-style: italic; font-size: 18px;
+    margin: 0; max-width: 62ch;
+  }
+
+  /* ---------- cards ---------- */
   .card {
     background: var(--panel); border: 1px solid var(--line);
-    border-radius: 10px; padding: 24px 26px; margin-bottom: 20px;
+    border-radius: var(--radius); padding: 26px 28px; margin-bottom: 22px;
+    box-shadow: var(--shadow);
   }
-  .card h2 {
-    font: 600 12px/1 system-ui, sans-serif; letter-spacing: .14em;
-    text-transform: uppercase; color: var(--muted); margin: 0 0 16px;
+  .eyebrow, .card > h2 {
+    font: 600 12px/1 var(--sans); letter-spacing: .14em;
+    text-transform: uppercase; color: var(--muted); margin: 0 0 18px;
   }
-  .docline { margin: 0 0 18px; }
+  .card > h2 .count { color: var(--faint); letter-spacing: .04em; }
+
+  /* ---------- call card ---------- */
+  .call-card.dry-run {
+    border: 1px dashed var(--accent-dim);
+    background:
+      repeating-linear-gradient(135deg, var(--panel), var(--panel) 11px, #201b12 11px, #201b12 22px);
+  }
+  .call-card.locked { border: 1px solid var(--accent); }
+  .call-badge {
+    display: inline-block; font: 700 11px/1 var(--sans);
+    letter-spacing: .12em; text-transform: uppercase; padding: 6px 10px;
+    border-radius: 4px; margin-bottom: 18px;
+  }
+  .call-badge.dry-run { background: var(--accent-dim); color: #ffe9b3; }
+  .call-badge.locked { background: var(--accent); color: var(--bg); }
+  .call-heading { margin: 0 0 18px; font-size: 18px; }
+  .call-heading strong { color: var(--accent); font-weight: normal; }
+  .call-probs { display: flex; flex-wrap: wrap; gap: 14px 30px; margin: 4px 0 20px; }
+  .call-prob .n { font-size: 30px; font-variant-numeric: tabular-nums; }
+  .call-prob .l {
+    font: 12px var(--sans); color: var(--muted);
+    text-transform: uppercase; letter-spacing: .08em; margin-top: 2px;
+  }
+  .call-index-line { margin: 0 0 10px; }
+
+  /* ---------- latest reading (lead of the index card) ---------- */
+  .reading { margin-bottom: 24px; }
+  .docline { margin: 0 0 14px; color: var(--muted); font-size: 15px; }
   .docline strong { color: var(--accent); font-weight: normal; }
-  .score { font-size: 44px; margin: 0; }
+  .score { font-size: 46px; margin: 0; font-variant-numeric: tabular-nums; }
   .score .sign-hawk { color: var(--hawk); }
   .score .sign-dove { color: var(--dove); }
+  .score .score-word { font-size: 15px; color: var(--muted); }
   .scale {
-    position: relative; height: 10px; border-radius: 5px; margin: 18px 0 6px;
+    position: relative; height: 10px; border-radius: 5px; margin: 20px 0 7px;
     background: linear-gradient(90deg, var(--dove), #3a3f4a 50%, var(--hawk));
   }
   .marker {
     position: absolute; top: -5px; width: 4px; height: 20px;
     background: var(--text); border-radius: 2px; transform: translateX(-50%);
+    box-shadow: 0 0 0 2px var(--panel);
   }
   .scale-labels {
     display: flex; justify-content: space-between;
-    font: 12px system-ui, sans-serif; color: var(--muted);
+    font: 12px var(--sans); color: var(--muted);
   }
-  .fine { font: 13px/1.7 system-ui, sans-serif; color: var(--muted); margin-top: 18px; }
-  .fine code { color: var(--text); }
-  footer { font: 13px system-ui, sans-serif; color: var(--muted); margin-top: 40px; }
-  footer a { color: var(--muted); }
-  #status { color: var(--muted); }
 
-  .call-card.dry-run {
-    border: 1px dashed #7a5f2e;
-    background: repeating-linear-gradient(135deg, var(--panel), var(--panel) 10px, #221d13 10px, #221d13 20px);
+  .divider { border: 0; border-top: 1px solid var(--line); margin: 24px 0; }
+  .subhead {
+    font: 600 12px/1 var(--sans); letter-spacing: .1em; text-transform: uppercase;
+    color: var(--muted); margin: 0 0 14px;
   }
-  .call-card.locked { border: 1px solid var(--accent); }
-  .call-badge {
-    display: inline-block; font: 700 11px/1 system-ui, sans-serif;
-    letter-spacing: .12em; text-transform: uppercase; padding: 6px 10px;
-    border-radius: 4px; margin-bottom: 16px;
-  }
-  .call-badge.dry-run { background: #7a5f2e; color: #ffe9b3; }
-  .call-badge.locked { background: var(--accent); color: var(--bg); }
-  .call-heading { margin: 0 0 14px; font-size: 17px; }
-  .call-heading strong { color: var(--accent); font-weight: normal; }
-  .call-probs { display: flex; gap: 28px; margin: 4px 0 18px; }
-  .call-prob .n { font-size: 26px; }
-  .call-prob .l {
-    font: 12px system-ui, sans-serif; color: var(--muted);
-    text-transform: uppercase; letter-spacing: .08em;
-  }
-  .call-index-line { margin: 0 0 10px; }
 
+  .fine { font: 14px/1.7 var(--sans); color: var(--muted); margin-top: 16px; }
+  .fine code { color: var(--text); font-size: 13px; }
+  .fine a, .card a { color: var(--muted); text-decoration-color: var(--line); }
+  .fine a:hover, .card a:hover { color: var(--text); }
+  #status, #chart-status, #ladder-status, #call-status { color: var(--muted); }
+
+  /* ---------- results table ---------- */
   .results-framing {
-    font: 14px/1.7 Georgia, 'Times New Roman', serif; color: var(--text);
-    background: #1c2029; border-left: 3px solid var(--accent);
-    padding: 12px 16px; margin: 0 0 20px; border-radius: 0 6px 6px 0;
+    font: 15px/1.7 var(--serif); color: var(--text);
+    background: var(--panel-2); border-left: 3px solid var(--accent);
+    padding: 13px 17px; margin: 0 0 22px; border-radius: 0 6px 6px 0;
   }
-  #ladder-table { width: 100%; border-collapse: collapse; font: 14px system-ui, sans-serif; }
+  .table-scroll { overflow-x: auto; -webkit-overflow-scrolling: touch; }
+  #ladder-table { width: 100%; border-collapse: collapse; font: 14px var(--sans); }
   #ladder-table th, #ladder-table td {
-    text-align: left; padding: 8px 12px; border-bottom: 1px solid var(--line);
-    white-space: nowrap;
+    text-align: right; padding: 9px 14px; border-bottom: 1px solid var(--line);
+    white-space: nowrap; font-variant-numeric: tabular-nums;
   }
-  #ladder-table th { color: var(--muted); font-weight: 600; font-size: 12px; text-transform: uppercase; letter-spacing: .06em; }
+  #ladder-table th:first-child, #ladder-table td:first-child { text-align: left; }
+  #ladder-table th {
+    color: var(--muted); font-weight: 600; font-size: 12px;
+    text-transform: uppercase; letter-spacing: .06em;
+  }
+  #ladder-table tbody tr:last-child td { border-bottom: 0; }
   #ladder-table tr.model-l1 td { color: var(--accent); }
+
+  /* ---------- methodology + footer ---------- */
+  .methodology {
+    display: flex; flex-wrap: wrap; gap: 10px 22px; align-items: baseline;
+    margin: 34px 0 22px; padding-top: 22px; border-top: 1px solid var(--line);
+    font: 15px var(--sans);
+  }
+  .methodology .m-label {
+    font: 600 12px var(--sans); letter-spacing: .1em; text-transform: uppercase;
+    color: var(--muted);
+  }
+  .methodology a { color: var(--accent); text-decoration: none; }
+  .methodology a:hover { text-decoration: underline; }
+  footer {
+    font: 13px/1.7 var(--sans); color: var(--faint); margin-top: 8px;
+  }
+  footer a { color: var(--muted); }
+  footer .nia { color: var(--muted); }
+
+  /* ---------- chart interactivity ---------- */
+  .chart-controls {
+    display: flex; flex-wrap: wrap; gap: 8px 18px; margin: 0 0 12px;
+    font: 13px var(--sans); color: var(--muted);
+  }
+  .chart-controls label { display: inline-flex; align-items: center; gap: 7px; cursor: pointer; user-select: none; }
+  .chart-controls input { accent-color: var(--accent); }
+  .chart-controls .swatch { width: 22px; height: 3px; border-radius: 2px; display: inline-block; }
+  .chart-wrap { position: relative; }
+  .chart-tip {
+    position: absolute; pointer-events: none; z-index: 5;
+    background: #0c0e12; border: 1px solid var(--line); border-radius: 8px;
+    padding: 9px 11px; font: 12px/1.55 var(--sans); color: var(--text);
+    box-shadow: 0 6px 20px rgba(0,0,0,.55); width: max-content; max-width: 250px;
+    transform: translate(-50%, calc(-100% - 14px));
+  }
+  .chart-tip .tt-doc { color: var(--accent); font-weight: 600; margin-bottom: 3px; }
+  .chart-tip .tt-row { color: var(--muted); }
+  .chart-tip .tt-row b { color: var(--text); font-weight: 600; }
+  .chart-tip .tt-hike { color: var(--hawk); font-weight: 600; }
+  .chart-tip .tt-cut { color: var(--dove); font-weight: 600; }
+  .chart-tip .tt-hold { color: var(--text); font-weight: 600; }
+
+  /* ---------- market & macro context ---------- */
+  .context-badge {
+    display: inline-block; font: 700 10px/1 var(--sans); letter-spacing: .1em;
+    text-transform: uppercase; color: var(--muted); border: 1px solid var(--line);
+    background: var(--panel-2); padding: 5px 9px; border-radius: 4px;
+    margin-left: 12px; vertical-align: middle;
+  }
+  .ctx-block { margin: 0 0 26px; }
+  .ctx-block:last-of-type { margin-bottom: 0; }
+  .ctx-h { font: 600 12px var(--sans); letter-spacing: .09em; text-transform: uppercase; color: var(--muted); margin: 0 0 3px; }
+  .ctx-sub { font: 13px/1.5 var(--sans); color: var(--faint); margin: 0 0 14px; }
+  .ois-legend { font: 12px var(--sans); color: var(--muted); margin: 0 0 12px; display: flex; gap: 16px; flex-wrap: wrap; }
+  .ois-legend .key { display: inline-flex; align-items: center; gap: 6px; }
+  .ois-legend .box { width: 11px; height: 11px; border-radius: 3px; display: inline-block; }
+  .ois-legend .box.cut { background: var(--dove); }
+  .ois-legend .box.hold { background: #3a3f4a; }
+  .ois-legend .box.hike { background: var(--hawk); }
+  .ois-row { display: grid; grid-template-columns: 96px 1fr 66px; align-items: center; gap: 14px; margin-bottom: 11px; }
+  .ois-row .ois-date { font: 14px var(--sans); color: var(--text); }
+  .ois-bar { display: flex; height: 22px; border-radius: 4px; overflow: hidden; background: var(--line); }
+  .ois-seg { height: 100%; display: flex; align-items: center; justify-content: center; font: 11px var(--sans); color: rgba(255,255,255,.92); overflow: hidden; }
+  .ois-seg.cut { background: var(--dove); }
+  .ois-seg.hold { background: #3a3f4a; color: var(--muted); }
+  .ois-seg.hike { background: var(--hawk); }
+  .ois-row .ois-chg { font: 12px var(--sans); color: var(--muted); text-align: right; font-variant-numeric: tabular-nums; }
+  .ctx-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; }
+  .ctx-figure .big { font: 34px/1 var(--serif); font-variant-numeric: tabular-nums; }
+  .ctx-figure .big .unit { font-size: 15px; color: var(--muted); }
+  .ctx-figure .asof { font: 12px var(--sans); color: var(--faint); margin: 4px 0 10px; }
+  .ctx-figure svg { width: 100%; height: auto; display: block; }
+  .ctx-note { font: 12px/1.6 var(--sans); color: var(--faint); margin: 18px 0 0; padding-top: 14px; border-top: 1px solid var(--line); }
+  .ctx-footnote { font: 12px/1.5 var(--sans); color: var(--faint); margin: 12px 0 0; }
+  .ctx-footnote a { color: var(--muted); }
+
+  /* ---------- episodes ---------- */
+  .episode { padding: 22px 0; border-bottom: 1px solid var(--line); }
+  .episode:last-child { border-bottom: 0; padding-bottom: 2px; }
+  .episode h3 { font: normal 21px/1.3 var(--serif); margin: 0 0 4px; }
+  .episode .ep-date { font: 12px var(--sans); color: var(--muted); text-transform: uppercase; letter-spacing: .06em; margin: 0 0 13px; }
+  .ep-body { font: 16px/1.7 var(--serif); color: var(--text); }
+  .ep-body p { margin: 0 0 12px; }
+  .ep-body p:last-child { margin-bottom: 0; }
+  .ep-body h3, .ep-body h4, .ep-body h5 { font-family: var(--sans); color: var(--muted); text-transform: uppercase; letter-spacing: .06em; font-size: 12px; margin: 16px 0 8px; }
+  .ep-body a { color: var(--accent); }
+  .ep-body ul { margin: 0 0 12px; padding-left: 20px; }
+  .ep-body li { margin: 0 0 5px; }
+
+  /* ---------- responsive ---------- */
+  @media (max-width: 560px) { .ctx-grid { grid-template-columns: 1fr; } }
+  @media (max-width: 640px) {
+    .wrap { padding: 36px 16px 56px; }
+    h1 { font-size: 27px; }
+    .thesis { font-size: 16px; }
+    body { font-size: 16px; }
+    .card { padding: 20px 18px; }
+    .score { font-size: 38px; }
+    .call-prob .n { font-size: 26px; }
+    .call-probs { gap: 12px 24px; }
+  }
 </style>
 </head>
 <body>
 <div class="wrap">
-  <span class="beta">Beta &middot; walking skeleton</span>
-  <h1>MPC Communication Index</h1>
-  <p class="thesis">Does the tone of Bank of England communication carry information
-  about the next rate decision beyond what markets already price? Every call will be
-  locked before the announcement, timestamped, and scored &mdash; including the misses.</p>
+  <header class="masthead">
+    <span class="beta">Beta &middot; pre-registered</span>
+    <h1>MPC Communication Index</h1>
+    <p class="thesis">Does the tone of Bank of England communication carry information
+    about the next rate decision beyond what markets already price? Every call is locked
+    before the announcement, timestamped, and scored &mdash; including the misses.</p>
+  </header>
 
-  <div class="card call-card" id="call-card" style="display:none">
+  <!-- 1. The call -->
+  <section class="card call-card" id="call-card" style="display:none">
     <div class="call-badge" id="call-badge"></div>
     <p class="call-heading" id="call-heading"></p>
     <div class="call-probs" id="call-probs"></div>
     <p class="fine call-index-line" id="call-index-line"></p>
     <p class="fine" id="call-fine"></p>
-  </div>
-  <div class="fine" id="call-status" style="margin:0 0 20px">Loading call card &hellip;</div>
+  </section>
+  <div class="fine" id="call-status" style="margin:0 0 22px">Loading call card &hellip;</div>
 
-  <div class="card">
-    <h2>Latest scored document</h2>
+  <!-- 2. The index (latest reading + history chart) -->
+  <section class="card">
+    <h2>The communication index</h2>
+
     <div id="status">Loading data/index.json &hellip;</div>
-    <div id="content" style="display:none">
+    <div class="reading" id="content" style="display:none">
       <p class="docline" id="docline"></p>
       <p class="score" id="score"></p>
       <div class="scale"><div class="marker" id="marker"></div></div>
       <div class="scale-labels"><span>&larr; dovish</span><span>neutral</span><span>hawkish &rarr;</span></div>
       <p class="fine" id="detail"></p>
     </div>
-  </div>
 
-  <div class="card">
-    <h2>A&amp;BG index, Aug 2015&ndash;present</h2>
+    <hr class="divider">
+    <p class="subhead">A&amp;BG index &middot; Aug 2015&ndash;present</p>
     <div id="chart-status" class="fine">Loading&hellip;</div>
-    <svg id="chart" viewBox="0 0 700 260" style="display:none;width:100%;height:auto"></svg>
+    <div class="chart-controls" id="chart-controls" style="display:none">
+      <label><input type="checkbox" id="toggle-decisions" checked> Decision markers</label>
+      <label><input type="checkbox" id="toggle-bankrate" checked>
+        <span class="swatch" style="background:var(--rate)"></span> Bank Rate</label>
+      <span style="color:var(--faint)">Hover the line for details</span>
+    </div>
+    <div class="chart-wrap">
+      <svg id="chart" viewBox="0 0 700 260" style="display:none;width:100%;height:auto"></svg>
+      <div class="chart-tip" id="chart-tip" style="display:none"></div>
+    </div>
     <div class="fine" id="chart-legend"></div>
-  </div>
+  </section>
 
-  <div class="card">
+  <!-- 2b. Market & macro context (NOT model inputs) -->
+  <section class="card">
+    <h2>Market &amp; macro context <span class="context-badge">Context &mdash; not model inputs</span></h2>
+    <div id="context-status" class="fine">Loading&hellip;</div>
+    <div id="context-content" style="display:none">
+
+      <div class="ctx-block">
+        <p class="ctx-h">OIS-implied path &middot; next 3 meetings</p>
+        <p class="ctx-sub" id="ois-sub"></p>
+        <div class="ois-legend">
+          <span class="key"><span class="box cut"></span> cut</span>
+          <span class="key"><span class="box hold"></span> hold</span>
+          <span class="key"><span class="box hike"></span> hike</span>
+          <span class="key" style="color:var(--faint)">bars = market-implied probability &middot; right = implied move</span>
+        </div>
+        <div id="ois-rows"></div>
+        <p class="ctx-footnote">Forward-implied probabilities reflect risk premia as well as
+        expectations &mdash; <a href="methodology.html#limitations">see Limitations</a>.</p>
+      </div>
+
+      <div class="ctx-grid">
+        <div class="ctx-block ctx-figure">
+          <p class="ctx-h">Bank Rate</p>
+          <p class="big" id="rate-latest"></p>
+          <p class="asof" id="rate-asof"></p>
+          <svg id="rate-chart" viewBox="0 0 320 110"></svg>
+        </div>
+        <div class="ctx-block ctx-figure">
+          <p class="ctx-h" id="gilt-h">2-year nominal gilt yield</p>
+          <p class="big" id="gilt-latest"></p>
+          <p class="asof" id="gilt-asof"></p>
+          <svg id="gilt-chart" viewBox="0 0 320 110"></svg>
+        </div>
+      </div>
+
+      <p class="ctx-note" id="context-note"></p>
+    </div>
+  </section>
+
+  <!-- 3. Results -->
+  <section class="card">
     <h2 id="ladder-heading">Results: benchmark ladder</h2>
     <div id="ladder-status" class="fine">Loading&hellip;</div>
     <div id="ladder-content" style="display:none">
@@ -140,7 +342,7 @@
         Brier and log scores are better. Skill is measured against L1, the market-only
         benchmark &mdash; not against always-hold.]</em>
       </p>
-      <div style="overflow-x:auto">
+      <div class="table-scroll">
         <table id="ladder-table">
           <thead>
             <tr><th>Model</th><th>Mean Brier</th><th>Mean log score</th><th>Skill vs L1</th><th>n</th></tr>
@@ -152,21 +354,64 @@
         <strong>Standing caveat: the market benchmark (L1) is the bar.</strong> L2&ndash;L4
         must show genuine skill above L1 to be worth anything &mdash; matching or beating
         L0 (always-hold) is not the test, since L1 already does that easily. See
-        DECISIONS.md for every modelling choice and the full per-meeting breakdown in
+        the methodology log for every modelling choice and the full per-meeting breakdown in
         <code>data/ladder_v1.json</code>.
       </p>
     </div>
-  </div>
+  </section>
+
+  <!-- 4. Episodes (hand-written annotations) -->
+  <section class="card">
+    <h2>Episodes</h2>
+    <p class="fine" style="margin-top:-6px">Short, dated annotations on specific meetings and
+    moments &mdash; written by hand, not generated.</p>
+    <div id="episodes-status" class="fine">Loading&hellip;</div>
+    <div id="episodes-list" style="display:none"></div>
+  </section>
+
+  <!-- 5. Methodology -->
+  <nav class="methodology">
+    <span class="m-label">Methodology</span>
+    <a href="methodology.html">Full methodology</a>
+    <a href="https://github.com/jakefoulkes1/mpc-index/blob/main/DECISIONS.md">Decisions log</a>
+    <a href="https://github.com/jakefoulkes1/mpc-index/blob/main/README.md">How it works</a>
+    <a href="https://github.com/jakefoulkes1/mpc-index">Source on GitHub</a>
+  </nav>
 
   <footer>
-    Method &amp; decisions log in the repository &middot; Source documents &copy; Bank of England,
-    linked not republished &middot; Lexicon: Apel &amp; Blix Grimaldi (2012), implemented verbatim
-    (see DECISIONS.md) &middot; Not investment advice.
+    <p class="nia"><strong>Not investment advice.</strong> A research project, not a
+    recommendation to buy, sell, or hold anything.</p>
+    <p>Source documents &copy; Bank of England, linked not republished &middot;
+    Lexicon: Apel &amp; Blix Grimaldi (2012), implemented verbatim (see the decisions log)
+    &middot; <span id="gen-note"></span></p>
   </footer>
 </div>
 
 <script>
 const PREDICTION_FILE = 'data/predictions/dryrun-2026-07.json';
+const SVGNS = 'http://www.w3.org/2000/svg';
+
+function svgNode(tag, attrs) {
+  const n = document.createElementNS(SVGNS, tag);
+  for (const k in attrs) n.setAttribute(k, attrs[k]);
+  return n;
+}
+function fetchJSON(path) {
+  return fetch(path).then(r => { if (!r.ok) throw new Error(r.status); return r.json(); });
+}
+function fmtDate(iso, opts) {
+  return new Date(iso).toLocaleDateString('en-GB',
+    opts || { day: 'numeric', month: 'short', year: 'numeric' });
+}
+// One decision classifier, matching pipeline/decision_label.py: the verb
+// adjacent to "Bank Rate", not the first word of a (possibly compound) string.
+function classifyDecision(decision) {
+  if (!decision) return null;
+  const m = decision.match(/(increase|reduce|maintain)\w*\s+Bank Rate/i);
+  if (!m) return null;
+  const verb = m[1].toLowerCase();
+  return verb === 'increase' ? 'hike' : (verb === 'reduce' ? 'cut' : 'hold');
+}
 
 fetch('data/ladder_v1.json')
   .then(r => { if (!r.ok) throw new Error(r.status); return r.json(); })
@@ -177,8 +422,8 @@ fetch('data/ladder_v1.json')
   });
 
 function renderLadder(d) {
-  document.getElementById('ladder-heading').textContent =
-    `Results: benchmark ladder (${d.schema})`;
+  document.getElementById('ladder-heading').innerHTML =
+    `Results: benchmark ladder <span class="count">(${d.schema})</span>`;
   document.getElementById('ladder-meta').innerHTML =
     `Scheduled meetings only, evaluated ${d.eval_start} &rarr; present ` +
     `(<strong>n=${d.n_scheduled}</strong>) &middot; ${d.n_specials} special meeting(s) reported ` +
@@ -199,17 +444,26 @@ function renderLadder(d) {
   document.getElementById('ladder-content').style.display = 'block';
 }
 
-fetch('data/index.json')
-  .then(r => { if (!r.ok) throw new Error(r.status); return r.json(); })
-  .then(data => {
-    renderLatest(data);
-    renderChart(data);
-  })
-  .catch(err => {
-    const msg = 'Could not load data/index.json (' + err.message + '). Serve over http://, e.g. python -m http.server';
-    document.getElementById('status').textContent = msg;
-    document.getElementById('chart-status').textContent = msg;
-  });
+Promise.all([
+  fetchJSON('data/index.json'),
+  fetchJSON('data/site_context.json').catch(err => {
+    console.warn('site_context.json unavailable:', err.message);
+    return null;
+  }),
+]).then(([index, context]) => {
+  renderLatest(index);
+  renderChart(index, context);
+  if (context) {
+    renderContext(context);
+  } else {
+    document.getElementById('context-status').textContent =
+      'Could not load data/site_context.json. Run: python -m pipeline.site_context';
+  }
+}).catch(err => {
+  const msg = 'Could not load data/index.json (' + err.message + '). Serve over http://, e.g. python -m http.server';
+  document.getElementById('status').textContent = msg;
+  document.getElementById('chart-status').textContent = msg;
+});
 
 fetch(PREDICTION_FILE)
   .then(r => { if (!r.ok) throw new Error(r.status); return r.json(); })
@@ -217,6 +471,13 @@ fetch(PREDICTION_FILE)
   .catch(err => {
     document.getElementById('call-status').textContent =
       'No prediction file yet (' + err.message + ').';
+  });
+
+fetchJSON('data/annotations.json')
+  .then(renderEpisodes)
+  .catch(err => {
+    document.getElementById('episodes-status').textContent =
+      'Could not load episodes (' + err.message + '). Run: python -m pipeline.build_annotations';
   });
 
 function renderCallCard(p) {
@@ -269,17 +530,22 @@ function renderLatest(data) {
     ` &middot; decision: ${doc.decision} &middot; vote ${doc.vote}`;
   document.getElementById('score').innerHTML =
     `<span class="${cls}">${doc.abg_net_index.toFixed(3)}</span>` +
-    ` <span style="font-size:16px;color:var(--muted)">${word} (A&amp;BG Net Index, 0&ndash;2 scale, ${neutral} = neutral)</span>`;
+    ` <span class="score-word">${word} (A&amp;BG Net Index, 0&ndash;2 scale, ${neutral} = neutral)</span>`;
   document.getElementById('marker').style.left = `${50 + net * 50}%`;
   document.getElementById('detail').innerHTML =
     `${doc.abg_hawk} hawkish vs ${doc.abg_dove} dovish noun+adjective hits &middot; ` +
     `lexicon: ${data.lexicon} &middot; sha256 <code>${doc.sha256.slice(0, 16)}&hellip;</code> &middot; ` +
-    `<a style="color:var(--muted)" href="${doc.source_url}">source document</a>`;
+    `<a href="${doc.source_url}">source document</a>`;
   document.getElementById('status').style.display = 'none';
   document.getElementById('content').style.display = 'block';
+
+  const gen = document.getElementById('gen-note');
+  if (gen && data.generated_utc) {
+    gen.textContent = 'Index data generated ' + data.generated_utc.slice(0, 10) + '.';
+  }
 }
 
-function renderChart(data) {
+function renderChart(data, context) {
   const docs = data.documents
     .filter(d => d.published)
     .slice()
@@ -289,66 +555,90 @@ function renderChart(data) {
     return;
   }
 
-  const W = 700, H = 260, PAD_L = 34, PAD_R = 12, PAD_T = 14, PAD_B = 24;
+  const ratePoints = (context && context.bank_rate_history && context.bank_rate_history.points) || null;
+
+  const W = 700, H = 260, PAD_L = 34, PAD_R = ratePoints ? 34 : 12, PAD_T = 14, PAD_B = 24;
   const neutral = data.neutral_value;
   const t0 = new Date(docs[0].published).getTime();
   const t1 = new Date(docs[docs.length - 1].published).getTime();
   const x = t => PAD_L + (W - PAD_L - PAD_R) * ((new Date(t).getTime() - t0) / (t1 - t0));
   const y = v => PAD_T + (H - PAD_T - PAD_B) * (1 - v / 2); // abg_net_index in [0,2]
 
-  const svgNS = 'http://www.w3.org/2000/svg';
   const svg = document.getElementById('chart');
+  svg.textContent = '';
   svg.setAttribute('viewBox', `0 0 ${W} ${H}`);
+  const el = svgNode;
 
-  const el = (tag, attrs) => {
-    const node = document.createElementNS(svgNS, tag);
-    for (const k in attrs) node.setAttribute(k, attrs[k]);
-    return node;
-  };
+  // ---- Bank Rate overlay (own right-hand scale) ----
+  let rMax = 0;
+  if (ratePoints) {
+    rMax = Math.max(2, Math.ceil(Math.max(...ratePoints.map(p => p.rate_pct))));
+  }
+  const yRate = r => PAD_T + (H - PAD_T - PAD_B) * (1 - r / rMax);
+  const rateLayer = el('g', { id: 'layer-bankrate' });
+  if (ratePoints) {
+    // right axis labels
+    [0, rMax].forEach(r => {
+      rateLayer.appendChild(el('text', {
+        x: W - PAD_R + 5, y: yRate(r) + 3, fill: 'var(--rate)',
+        'font-size': 10, 'font-family': 'system-ui, sans-serif',
+      })).textContent = r + '%';
+    });
+    // step line: rate holds until the next meeting, then jumps
+    const pts = [];
+    ratePoints.forEach((p, i) => {
+      const px = x(p.date);
+      if (i > 0) pts.push(`${px.toFixed(1)},${yRate(ratePoints[i - 1].rate_pct).toFixed(1)}`);
+      pts.push(`${px.toFixed(1)},${yRate(p.rate_pct).toFixed(1)}`);
+    });
+    // extend the latest rate to the right edge
+    pts.push(`${(W - PAD_R).toFixed(1)},${yRate(ratePoints[ratePoints.length - 1].rate_pct).toFixed(1)}`);
+    rateLayer.appendChild(el('polyline', {
+      points: pts.join(' '), fill: 'none', stroke: 'var(--rate)',
+      'stroke-width': 1.4, 'stroke-opacity': 0.9,
+    }));
+    svg.appendChild(rateLayer);
+  }
 
-  // neutral gridline, at data.neutral_value (the paper's fixed ratio midpoint, p.10)
+  // ---- neutral gridline, labelled (paper's fixed ratio midpoint, p.10) ----
   svg.appendChild(el('line', {
     x1: PAD_L, x2: W - PAD_R, y1: y(neutral), y2: y(neutral),
     stroke: '#2a2f3a', 'stroke-width': 1, 'stroke-dasharray': '3,3',
   }));
   svg.appendChild(el('text', {
-    x: PAD_L, y: y(neutral) - 4, fill: '#9aa0ab', 'font-size': 10, 'font-family': 'system-ui, sans-serif',
+    x: PAD_L + 3, y: y(neutral) - 4, fill: '#9aa0ab', 'font-size': 10, 'font-family': 'system-ui, sans-serif',
   })).textContent = `neutral (${neutral})`;
 
-  // y-axis labels
+  // left y-axis labels (index)
   [0, 1, 2].forEach(v => {
     svg.appendChild(el('text', {
       x: 4, y: y(v) + 3, fill: '#9aa0ab', 'font-size': 10, 'font-family': 'system-ui, sans-serif',
     })).textContent = v.toFixed(0);
   });
 
-  // index line
+  // ---- index line ----
   const points = docs.map(d => `${x(d.published).toFixed(1)},${y(d.abg_net_index).toFixed(1)}`).join(' ');
   svg.appendChild(el('polyline', {
     points, fill: 'none', stroke: '#c9a34e', 'stroke-width': 1.6,
   }));
 
-  // decision markers: hike (red, up triangle) / cut (blue, down triangle)
-  // Verb adjacent to "Bank Rate", not just the first word of the decision
-  // string - some decisions are compound (e.g. asset purchases mentioned
-  // first, Bank Rate second); see pipeline/decision_label.py / DECISIONS.md.
+  // ---- decision markers (toggleable) ----
+  const decisionLayer = el('g', { id: 'layer-decisions' });
   docs.forEach(d => {
-    if (!d.decision) return;
-    const match = d.decision.match(/(increase|reduce|maintain)\w*\s+Bank Rate/i);
-    if (!match) return;
-    const verb = match[1].toLowerCase();
-    if (verb !== 'increase' && verb !== 'reduce') return;
+    const cls = classifyDecision(d.decision);
+    if (cls !== 'hike' && cls !== 'cut') return;
     const cx = x(d.published), cy = y(d.abg_net_index);
-    const hawk = verb === 'increase';
+    const hawk = cls === 'hike';
     const color = hawk ? '#d16a5a' : '#5a8fd1';
     const dy = hawk ? -5 : 5;
     const tri = `${cx},${cy + dy} ${cx - 4},${cy + dy + (hawk ? -6 : 6)} ${cx + 4},${cy + dy + (hawk ? -6 : 6)}`;
+    const marker = el('polygon', { points: tri, fill: color });
     const title = el('title', {});
     title.textContent = `${d.doc_id}: ${d.decision} (${d.published})`;
-    const marker = el('polygon', { points: tri, fill: color });
     marker.appendChild(title);
-    svg.appendChild(marker);
+    decisionLayer.appendChild(marker);
   });
+  svg.appendChild(decisionLayer);
 
   // x-axis year labels
   const years = [...new Set(docs.map(d => d.published.slice(0, 4)))];
@@ -359,11 +649,242 @@ function renderChart(data) {
     })).textContent = yr;
   });
 
+  // ---- hover layer (guide + dot), on top ----
+  const hoverLayer = el('g', { id: 'layer-hover', style: 'display:none' });
+  const guide = el('line', { y1: PAD_T, y2: H - PAD_B, stroke: '#4a5160', 'stroke-width': 1 });
+  const dot = el('circle', { r: 4, fill: '#c9a34e', stroke: '#0f1115', 'stroke-width': 1.5 });
+  hoverLayer.appendChild(guide);
+  hoverLayer.appendChild(dot);
+  svg.appendChild(hoverLayer);
+
+  const tip = document.getElementById('chart-tip');
+  function moveTip(evt) {
+    const rect = svg.getBoundingClientRect();
+    const vbX = (evt.clientX - rect.left) / rect.width * W;
+    // nearest document by x
+    let best = docs[0], bestDist = Infinity;
+    for (const d of docs) {
+      const dist = Math.abs(x(d.published) - vbX);
+      if (dist < bestDist) { bestDist = dist; best = d; }
+    }
+    const i = docs.indexOf(best);
+    const cx = x(best.published), cy = y(best.abg_net_index);
+    guide.setAttribute('x1', cx); guide.setAttribute('x2', cx);
+    dot.setAttribute('cx', cx); dot.setAttribute('cy', cy);
+    hoverLayer.style.display = 'block';
+
+    const next = docs[i + 1];
+    let followed;
+    if (next) {
+      const cls = classifyDecision(next.decision);
+      const cclass = cls === 'hike' ? 'tt-hike' : (cls === 'cut' ? 'tt-cut' : 'tt-hold');
+      followed = `<span class="${cclass}">${cls || '?'}</span> &middot; ${fmtDate(next.published)}<br>` +
+        `<span style="color:var(--faint)">${next.decision || ''}</span>`;
+    } else {
+      followed = '<span style="color:var(--faint)">awaited (latest document)</span>';
+    }
+    tip.innerHTML =
+      `<div class="tt-doc">${best.doc_id}</div>` +
+      `<div class="tt-row">Published <b>${fmtDate(best.published)}</b></div>` +
+      `<div class="tt-row">Index <b>${best.abg_net_index.toFixed(3)}</b></div>` +
+      `<div class="tt-row" style="margin-top:4px">Decision that followed:<br>${followed}</div>`;
+
+    const pxX = cx / W * rect.width;
+    const pxY = cy / H * rect.height;
+    const clampedX = Math.max(70, Math.min(rect.width - 70, pxX));
+    tip.style.left = clampedX + 'px';
+    tip.style.top = pxY + 'px';
+    tip.style.transform = pxY < 90
+      ? 'translate(-50%, 16px)'
+      : 'translate(-50%, calc(-100% - 14px))';
+    tip.style.display = 'block';
+  }
+  svg.addEventListener('mousemove', moveTip);
+  svg.addEventListener('mouseleave', () => {
+    tip.style.display = 'none';
+    hoverLayer.style.display = 'none';
+  });
+
+  // ---- toggles ----
+  const toggleDec = document.getElementById('toggle-decisions');
+  toggleDec.onchange = () => { decisionLayer.style.display = toggleDec.checked ? 'block' : 'none'; };
+  const bankLabel = document.querySelector('label:has(#toggle-bankrate)');
+  const toggleRate = document.getElementById('toggle-bankrate');
+  if (ratePoints) {
+    toggleRate.onchange = () => { rateLayer.style.display = toggleRate.checked ? 'block' : 'none'; };
+  } else if (bankLabel) {
+    bankLabel.style.display = 'none';
+  }
+
   document.getElementById('chart-legend').innerHTML =
-    `<span style="color:#c9a34e">&mdash;</span> A&amp;BG Net Index (document-level, 0&ndash;2 scale) &middot; ` +
-    `<span style="color:#d16a5a">&#9650;</span> hike &middot; <span style="color:#5a8fd1">&#9660;</span> cut`;
+    `<span style="color:#c9a34e">&mdash;</span> A&amp;BG Net Index (0&ndash;2 scale) &middot; ` +
+    `<span style="color:#d16a5a">&#9650;</span> hike &middot; ` +
+    `<span style="color:#5a8fd1">&#9660;</span> cut` +
+    (ratePoints ? ` &middot; <span style="color:var(--rate)">&mdash;</span> Bank Rate (right axis)` : '');
   document.getElementById('chart-status').style.display = 'none';
+  document.getElementById('chart-controls').style.display = 'flex';
   svg.style.display = 'block';
+}
+
+function renderContext(ctx) {
+  // (a) OIS-implied path for the next 3 meetings
+  const op = ctx.ois_path;
+  document.getElementById('ois-sub').innerHTML =
+    `Curve as of <b style="color:var(--text)">${op.curve_as_of}</b> vs SONIA ${op.sonia_pct.toFixed(3)}% ` +
+    `(${op.sonia_as_of}) &middot; two-state &plusmn;${op.assumed_move_bp}bp assumption.`;
+  const rowsEl = document.getElementById('ois-rows');
+  rowsEl.innerHTML = '';
+  op.meetings.forEach(m => {
+    const seg = (cls, p) => {
+      const pct = Math.round(p * 100);
+      const label = pct >= 12 ? pct + '%' : '';
+      return `<div class="ois-seg ${cls}" style="width:${(p * 100).toFixed(1)}%">${label}</div>`;
+    };
+    const chg = (m.implied_change_bp >= 0 ? '+' : '') + m.implied_change_bp.toFixed(1) + 'bp';
+    const row = document.createElement('div');
+    row.className = 'ois-row';
+    row.innerHTML =
+      `<div class="ois-date">${fmtDate(m.meeting_date)}</div>` +
+      `<div class="ois-bar">${seg('cut', m.p_cut)}${seg('hold', m.p_hold)}${seg('hike', m.p_hike)}</div>` +
+      `<div class="ois-chg">${chg}</div>`;
+    rowsEl.appendChild(row);
+  });
+
+  // (b) Bank Rate history — step chart
+  const rate = ctx.bank_rate_history.points;
+  const last = rate[rate.length - 1];
+  document.getElementById('rate-latest').innerHTML =
+    `${last.rate_pct.toFixed(2)}<span class="unit">%</span>`;
+  document.getElementById('rate-asof').textContent = `latest, ${fmtDate(last.date)}`;
+  drawStep('rate-chart', rate.map(p => [p.date, p.rate_pct]), 'var(--rate)', true);
+
+  // (c) 2-year nominal gilt yield — latest + 12-month sparkline
+  const g = ctx.gilt_2y;
+  document.getElementById('gilt-h').textContent = g.label;
+  document.getElementById('gilt-latest').innerHTML =
+    `${g.latest_pct.toFixed(2)}<span class="unit">%</span>`;
+  document.getElementById('gilt-asof').textContent =
+    `latest, ${fmtDate(g.as_of)} · ${g.window_months}-month history`;
+  drawSparkline('gilt-chart', g.sparkline.map(p => [p.date, p.yield_pct]), 'var(--gilt)');
+
+  document.getElementById('context-note').innerHTML =
+    `${ctx.disclaimer} Sources: Bank of England OIS forward curve &amp; SONIA; ` +
+    `GLC nominal gilt curve; Bank Rate from the voting record.`;
+
+  document.getElementById('context-status').style.display = 'none';
+  document.getElementById('context-content').style.display = 'block';
+}
+
+// Small step chart (Bank Rate): value holds until the next date, then jumps.
+function drawStep(svgId, series, color, stepAfter) {
+  const svg = document.getElementById(svgId);
+  svg.textContent = '';
+  const W = 320, H = 110, PAD_L = 26, PAD_R = 6, PAD_T = 8, PAD_B = 16;
+  const t0 = new Date(series[0][0]).getTime();
+  const t1 = new Date(series[series.length - 1][0]).getTime();
+  const vMax = Math.max(2, Math.ceil(Math.max(...series.map(s => s[1]))));
+  const x = t => PAD_L + (W - PAD_L - PAD_R) * ((new Date(t).getTime() - t0) / (t1 - t0));
+  const y = v => PAD_T + (H - PAD_T - PAD_B) * (1 - v / vMax);
+  [0, vMax].forEach(v => {
+    svg.appendChild(svgNode('text', {
+      x: 2, y: y(v) + 3, fill: '#6b7280', 'font-size': 9, 'font-family': 'system-ui, sans-serif',
+    })).textContent = v + '%';
+  });
+  const pts = [];
+  series.forEach((s, i) => {
+    const px = x(s[0]);
+    if (stepAfter && i > 0) pts.push(`${px.toFixed(1)},${y(series[i - 1][1]).toFixed(1)}`);
+    pts.push(`${px.toFixed(1)},${y(s[1]).toFixed(1)}`);
+  });
+  svg.appendChild(svgNode('polyline', {
+    points: pts.join(' '), fill: 'none', stroke: color, 'stroke-width': 1.6,
+  }));
+  // end year labels
+  [series[0], series[series.length - 1]].forEach((s, i) => {
+    svg.appendChild(svgNode('text', {
+      x: i === 0 ? PAD_L : W - PAD_R, y: H - 4, fill: '#6b7280',
+      'font-size': 9, 'font-family': 'system-ui, sans-serif',
+      'text-anchor': i === 0 ? 'start' : 'end',
+    })).textContent = s[0].slice(0, 4);
+  });
+}
+
+// Small line sparkline (gilt yield) with min/max labels and an end dot.
+function drawSparkline(svgId, series, color) {
+  const svg = document.getElementById(svgId);
+  svg.textContent = '';
+  const W = 320, H = 110, PAD_L = 30, PAD_R = 8, PAD_T = 10, PAD_B = 16;
+  const t0 = new Date(series[0][0]).getTime();
+  const t1 = new Date(series[series.length - 1][0]).getTime();
+  const vals = series.map(s => s[1]);
+  let vMin = Math.min(...vals), vMax = Math.max(...vals);
+  const padv = (vMax - vMin) * 0.15 || 0.1;
+  vMin -= padv; vMax += padv;
+  const x = t => PAD_L + (W - PAD_L - PAD_R) * ((new Date(t).getTime() - t0) / (t1 - t0));
+  const y = v => PAD_T + (H - PAD_T - PAD_B) * (1 - (v - vMin) / (vMax - vMin));
+  [{ v: Math.max(...vals), a: 'start' }, { v: Math.min(...vals), a: 'start' }].forEach(o => {
+    svg.appendChild(svgNode('text', {
+      x: 2, y: y(o.v) + 3, fill: '#6b7280', 'font-size': 9, 'font-family': 'system-ui, sans-serif',
+    })).textContent = o.v.toFixed(1);
+  });
+  const pts = series.map(s => `${x(s[0]).toFixed(1)},${y(s[1]).toFixed(1)}`).join(' ');
+  svg.appendChild(svgNode('polyline', {
+    points: pts, fill: 'none', stroke: color, 'stroke-width': 1.6,
+  }));
+  const lastS = series[series.length - 1];
+  svg.appendChild(svgNode('circle', {
+    cx: x(lastS[0]), cy: y(lastS[1]), r: 2.6, fill: color,
+  }));
+  [series[0], lastS].forEach((s, i) => {
+    svg.appendChild(svgNode('text', {
+      x: i === 0 ? PAD_L : W - PAD_R, y: H - 4, fill: '#6b7280',
+      'font-size': 9, 'font-family': 'system-ui, sans-serif',
+      'text-anchor': i === 0 ? 'start' : 'end',
+    })).textContent = fmtDate(s[0], { month: 'short', year: '2-digit' });
+  });
+}
+
+// Minimal, safe markdown -> HTML for hand-written episode bodies. Supports
+// paragraphs, ##/### headings, **bold**, *italic*, [links](https://...),
+// and - bullet lists. Content is escaped first (episodes are trusted, but
+// escaping keeps stray angle brackets from breaking layout).
+function renderMarkdown(md) {
+  const esc = s => s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+  const inline = s => esc(s)
+    .replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>')
+    .replace(/\*(.+?)\*/g, '<em>$1</em>')
+    .replace(/\[([^\]]+)\]\((https?:\/\/[^)\s]+)\)/g, '<a href="$2" rel="noopener">$1</a>');
+  return md.split(/\n{2,}/).map(block => {
+    const lines = block.split('\n');
+    if (lines.length && lines.every(l => /^\s*-\s+/.test(l))) {
+      return '<ul>' + lines.map(l => `<li>${inline(l.replace(/^\s*-\s+/, ''))}</li>`).join('') + '</ul>';
+    }
+    const h = block.match(/^(#{2,4})\s+(.*)$/);
+    if (h && lines.length === 1) {
+      const lvl = h[1].length + 1; // ## -> h3, ### -> h4, #### -> h5
+      return `<h${lvl}>${inline(h[2])}</h${lvl}>`;
+    }
+    return `<p>${inline(block.replace(/\n/g, ' '))}</p>`;
+  }).join('');
+}
+
+function renderEpisodes(d) {
+  const status = document.getElementById('episodes-status');
+  const list = document.getElementById('episodes-list');
+  if (!d.episodes || d.episodes.length === 0) {
+    status.textContent = 'No episodes published yet.';
+    return;
+  }
+  list.innerHTML = d.episodes.map(ep => {
+    const date = fmtDate(ep.date);
+    return `<article class="episode">` +
+      `<h3>${ep.title.replace(/</g, '&lt;')}</h3>` +
+      `<p class="ep-date">${date}</p>` +
+      `<div class="ep-body">${renderMarkdown(ep.body || '')}</div>` +
+      `</article>`;
+  }).join('');
+  status.style.display = 'none';
+  list.style.display = 'block';
 }
 </script>
 </body>

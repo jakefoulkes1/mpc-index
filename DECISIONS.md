@@ -1072,3 +1072,73 @@ Changes apply forward only; nothing is retrofitted. Locked calls are never touch
   the "DRY RUN - NOT A FORECAST" badge applied correctly (same code path
   already used for `dryrun-2026-07.json`, since both files share the same
   `point_call: null` schema).
+
+## 2026-08-08 — site v2 (design, interactivity, context panel, annotations, methodology)
+
+Site-only session, hard constraint: nothing in `pipeline/score`,
+`pipeline/market`, `pipeline/predict`, the lexicon, or any existing data
+schema was modified; the original 83 tests stayed green throughout (now 93
+with new site tests). New site work imports the science-layer modules
+read-only and only ever writes NEW json files.
+
+- **Design pass on `index.html`**: reordered to a clear hierarchy (call card
+  -> the index -> market & macro context -> results -> episodes ->
+  methodology), merged the old standalone "latest scored document" card into
+  the index card as its lead reading, added a type scale, tabular numerals,
+  mobile responsiveness, an inline-SVG favicon (data URI, no external file),
+  page `<title>`/description/Open Graph/theme-color meta, and a real footer
+  (GitHub links, "not investment advice", auto-populated generated date).
+  All existing element IDs and data-loading JS preserved. Stale badge "Beta ·
+  walking skeleton" corrected to "Beta · pre-registered".
+- **Chart interactivity, hand-rolled (no chart library, no CDN)**: hover
+  tooltip (document, published date, index value, and the decision that
+  *followed* - i.e. the NEXT meeting's decision, the thesis-relevant one,
+  since a meeting's own decision is already its marker); toggleable overlays
+  for decision markers and a Bank Rate step line on its own right-hand axis;
+  neutral reference line kept labelled. One decision classifier shared with
+  the rest of the codebase (the verb adjacent to "Bank Rate", re-implemented
+  in JS since it can't import `pipeline/decision_label.py`).
+- **NEW exporter `pipeline/site_context.py` -> `data/site_context.json`**,
+  labelled "Context - not model inputs" (a `context_not_model_inputs: true`
+  flag in the JSON and a visible badge on the site). Three series:
+  (a) the OIS-implied path for the next three scheduled meetings (30 Jul /
+  17 Sep / 5 Nov 2026, from the Bank's published calendar - see the
+  2026-08-01 entry - hardcoded as CONTEXT labels, not a model input),
+  computed via the SAME `market_probs_for_meeting` rule used for m0 and the
+  benchmark; (b) Bank Rate history as a step chart, from `data/votes.csv`'s
+  `decided_rate`; (c) the 2-year nominal gilt yield (latest + a 12-month
+  daily sparkline), read from the Bank's GLC Nominal curve files (the
+  current-month file already downloaded by `ois.download_latest_month_zip`
+  plus a NEW polite download of `glcnominalddata.zip`, same 2s-sleep
+  discipline). The 24-month spot point was found in the "3. spot, short end"
+  sheet; **it parsed cleanly, no HARD STOP triggered** - but the reader path
+  raises rather than approximating if the sheet/column ever goes missing.
+- **Annotations machinery, site layer only**: markdown episodes live in
+  `site/annotations/YYYY-MM-slug.md` (two header lines `title:`/`date:` then
+  a markdown body). A build step (`pipeline/build_annotations.py`) scans them
+  into `data/annotations.json`, newest-first, which the "Episodes" section
+  fetches and renders with a tiny safe markdown subset (paragraphs, headings,
+  bold/italic, links, bullet lists) - **a build step, not client-side
+  directory listing, because static GitHub Pages has no directory index**;
+  same "everything the site reads is a data/*.json" pattern as the rest of
+  the project. Exactly one placeholder file, `2021-11-the-hold-that-wasnt.md`,
+  marked `TODO(Jake)` - all real episode text is written by Jake, never
+  generated here. A missing `title:`/`date:` header HARD STOPs.
+- **`methodology.html`** added: self-contained companion page (own trimmed
+  copy of the site styles, no shared external stylesheet, to keep both pages
+  zero-dependency), with five section stubs marked `TODO(Jake)` - Data, Index
+  construction, Market benchmark, Evaluation, Limitations - wired into the
+  index footer nav. A one-line footnote under the OIS probability bars
+  ("forward-implied probabilities reflect risk premia as well as
+  expectations") links to `methodology.html#limitations`.
+- **`CLAUDE.md` added at the repo root** with the standing rules (read
+  DECISIONS.md first; every choice gets a dated forward-only entry; never
+  modify `data/predictions/lock-*`; the science layer is off-limits unless a
+  prompt says otherwise; one plain-English line before each command for a
+  beginner maintainer; never fabricate/approximate - HARD STOP and ask).
+- **New site tests (site layer only), 10 added, 93 total**: contract tests
+  that `data/site_context.json` and `data/annotations.json` carry every field
+  the front-end reads (same guard as `test_site_contract.py`), plus pure-
+  helper unit tests (bank-rate dedup, era-file year parsing, gilt 12-month
+  windowing, OIS-path shape, annotation header parsing incl. the HARD-STOP
+  path) - none make live calls.

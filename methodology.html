@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Methodology — MPC Communication Index</title>
+<meta name="description" content="How the MPC Communication Index is built and evaluated: data, index construction, market benchmark, evaluation, and limitations.">
+<meta name="theme-color" content="#0f1115">
+<link rel="icon" href="data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='0%200%2032%2032'%3E%3Crect%20width='32'%20height='32'%20rx='7'%20fill='%230f1115'/%3E%3Cpolyline%20points='4,22%2011,14%2016,18%2022,7%2028,12'%20fill='none'%20stroke='%23c9a34e'%20stroke-width='2.6'%20stroke-linecap='round'%20stroke-linejoin='round'/%3E%3C/svg%3E">
+<style>
+  :root {
+    --bg: #0f1115; --panel: #171a21; --panel-2: #1c2029; --line: #2a2f3a;
+    --text: #e8e6e1; --muted: #9aa0ab; --faint: #6b7280;
+    --accent: #c9a34e; --accent-dim: #7a5f2e;
+    --serif: Georgia, 'Times New Roman', serif;
+    --sans: system-ui, -apple-system, 'Segoe UI', sans-serif;
+    --radius: 12px;
+    --shadow: 0 1px 2px rgba(0,0,0,.4), 0 8px 24px rgba(0,0,0,.25);
+  }
+  * { box-sizing: border-box; }
+  html { -webkit-text-size-adjust: 100%; }
+  body {
+    margin: 0; background: var(--bg); color: var(--text);
+    font: 17px/1.65 var(--serif);
+    -webkit-font-smoothing: antialiased; text-rendering: optimizeLegibility;
+  }
+  .wrap { max-width: 760px; margin: 0 auto; padding: 56px 22px 72px; }
+  .backlink { font: 13px var(--sans); color: var(--muted); text-decoration: none; }
+  .backlink:hover { color: var(--text); }
+  h1 { font: normal 34px/1.15 var(--serif); margin: 18px 0 10px; letter-spacing: -.01em; }
+  .lede { color: var(--muted); font-style: italic; font-size: 18px; margin: 0 0 12px; max-width: 62ch; }
+  .lede a { color: var(--accent); }
+  .toc { display: flex; flex-wrap: wrap; gap: 8px 18px; margin: 0 0 40px; font: 14px var(--sans); }
+  .toc a { color: var(--muted); text-decoration: none; }
+  .toc a:hover { color: var(--text); }
+  .card {
+    background: var(--panel); border: 1px solid var(--line);
+    border-radius: var(--radius); padding: 26px 28px; margin-bottom: 22px;
+    box-shadow: var(--shadow); scroll-margin-top: 20px;
+  }
+  .card h2 {
+    font: 600 12px/1 var(--sans); letter-spacing: .14em;
+    text-transform: uppercase; color: var(--muted); margin: 0 0 16px;
+  }
+  .stub {
+    font: 14px/1.7 var(--sans); color: var(--faint);
+    background: var(--panel-2); border-left: 3px solid var(--accent-dim);
+    padding: 12px 16px; border-radius: 0 6px 6px 0; margin: 0;
+  }
+  .stub code { color: var(--muted); }
+  footer { font: 13px/1.7 var(--sans); color: var(--faint); margin-top: 34px; padding-top: 22px; border-top: 1px solid var(--line); }
+  footer a { color: var(--muted); }
+  @media (max-width: 640px) {
+    .wrap { padding: 36px 16px 56px; }
+    h1 { font-size: 27px; }
+    .lede { font-size: 16px; }
+    body { font-size: 16px; }
+    .card { padding: 20px 18px; }
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <a class="backlink" href="index.html">&larr; MPC Communication Index</a>
+  <h1>Methodology</h1>
+  <p class="lede">How the index is built and evaluated. Every choice is also recorded, dated
+  and forward-only, in the <a href="https://github.com/jakefoulkes1/mpc-index/blob/main/DECISIONS.md">decisions log</a>.</p>
+
+  <nav class="toc">
+    <a href="#data">Data</a>
+    <a href="#index-construction">Index construction</a>
+    <a href="#market-benchmark">Market benchmark</a>
+    <a href="#evaluation">Evaluation</a>
+    <a href="#limitations">Limitations</a>
+  </nav>
+
+  <section class="card" id="data">
+    <h2>Data</h2>
+    <p class="stub">TODO(Jake): describe the corpus (Bank of England MPC minutes, Aug 2015&ndash;present),
+    how documents are scraped and reconstructed, the voting record, and the market data sources.</p>
+  </section>
+
+  <section class="card" id="index-construction">
+    <h2>Index construction</h2>
+    <p class="stub">TODO(Jake): describe the Apel &amp; Blix Grimaldi (2012) Net Index &mdash; the
+    noun+adjective term lists, the counting rule, and the 0&ndash;2 scale (1 = neutral).</p>
+  </section>
+
+  <section class="card" id="market-benchmark">
+    <h2>Market benchmark</h2>
+    <p class="stub">TODO(Jake): describe the OIS forward-curve / SONIA benchmark and the two-state
+    &plusmn;25bp mapping from implied rate change to cut/hold/hike probabilities.</p>
+  </section>
+
+  <section class="card" id="evaluation">
+    <h2>Evaluation</h2>
+    <p class="stub">TODO(Jake): describe how calls are scored (Brier and log score), the benchmark
+    ladder (L0&ndash;L4), and the pre-registration / lock-before-announcement discipline.</p>
+  </section>
+
+  <section class="card" id="limitations">
+    <h2>Limitations</h2>
+    <p class="stub">TODO(Jake): describe the known limitations &mdash; including that forward-implied
+    probabilities reflect risk premia as well as rate expectations, the smoothed-curve bias, the
+    crude negation window, and the small, noisy sample.</p>
+  </section>
+
+  <footer>
+    <a href="index.html">&larr; Back to the index</a> &middot; Not investment advice &middot;
+    Source documents &copy; Bank of England, linked not republished.
+  </footer>
+</div>
+</body>
+</html>

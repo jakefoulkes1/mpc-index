@@ -1,0 +1,12 @@
+{
+  "schema": "annotations-v1",
+  "generated_utc": "2026-07-12T00:50:56+00:00",
+  "episodes": [
+    {
+      "title": "The hold that wasn't",
+      "date": "2021-11-04",
+      "body": "TODO(Jake): write this episode in your own words. This placeholder body\nexists only so the Episodes section rendering can be seen \u2014 replace it\nentirely, or delete this file and add your own alongside it.\n\nMarkdown works here: **bold**, *italic*, [links](https://www.bankofengland.co.uk),\n## sub-headings, and\n\n- bullet\n- lists",
+      "slug": "2021-11-the-hold-that-wasnt"
+    }
+  ]
+}
