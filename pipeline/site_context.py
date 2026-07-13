@@ -30,6 +30,8 @@ Three series are exported:
                      HARD STOP if the gilt files won't parse as expected -
                      never approximate (per the task instruction).
 
+Governed by DECISIONS.md: 2026-07-12 (site v2 - context panel).
+
 Run:  python -m pipeline.site_context
 """
 import csv
@@ -62,7 +64,7 @@ GILT_MATURITY_MONTHS = 24  # 2-year point
 GILT_WINDOW_MONTHS = 12
 
 # The next three scheduled MPC announcement dates, from the Bank's published
-# calendar (see DECISIONS.md, 2026-08-01, which lists 30 Jul / 17 Sep / 5 Nov
+# calendar (see DECISIONS.md, 2026-07-11, which lists 30 Jul / 17 Sep / 5 Nov
 # 2026 as the three upcoming meetings). These are CONTEXT LABELS for the
 # implied-path panel, NOT a model input and NOT a claim about those dates.
 UPCOMING_MEETINGS = ["2026-07-30", "2026-09-17", "2026-11-05"]

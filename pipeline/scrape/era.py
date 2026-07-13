@@ -5,6 +5,9 @@ Thursday") from 2016 onward. Rather than hardcode which months have a
 meeting, this just tries every month in the range and tolerates 404s for
 months with no meeting.
 
+Governed by DECISIONS.md: 2026-07-11 (era corpus - schedule discovered by
+trying, two URL slug patterns, suspect-parse threshold).
+
 Run on your own machine:
     python -m pipeline.scrape.era
 """

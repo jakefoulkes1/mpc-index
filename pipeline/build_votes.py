@@ -15,6 +15,9 @@ not the meeting_end date - confirmed by cross-checking known dates (e.g.
 `meeting_end` of 2026-06-17). Rates are decimals (0.0375 = 3.75%), kept as
 given in the source.
 
+Governed by DECISIONS.md: 2026-07-11 (voting-record parsing and
+reconciliation).
+
 Run:  python -m pipeline.build_votes
 """
 import csv

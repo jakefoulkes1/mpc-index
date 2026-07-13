@@ -1,0 +1,18 @@
+cff-version: 1.2.0
+message: "If you use this work, please cite it as below."
+type: software
+title: "MPC Communication Index"
+abstract: >-
+  Does the tone of Bank of England MPC communication carry information about
+  the next Bank Rate decision beyond what markets already price into the
+  OIS/SONIA curve? An Apel & Blix Grimaldi (2012) dictionary index over the
+  Aug 2015-present MPC minutes corpus, benchmarked against OIS-implied
+  probabilities, with pre-registered locked calls scored after each
+  announcement.
+authors:
+  - family-names: Foulkes
+    given-names: Jake
+date-released: "2026-07-12"
+url: "https://jakefoulkes1.github.io/mpc-index/"
+repository-code: "https://github.com/jakefoulkes1/mpc-index"
+license: MIT

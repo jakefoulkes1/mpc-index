@@ -19,6 +19,8 @@ markdown library or CDN dependency added.
 HARD STOP (never approximate): a .md file missing its title: or date: header
 raises rather than being silently skipped or guessed at.
 
+Governed by DECISIONS.md: 2026-07-12 (site v2 - annotations machinery).
+
 Run:  python -m pipeline.build_annotations
 """
 import datetime as dt

@@ -4,6 +4,9 @@ Run on your own machine:
     python -m pipeline.scrape.minutes 2026 april
 Caches raw HTML to data/raw/html/ and extracted text to data/raw/.
 One request at a time, identified User-Agent, 2s sleep: polite scraping is method.
+
+Governed by DECISIONS.md: 2026-07-05 (raw texts gitignored) and 2026-07-11
+(two URL slug patterns, tried in order rather than a hardcoded year cutoff).
 """
 import hashlib
 import sys

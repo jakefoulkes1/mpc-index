@@ -13,6 +13,9 @@ The transition matrix is P(state at a member's NEXT voted meeting | state
 now), pooled across all members (not per-member - most members have too few
 meetings to split further without n per cell becoming meaningless).
 
+Governed by DECISIONS.md: 2026-07-11 (member-behaviour table, seeds
+Stage 4).
+
 Run:  python -m pipeline.member_behaviour
 """
 import csv

@@ -1,5 +1,8 @@
 """Download the Bank's MPC voting-history spreadsheet (ground truth for validation).
 
+Governed by DECISIONS.md: 2026-07-11 (voting-record parsing and
+reconciliation; the sheet's date column is the PUBLISHED date).
+
 Run on your own machine:  python -m pipeline.scrape.votes
 """
 from pathlib import Path
