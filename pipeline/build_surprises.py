@@ -1,13 +1,13 @@
 """Builds data/surprises.csv: for every SCHEDULED meeting,
 surprise_bp = actual_change_bp - implied_change_bp (at lock, using the
 same LOCK_OFFSET_DAYS=3 convention as everywhere else - see DECISIONS.md,
-2026-08-01).
+2026-07-11).
 
 actual_change_bp is the real Bank Rate change from the immediately
 PRECEDING decision (whatever type that was - special or scheduled; the
 rate itself doesn't care) to this meeting's decided rate. Special
 meetings are excluded from the OUTPUT rows (can't have been pre-registered
-forecasts - see DECISIONS.md, 2026-08-08) but still count as the
+forecasts - see DECISIONS.md, 2026-07-11) but still count as the
 "previous decision" when a scheduled meeting immediately follows one, since
 that's the actual rate history.
 

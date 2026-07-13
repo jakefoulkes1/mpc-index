@@ -13,6 +13,11 @@ These apply to every session. Read them before starting work.
 - **Never fabricate or approximate data.** If a source won't parse, a value is
   missing, or something is ambiguous, **HARD STOP and ask** — do not guess, fill
   in, or estimate. A deliberate `null` with an explanation beats a made-up number.
+- **Before writing any `DECISIONS.md` entry, obtain the date by running `date`**
+  — never from memory or an assumed session cadence. (Added after the
+  2026-07-13 erratum: 29 header dates had been invented on an assumed weekly
+  schedule. A pytest guard, `pipeline/tests/test_decisions_dates.py`, fails on
+  any future-dated entry.)
 
 ## What must not change
 - **Files under `data/predictions/lock-*` are never modified once written.** A

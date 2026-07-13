@@ -2,7 +2,7 @@
 probabilities for every meeting in the text corpus (Aug 2015-present),
 from the historical OIS forward curve + SONIA, using the same convention
 as the live dry-run card (pipeline/predict/market_probs.py, LOCK_OFFSET_DAYS
-= 3 days after the meeting - see DECISIONS.md, 2026-08-01).
+= 3 days after the meeting - see DECISIONS.md, 2026-07-11).
 
 Lock date (the curve snapshot used, as if this were locked ahead of the
 announcement): announcement - LOCK_DATE_OFFSET_DAYS (2) calendar days; if
@@ -13,7 +13,7 @@ walks back to the nearest one that is, logged.
 the March 2020 Covid cuts) - at "lock time" nobody could have registered
 a forecast for a meeting whose existence wasn't yet announced, so these
 can't be treated as ordinary pre-registered forecasts. True for every
-regular minutes document. See DECISIONS.md, 2026-08-08.
+regular minutes document. See DECISIONS.md, 2026-07-11.
 
 Run:  python -m pipeline.build_market_history
 """

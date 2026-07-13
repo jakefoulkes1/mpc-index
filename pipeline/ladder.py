@@ -1,6 +1,6 @@
 """Expanding-window benchmark ladder: L0 (always-hold) through L4
 (member-level simulation), each fit on strictly prior meetings only and
-evaluated on the next. See DECISIONS.md, 2026-08-01, for every modelling
+evaluated on the next. See DECISIONS.md, 2026-07-11, for every modelling
 choice below - several are genuine judgment calls where the task's own
 wording left room for more than one reading, flagged as such.
 
@@ -133,7 +133,7 @@ def _standardize(X: list[list[float]]) -> tuple[list[list[float]], list[float], 
     implied_change_bp (raw values ~1e1) would need wildly different
     coefficient magnitudes for an equally "healthy" fit, and every L3 fit
     was spuriously flagged degenerate before this was added. See
-    DECISIONS.md, 2026-08-01."""
+    DECISIONS.md, 2026-07-11."""
     n_features = len(X[0])
     means = [sum(row[j] for row in X) / len(X) for j in range(n_features)]
     stds = []

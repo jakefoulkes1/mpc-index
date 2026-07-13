@@ -1,7 +1,7 @@
 """Runs the full headline inference (Spec 3 OLS + Spec 2 ordered-logit LR
 test, full sample and a Sep 2023-present fragility check) and writes
 data/inference_v1.json. See pipeline/inference.py and DECISIONS.md
-(2026-08-08) for every modelling choice.
+(2026-07-11) for every modelling choice.
 
 NOT published to the site - per instruction, for review first.
 
@@ -53,8 +53,8 @@ def main() -> None:
         "notes": ("Small and careful, per instruction: this is a handful of specifications on "
                   "91 scheduled meetings (full sample) / 23 (post-hiking-cycle subsample), not a "
                   "search over many. Lagged features (index_level, skew) use the PREVIOUS meeting's "
-                  "value, same convention as the benchmark ladder's L3 - see DECISIONS.md, 2026-08-01 "
-                  "and 2026-08-08. The fragility-check subsample is small (n=23) and its ordered-logit "
+                  "value, same convention as the benchmark ladder's L3 - see DECISIONS.md, 2026-07-11 "
+                  "(ladder and headline-inference entries). The fragility-check subsample is small (n=23) and its ordered-logit "
                   "fit did not converge - reported anyway, clearly caveated, not hidden. "
                   "NOT published to the site - for review first."),
     }

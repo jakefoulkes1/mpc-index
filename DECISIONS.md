@@ -3,6 +3,43 @@
 Every methodological choice gets a dated line here, before it is used.
 Changes apply forward only; nothing is retrofitted. Locked calls are never touched.
 
+## Table of contents
+
+- 2026-07-05 — [repo created](#2026-07-05--repo-created)
+- 2026-07-11 — [era corpus, Aug 2015–Jun 2026](#2026-07-11--era-corpus-aug-2015jun-2026)
+- 2026-07-11 — [corpus audit: full-text repair + special meetings](#2026-07-11--corpus-audit-full-text-repair--special-meetings)
+- 2026-07-11 — [A&BG (2012) baseline lexicon](#2026-07-11--abg-2012-baseline-lexicon)
+- 2026-07-11 — [voting-record parsing and reconciliation](#2026-07-11--voting-record-parsing-and-reconciliation)
+- 2026-07-11 — [first validation pass (v1)](#2026-07-11--first-validation-pass-v1)
+- 2026-07-11 — [site: A&BG chart, retiring starter_v0 fields from the UI](#2026-07-11--site-abg-chart-retiring-starter_v0-fields-from-the-ui)
+- 2026-07-11 — [19 March 2020 special meeting added](#2026-07-11--19-march-2020-special-meeting-added)
+- 2026-07-11 — [validation join fixed: voting-sheet date is canonical](#2026-07-11--validation-join-fixed-voting-sheet-date-is-canonical)
+- 2026-07-11 — [neutral_value published in index.json](#2026-07-11--neutral_value-published-in-indexjson)
+- 2026-07-11 — [member-behaviour table (seeds Stage 4)](#2026-07-11--member-behaviour-table-seeds-stage-4)
+- 2026-07-11 — [market benchmark: OIS forward curve + SONIA](#2026-07-11--market-benchmark-ois-forward-curve--sonia)
+- 2026-07-11 — [market_probs: two-state ±25bp assumption](#2026-07-11--market_probs-two-state-25bp-assumption)
+- 2026-07-11 — [lock and scoring machinery](#2026-07-11--lock-and-scoring-machinery)
+- 2026-07-11 — [site call card + dry run](#2026-07-11--site-call-card--dry-run)
+- 2026-07-11 — [smoothed-curve bias: quantified, offset convention chosen](#2026-07-11--smoothed-curve-bias-quantified-offset-convention-chosen)
+- 2026-07-11 — [2 null-decision documents recovered](#2026-07-11--2-null-decision-documents-recovered)
+- 2026-07-11 — [historical market benchmark: data/market_history.csv](#2026-07-11--historical-market-benchmark-datamarket_historycsv)
+- 2026-07-11 — [decision classifier bug found and fixed: Bank-Rate-adjacent verb, not first word](#2026-07-11--decision-classifier-bug-found-and-fixed-bank-rate-adjacent-verb-not-first-word)
+- 2026-07-11 — [Part B sanity checks](#2026-07-11--part-b-sanity-checks)
+- 2026-07-11 — [scipy added, for the ordered logit models only](#2026-07-11--scipy-added-for-the-ordered-logit-models-only)
+- 2026-07-11 — [the benchmark ladder (first real backtest), L0-L4](#2026-07-11--the-benchmark-ladder-first-real-backtest-l0-l4)
+- 2026-07-11 — [curve freshness fix](#2026-07-11--curve-freshness-fix)
+- 2026-07-11 — [scheduled vs special meetings split; probability-clip logged](#2026-07-11--scheduled-vs-special-meetings-split-probability-clip-logged)
+- 2026-07-11 — [live site investigation: false alarm, contract test added anyway](#2026-07-11--live-site-investigation-false-alarm-contract-test-added-anyway)
+- 2026-07-11 — [data/surprises.csv](#2026-07-11--datasurprisescsv)
+- 2026-07-11 — [the headline inference (Spec 3 OLS + Spec 2 ordered-logit LR test)](#2026-07-11--the-headline-inference-spec-3-ols--spec-2-ordered-logit-lr-test)
+- 2026-07-11 — [Results section published to the site (ladder v1)](#2026-07-11--results-section-published-to-the-site-ladder-v1)
+- 2026-07-11 — [lock rehearsal (dry run, fresh curve)](#2026-07-11--lock-rehearsal-dry-run-fresh-curve)
+- 2026-07-12 — [site v2 (design, interactivity, context panel, annotations, methodology)](#2026-07-12--site-v2-design-interactivity-context-panel-annotations-methodology)
+- 2026-07-12 — [evidence inspector (`pipeline/inspect.py`)](#2026-07-12--evidence-inspector-pipelineinspectpy)
+- 2026-07-12 — [Track record section (`data/track_record.json`, `index.html`)](#2026-07-12--track-record-section-datatrack_recordjson-indexhtml)
+- 2026-07-13 — [final polish: Spec 3 published, lexicon sparsity, repo front door](#2026-07-13--final-polish-spec-3-published-lexicon-sparsity-repo-front-door)
+- 2026-07-13 — [ERRATUM: entry header dates corrected against commit evidence](#2026-07-13--erratum-entry-header-dates-corrected-against-commit-evidence)
+
 ## 2026-07-05 — repo created
 - **Thesis:** does the tone of MPC communication carry information about the next
   Bank Rate decision beyond what the OIS/SONIA curve already prices? Null = no.
@@ -62,7 +99,7 @@ Changes apply forward only; nothing is retrofitted. Locked calls are never touch
   <date>" is standard; a few 2016 pages drop the "on"). The parser regex
   accepts both; still requires a 4-digit year to accept a match.
 
-## 2026-07-18 — corpus audit: full-text repair + special meetings
+## 2026-07-11 — corpus audit: full-text repair + special meetings
 
 - **Root cause of the 30 (later found: 52) short documents, confirmed by
   fetching 3 live pages, not guessed:** the Bank published the Monetary
@@ -143,7 +180,7 @@ Changes apply forward only; nothing is retrofitted. Locked calls are never touch
   low was 679; new low is 2,606, in the short 2024 minutes). No individual
   per-document explanations needed since none remain under threshold.
 
-## 2026-07-18 — A&BG (2012) baseline lexicon
+## 2026-07-11 — A&BG (2012) baseline lexicon
 
 - **Source, retrieved and verified, not reconstructed from memory.** Apel &
   Blix Grimaldi (2012), "The Information Content of Central Bank Minutes",
@@ -192,7 +229,7 @@ Changes apply forward only; nothing is retrofitted. Locked calls are never touch
   (starter_v0 fields) replaced by `abg_hawk` / `abg_dove` /
   `abg_net_index` on every document and in the series.
 
-## 2026-07-18 — voting-record parsing and reconciliation
+## 2026-07-11 — voting-record parsing and reconciliation
 
 - **`data/votes.csv` join key is the sheet's own date column, which is the
   meeting's PUBLISHED/announcement date, not `meeting_end`** - confirmed by
@@ -225,7 +262,7 @@ Changes apply forward only; nothing is retrofitted. Locked calls are never touch
   action taken - the voting record and the text corpus are allowed to
   disagree on document boundaries; this is noted, not corrected.
 
-## 2026-07-18 — first validation pass (v1)
+## 2026-07-11 — first validation pass (v1)
 
 - **Contemporaneous only, not predictive.** `pipeline/validate.py` compares
   a meeting's own minutes (abg_net_index) against that SAME meeting's own
@@ -250,7 +287,7 @@ Changes apply forward only; nothing is retrofitted. Locked calls are never touch
   first pass. Saved to `data/validation_v1.json`; not a claim of predictive
   power, just the first descriptive checkpoint.
 
-## 2026-07-18 — site: A&BG chart, retiring starter_v0 fields from the UI
+## 2026-07-11 — site: A&BG chart, retiring starter_v0 fields from the UI
 
 - **Hand-rolled inline SVG, no chart library, no CDN.** The site is static
   GitHub Pages with no build step; a CDN script is one more thing that can
@@ -273,7 +310,7 @@ Changes apply forward only; nothing is retrofitted. Locked calls are never touch
   = hike, "reduce" = cut, holds unmarked) - one classification rule, not
   two independently-maintained ones.
 
-## 2026-07-25 — 19 March 2020 special meeting added
+## 2026-07-11 — 19 March 2020 special meeting added
 
 - **Diffing `data/votes.csv` against the corpus found exactly one genuinely
   missing meeting: 19 March 2020**, the second Covid-19 emergency decision
@@ -325,7 +362,7 @@ Changes apply forward only; nothing is retrofitted. Locked calls are never touch
   all real and individually explained above and in the 2026-07-18 entries
   - none silently absorbed).
 
-## 2026-07-25 — validation join fixed: voting-sheet date is canonical
+## 2026-07-11 — validation join fixed: voting-sheet date is canonical
 
 - **`pipeline/validate.py` no longer joins on exact match against our own
   `published` field.** It now treats each corpus document's `published`
@@ -360,7 +397,7 @@ Changes apply forward only; nothing is retrofitted. Locked calls are never touch
   `data/validation_v1.json`, not chosen between - both are genuinely small
   effects at this stage, not evidence either framing is "the right one".
 
-## 2026-07-25 — neutral_value published in index.json
+## 2026-07-11 — neutral_value published in index.json
 
 - **Formula and range re-confirmed against the paper, unchanged**: Net
   Index = [(#hawk/(#hawk+#dove)) - (#dove/(#hawk+#dove))] + 1 (p.10,
@@ -379,7 +416,7 @@ Changes apply forward only; nothing is retrofitted. Locked calls are never touch
   so a future change to the formula's neutral point (there isn't one
   planned) wouldn't require hunting down every hardcoded copy.
 
-## 2026-07-25 — member-behaviour table (seeds Stage 4)
+## 2026-07-11 — member-behaviour table (seeds Stage 4)
 
 - **Three-state coding, not binary.** Each member-meeting from
   `data/votes.csv` is coded `hawkish_dissent` (preferred > decided),
@@ -414,7 +451,7 @@ Changes apply forward only; nothing is retrofitted. Locked calls are never touch
   majority" first, never straight to the opposite direction, in this
   sample.
 
-## 2026-07-25 — market benchmark: OIS forward curve + SONIA
+## 2026-07-11 — market benchmark: OIS forward curve + SONIA
 
 - **Both sources parse cleanly - no hard stop triggered.** OIS:
   bankofengland.co.uk/statistics/yield-curves -> "oisddata.zip" (daily OIS
@@ -448,7 +485,7 @@ Changes apply forward only; nothing is retrofitted. Locked calls are never touch
 - **Raw downloads cached under `data/raw/market/`** (gitignored, same
   convention as `data/raw/` generally - only derived outputs are public).
 
-## 2026-07-25 — market_probs: two-state ±25bp assumption
+## 2026-07-11 — market_probs: two-state ±25bp assumption
 
 - **`pipeline/predict/market_probs.py` implements one documented,
   deliberately simple mapping from implied rate change to {cut, hold,
@@ -473,7 +510,7 @@ Changes apply forward only; nothing is retrofitted. Locked calls are never touch
   `ois.latest_sonia()`'s return values, not the fetch functions
   themselves, so tests never touch the network.
 
-## 2026-07-25 — lock and scoring machinery
+## 2026-07-11 — lock and scoring machinery
 
 - **Running `pipeline/predict/lock.py` is not itself "the lock".** It
   writes a timestamped snapshot with `point_call`/`rationale` left as
@@ -507,7 +544,7 @@ Changes apply forward only; nothing is retrofitted. Locked calls are never touch
   real forecast needs to beat. A base-rate-fitted reference is a
   reasonable future addition but wasn't asked for here.
 
-## 2026-07-25 — site call card + dry run
+## 2026-07-11 — site call card + dry run
 
 - **The call card's dry-run vs locked styling is data-driven, not a
   hardcoded label.** `renderCallCard()` checks `point_call !== null`
@@ -539,7 +576,7 @@ Changes apply forward only; nothing is retrofitted. Locked calls are never touch
   by content) from any future actual locked call, which would need its
   own deliberately-named file.
 
-## 2026-08-01 — smoothed-curve bias: quantified, offset convention chosen
+## 2026-07-11 — smoothed-curve bias: quantified, offset convention chosen
 
 - **Known limitation confirmed and quantified, not just asserted.** The
   Bank's published OIS forward curve is a fitted spline across maturities,
@@ -593,7 +630,7 @@ Changes apply forward only; nothing is retrofitted. Locked calls are never touch
   range and confirmed monotonic. No fix was needed for this; the
   investigation is recorded so the check isn't silently skipped.
 
-## 2026-08-01 — 2 null-decision documents recovered
+## 2026-07-11 — 2 null-decision documents recovered
 
 - **The 94-corpus/94-voting-sheet join reporting only 92 candidates was
   exactly the 2 already-logged null-decision documents** (`minutes-2016-08`
@@ -624,7 +661,7 @@ Changes apply forward only; nothing is retrofitted. Locked calls are never touch
   document** - if a future meeting uses the same Governor's-proposition
   phrasing, it will be recovered automatically without a code change.
 
-## 2026-08-01 — historical market benchmark: data/market_history.csv
+## 2026-07-11 — historical market benchmark: data/market_history.csv
 
 - **"Archive files ... by year" turned out to be one multi-era zip, not
   one file per calendar year** - confirmed by re-reading the yield curves
@@ -679,7 +716,7 @@ Changes apply forward only; nothing is retrofitted. Locked calls are never touch
   move, clipped) - the kind of result that should show up at the extremes
   and does.
 
-## 2026-08-01 — decision classifier bug found and fixed: Bank-Rate-adjacent verb, not first word
+## 2026-07-11 — decision classifier bug found and fixed: Bank-Rate-adjacent verb, not first word
 
 - **Found while running the Part-B sanity checks, not before**: the
   "5 most-wrong meetings" table initially put `minutes-2020-03-19-special`
@@ -709,7 +746,7 @@ Changes apply forward only; nothing is retrofitted. Locked calls are never touch
   2021, as expected, instead of being pushed down by this misclassified
   entry.
 
-## 2026-08-01 — Part B sanity checks
+## 2026-07-11 — Part B sanity checks
 
 - **(a) Mean p_hike at lock across the 14 consecutive hikes (Dec 2021 -
   Aug 2023): 0.9225** - far above the corpus-wide hike base rate of
@@ -742,7 +779,7 @@ Changes apply forward only; nothing is retrofitted. Locked calls are never touch
   Nov 2021 and Dec 2021 both appear, as expected. All five are real,
   independently-recognisable market surprises, not artefacts.
 
-## 2026-08-01 — scipy added, for the ordered logit models only
+## 2026-07-11 — scipy added, for the ordered logit models only
 
 - **scipy added as a dependency, deliberately narrower in scope than it
   sounds.** The earlier choice (2026-07-25) to implement Pearson/Spearman
@@ -772,7 +809,7 @@ Changes apply forward only; nothing is retrofitted. Locked calls are never touch
   test case and does NOT fire on realistic noisy synthetic data or a
   well-separated-but-still-noisy case (unit-tested for both).
 
-## 2026-08-01 — the benchmark ladder (first real backtest), L0-L4
+## 2026-07-11 — the benchmark ladder (first real backtest), L0-L4
 
 - **Outcomes coded by SIGN only, magnitude ignored**, per instruction: a
   50bp move counts the same as a 15bp move in the same direction. Uses
@@ -858,7 +895,7 @@ Changes apply forward only; nothing is retrofitted. Locked calls are never touch
   Saved to `data/ladder_v1.json`; explicitly NOT published to the site,
   per instruction - for review first.
 
-## 2026-08-08 — curve freshness fix
+## 2026-07-11 — curve freshness fix
 
 - **Root cause of the stale 2026-06-30 curve: `ois.py` only ever read
   `oisddata.zip`, the multi-year ARCHIVE - which the Bank's own FAQ says
@@ -897,7 +934,7 @@ Changes apply forward only; nothing is retrofitted. Locked calls are never touch
   Fixture-tested for both the pass and hard-stop paths, using the actual
   stale/fresh dates from this real incident.
 
-## 2026-08-08 — scheduled vs special meetings split; probability-clip logged
+## 2026-07-11 — scheduled vs special meetings split; probability-clip logged
 
 - **`scheduled` (bool) added to `data/market_history.csv` and every ladder
   record**: False for `special_minutes` (the two March 2020 emergency
@@ -922,7 +959,7 @@ Changes apply forward only; nothing is retrofitted. Locked calls are never touch
   can now see exactly what floor the log scores were computed under
   without reading the source.
 
-## 2026-08-08 — live site investigation: false alarm, contract test added anyway
+## 2026-07-11 — live site investigation: false alarm, contract test added anyway
 
 - **Investigated thoroughly before concluding anything, per instruction not
   to assume.** Compared: (1) the live deployed `index.html` byte-for-byte
@@ -953,7 +990,7 @@ Changes apply forward only; nothing is retrofitted. Locked calls are never touch
   - not a synthetic fixture, so it catches drift in the actual published
   data, not just the parsing logic.
 
-## 2026-08-08 — data/surprises.csv
+## 2026-07-11 — data/surprises.csv
 
 - **`surprise_bp = actual_change_bp - implied_change_bp`**, scheduled
   meetings only (91 of 94 - excludes the 2 specials and the very first
@@ -972,7 +1009,7 @@ Changes apply forward only; nothing is retrofitted. Locked calls are never touch
   (a scheduled meeting's prev-rate reference correctly points at an
   intervening special meeting's rate).
 
-## 2026-08-08 — the headline inference (Spec 3 OLS + Spec 2 ordered-logit LR test)
+## 2026-07-11 — the headline inference (Spec 3 OLS + Spec 2 ordered-logit LR test)
 
 - **statsmodels added as a new dependency, specifically and only for
   Newey-West HAC standard errors.** Not something worth hand-deriving
@@ -1023,7 +1060,7 @@ Changes apply forward only; nothing is retrofitted. Locked calls are never touch
   index.html or otherwise published** - confirmed by grep - per
   instruction, for review first.
 
-## 2026-08-08 — Results section published to the site (ladder v1)
+## 2026-07-11 — Results section published to the site (ladder v1)
 
 - **New "Results: benchmark ladder" card**, fetching `data/ladder_v1.json`
   and rendering the SCHEDULED-ONLY headline table (L0-L4: mean Brier,
@@ -1050,7 +1087,7 @@ Changes apply forward only; nothing is retrofitted. Locked calls are never touch
   L1's row highlighted in accent colour, zero console errors, zero failed
   network requests.
 
-## 2026-08-08 — lock rehearsal (dry run, fresh curve)
+## 2026-07-11 — lock rehearsal (dry run, fresh curve)
 
 - **`python -m pipeline.predict.lock 2026-07-30 rehearsal-2026-07`** run
   end to end with the now-fixed fresh-curve pipeline. Curve as of
@@ -1073,7 +1110,7 @@ Changes apply forward only; nothing is retrofitted. Locked calls are never touch
   already used for `dryrun-2026-07.json`, since both files share the same
   `point_call: null` schema).
 
-## 2026-08-08 — site v2 (design, interactivity, context panel, annotations, methodology)
+## 2026-07-12 — site v2 (design, interactivity, context panel, annotations, methodology)
 
 Site-only session, hard constraint: nothing in `pipeline/score`,
 `pipeline/market`, `pipeline/predict`, the lexicon, or any existing data
@@ -1143,7 +1180,7 @@ read-only and only ever writes NEW json files.
   windowing, OIS-path shape, annotation header parsing incl. the HARD-STOP
   path) - none make live calls.
 
-## 2026-07-12 - evidence inspector (`pipeline/inspect.py`)
+## 2026-07-12 — evidence inspector (`pipeline/inspect.py`)
 - New tooling module for drafting/inspection only, never read by the site.
   Imports `pipeline/score/abg.py`'s tokeniser (`_TOKEN`), lexicon loader
   (`load_abg_lexicon`) and noun-matcher (`_noun_matches_at`) verbatim rather
@@ -1169,7 +1206,7 @@ read-only and only ever writes NEW json files.
 - `--vs-trailing` is descriptive only (raw counts and deltas vs a simple
   average) - no significance testing, per instruction.
 
-## 2026-07-12 - Track record section (`data/track_record.json`, `index.html`)
+## 2026-07-12 — Track record section (`data/track_record.json`, `index.html`)
 - New `pipeline/build_track_record.py` (site layer, additive) reads
   `data/predictions/*.json` (never writes to them) and writes a flat summary
   to `data/track_record.json`, which a new "Track record" section on the
@@ -1203,3 +1240,91 @@ read-only and only ever writes NEW json files.
   Verified rendering locally in a real browser (`preview_*` tools): both
   draft rows render with correct badges/values, empty-state note shows, no
   console errors.
+
+## 2026-07-13 — final polish: Spec 3 published, lexicon sparsity, repo front door
+
+- **The headline inference (Spec 3 + Spec 2) is now published to the site's
+  Results section**, ending the "NOT published - for review first" status
+  from the headline-inference entry (2026-07-11, formerly misdated
+  2026-08-08 - see the erratum below). Values are rendered verbatim from
+  `data/inference_v1.json` by index.html's JS (no re-rounding, no
+  re-derivation); the fragility non-replication and Spec 2's null are shown
+  in the same sentence as the full-sample p-value, never separated from it.
+  A one-line plain-English caption sits under both the ladder table and the
+  Spec 3 line, each marked DRAFT for JF to revise.
+- **Lexicon-sparsity statistic computed read-only and quoted on
+  methodology.html#limitations**: per document, total_hits = abg_hawk +
+  abg_dove from `data/index.json`; across all 94 documents the median is 2
+  hits, Q1 = 1, Q3 = 3 (IQR = 2), min 0, max 12. Computed by the additive
+  script `pipeline/lexicon_sparsity.py` (reads index.json, writes nothing,
+  imports nothing from the science layer). Quartiles use
+  `statistics.quantiles(n=4, method="inclusive")` - the median-inclusive
+  convention - stated on the page rather than left implicit.
+- **methodology.html's five stubs replaced with a factual specification
+  sheet** (Data / Index construction / Market benchmark / Evaluation /
+  Limitations), every claim traceable inline to code or a dated entry in
+  this file; every section carries a DRAFT marker - the interpretive
+  discussion is Jake's to write, not generated.
+- **Repo front door for an academic reader**: README rewritten (research
+  question, pipeline diagram, headline ladder + Spec 3 numbers copied
+  verbatim from the JSON files, quickstart, repo map, limitations pointer);
+  CITATION.cff added; a GitHub Actions workflow runs pytest on every push -
+  tests only, it never rebuilds data and never touches
+  `data/predictions/`; repo description/topics set via gh. A dated table
+  of contents was added to the top of this file and the two 2026-07-12
+  headers' dash style normalised - no entry wording, dates or meaning
+  changed.
+- **Date oddity in earlier headers**: noticed during this session that
+  entries dated 2026-08-01/2026-08-08 sat before entries dated 2026-07-12
+  in file order. Investigated against commit evidence the same day and
+  corrected - see the erratum entry below for the full table and the root
+  cause.
+
+## 2026-07-13 — ERRATUM: entry header dates corrected against commit evidence
+
+Header dates in this file had been written from an assumed weekly session
+cadence instead of the system clock: `git log --follow -p` shows every
+misdated entry was actually committed on 11-12 July 2026, while the headers
+claimed dates up to four weeks later. Each header below was corrected in
+place to the date of the commit that introduced it; **no entry wording was
+changed**. Body-text cross-references to the old dates (in earlier entries,
+committed docstrings, and data/*.json notes) resolve via this table. The
+2026-07-05 "repo created" header predates the first commit (b66db84,
+2026-07-10) and cannot be verified from git; it is not future-dated and no
+evidence contradicts it, so it is left unchanged. Root cause: dates were
+recalled from memory/assumed schedule and never checked with `date` — a
+rule now added to CLAUDE.md, with a pytest guard
+(`pipeline/tests/test_decisions_dates.py`) that fails on any future-dated
+entry.
+
+| Entry | Wrong date | Corrected date | Evidencing commit |
+|---|---|---|---|
+| corpus audit: full-text repair + special meetings | 2026-07-18 | 2026-07-11 | 69f4593 |
+| A&BG (2012) baseline lexicon | 2026-07-18 | 2026-07-11 | 8d56446 |
+| voting-record parsing and reconciliation | 2026-07-18 | 2026-07-11 | 8d56446 |
+| first validation pass (v1) | 2026-07-18 | 2026-07-11 | 8d56446 |
+| site: A&BG chart, retiring starter_v0 fields from the UI | 2026-07-18 | 2026-07-11 | 8d56446 |
+| 19 March 2020 special meeting added | 2026-07-25 | 2026-07-11 | 32659bd |
+| validation join fixed: voting-sheet date is canonical | 2026-07-25 | 2026-07-11 | 32659bd |
+| neutral_value published in index.json | 2026-07-25 | 2026-07-11 | 32659bd |
+| member-behaviour table (seeds Stage 4) | 2026-07-25 | 2026-07-11 | 32659bd |
+| market benchmark: OIS forward curve + SONIA | 2026-07-25 | 2026-07-11 | 523e44d |
+| market_probs: two-state ±25bp assumption | 2026-07-25 | 2026-07-11 | 523e44d |
+| lock and scoring machinery | 2026-07-25 | 2026-07-11 | 523e44d |
+| site call card + dry run | 2026-07-25 | 2026-07-11 | 523e44d |
+| smoothed-curve bias: quantified, offset convention chosen | 2026-08-01 | 2026-07-11 | 329a5a9 |
+| 2 null-decision documents recovered | 2026-08-01 | 2026-07-11 | 329a5a9 |
+| historical market benchmark: data/market_history.csv | 2026-08-01 | 2026-07-11 | 329a5a9 |
+| decision classifier bug found and fixed | 2026-08-01 | 2026-07-11 | 329a5a9 |
+| Part B sanity checks | 2026-08-01 | 2026-07-11 | 329a5a9 |
+| scipy added, for the ordered logit models only | 2026-08-01 | 2026-07-11 | 329a5a9 |
+| the benchmark ladder (first real backtest), L0-L4 | 2026-08-01 | 2026-07-11 | 329a5a9 |
+| curve freshness fix | 2026-08-08 | 2026-07-11 | 95a9af7 |
+| scheduled vs special meetings split; probability-clip logged | 2026-08-08 | 2026-07-11 | 95a9af7 |
+| live site investigation: false alarm, contract test added anyway | 2026-08-08 | 2026-07-11 | 95a9af7 |
+| data/surprises.csv | 2026-08-08 | 2026-07-11 | 95a9af7 |
+| the headline inference (Spec 3 OLS + Spec 2 ordered-logit LR test) | 2026-08-08 | 2026-07-11 | 95a9af7 |
+| Results section published to the site (ladder v1) | 2026-08-08 | 2026-07-11 | 95a9af7 |
+| lock rehearsal (dry run, fresh curve) | 2026-08-08 | 2026-07-11 | 95a9af7 |
+| site v2 (design, interactivity, context panel, annotations, methodology) | 2026-08-08 | 2026-07-12 | c2356a2 |
+| final polish: Spec 3 published, lexicon sparsity, repo front door | 2026-07-12 | 2026-07-13 | uncommitted (this session; `date` = 2026-07-13) |

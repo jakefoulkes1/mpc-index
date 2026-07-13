@@ -6,7 +6,7 @@ reported honestly including a small-n post-hiking-cycle fragility check.
 Spec 3: OLS of surprise_bp (data/surprises.csv) on the lagged A&BG index
 level, Newey-West HAC standard errors (statsmodels). A second version adds
 lagged vote skew. "Lagged" = the PREVIOUS meeting's value, same convention
-as the benchmark ladder's L3 (see DECISIONS.md, 2026-08-01, on why
+as the benchmark ladder's L3 (see DECISIONS.md, 2026-07-11, on why
 index_level is lagged there - the identical reasoning applies here: a
 meeting's own minutes publish simultaneously with its own decision, so
 using them unlagged wouldn't be information available before that

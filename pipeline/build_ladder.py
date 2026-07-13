@@ -1,6 +1,6 @@
 """Runs the expanding-window benchmark ladder (L0-L4) and writes
 data/ladder_v1.json. See pipeline/ladder.py for every model's definition
-and DECISIONS.md (2026-08-01) for the modelling choices.
+and DECISIONS.md (2026-07-11) for the modelling choices.
 
 NOT published to the site - results get reviewed before display, per
 instruction.
@@ -130,7 +130,7 @@ def main() -> None:
         "notes": ("3-class outcomes coded by sign only (a 50bp+ move counts the same as a "
                   "smaller move in the same direction). L3's index_level and skew are both "
                   "the PREVIOUS meeting's values, not the target's own - see DECISIONS.md, "
-                  "2026-08-01, for why. HEADLINE evaluation is scheduled meetings only - "
+                  "2026-07-11, for why. HEADLINE evaluation is scheduled meetings only - "
                   "special/emergency meetings (e.g. the March 2020 Covid cuts) could not have "
                   "been pre-registered forecasts, since at lock time nobody knew they'd occur; "
                   "they're reported separately as a robustness check, not blended into the "

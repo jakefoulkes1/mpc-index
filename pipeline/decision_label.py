@@ -11,7 +11,7 @@ document; this is the one classifier used everywhere a document needs a
 hike/hold/cut label (pipeline/validate.py, pipeline/build_market_history.py
 sanity checks, the ladder in pipeline/ladder.py, index.html's chart
 markers) so there is exactly one place this can go wrong, not several
-copies that can drift. See DECISIONS.md, 2026-08-01.
+copies that can drift. See DECISIONS.md, 2026-07-11.
 """
 import re
 
