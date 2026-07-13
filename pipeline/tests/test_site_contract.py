@@ -8,7 +8,7 @@ DECISIONS.md) - a live-site investigation found the site was actually fine
 Loading..." impression, not a real bug - confirmed by rendering the exact
 deployed HTML+JSON with a real JS-executing browser), but the underlying
 risk (index.html and build_index.py's schema silently diverging) is real
-and worth guarding against going forward. See DECISIONS.md, 2026-08-08.
+and worth guarding against going forward. See DECISIONS.md, 2026-07-11.
 
 The required-field lists below are maintained by hand against index.html's
 actual `doc.xxx` / `data.xxx` / `p.xxx` / `m0.xxx` reads - update both
@@ -79,3 +79,19 @@ def test_ladder_json_has_every_field_the_results_section_reads():
         assert model in scores, f"{path.name}'s headline_scores_scheduled_only is missing model {model}"
         missing_fields = REQUIRED_LADDER_MODEL_FIELDS - scores[model].keys()
         assert not missing_fields, f"{path.name}'s {model} entry is missing field(s): {missing_fields}"
+
+
+# Every field index.html's renderInference() reads from data/inference_v1.json,
+# maintained by hand against the JS - same pattern as the other contract tests.
+def test_inference_json_has_every_field_the_results_section_reads():
+    d = json.loads((ROOT / "data" / "inference_v1.json").read_text())
+    full = d["full_sample"]["spec3_surprise_on_lagged_index"]
+    assert {"newey_west_maxlags", "n", "coefficients"} <= full.keys()
+    li = full["coefficients"]["lagged_index"]
+    assert {"coef", "t", "p"} <= li.keys()
+    frag = d["fragility_check_subsample"]
+    assert "start_date" in frag and "n" in frag["results"]
+    frag_li = frag["results"]["spec3_surprise_on_lagged_index"]["coefficients"]["lagged_index"]
+    assert {"coef", "p"} <= frag_li.keys()
+    lr = d["full_sample"]["spec2_ordered_logit_lr_test"]
+    assert {"lr_statistic", "p_value"} <= lr.keys()

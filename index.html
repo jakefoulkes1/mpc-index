@@ -271,6 +271,21 @@
     before the announcement, timestamped, and scored &mdash; including the misses.</p>
   </header>
 
+  <!-- 0. What is this? -->
+  <!-- DRAFT: JF to revise -->
+  <section class="card" id="what-is-this">
+    <h2>What is this?</h2>
+    <p style="margin:0">This project tests whether the tone of the Bank of England's MPC minutes
+    says anything about the next Bank Rate decision that financial markets have not already
+    priced in. Every minutes document since August 2015 is scored with a published
+    hawkish/dovish dictionary (Apel &amp; Blix Grimaldi, 2012), producing the communication
+    index charted below. The bar to clear is the market itself: probabilities implied by the
+    Bank of England's own OIS forward curve. Before each announcement a probabilistic call is
+    locked and timestamped; after the announcement it is scored, and misses stay on the record
+    permanently. A null result &mdash; the market already prices whatever the tone says &mdash;
+    is itself the finding.</p>
+  </section>
+
   <!-- 1. The call -->
   <section class="card call-card" id="call-card" style="display:none">
     <div class="call-badge" id="call-badge"></div>
@@ -351,7 +366,8 @@
 
   <!-- 3. Results -->
   <section class="card">
-    <h2 id="ladder-heading">Results: benchmark ladder</h2>
+    <h2 id="ladder-heading">Results</h2>
+    <p class="subhead">Benchmark ladder <span class="count" id="ladder-schema"></span></p>
     <div id="ladder-status" class="fine">Loading&hellip;</div>
     <div id="ladder-content" style="display:none">
       <p class="fine" id="ladder-meta"></p>
@@ -372,6 +388,10 @@
           <tbody id="ladder-tbody"></tbody>
         </table>
       </div>
+      <!-- DRAFT: JF to revise -->
+      <p class="fine" id="ladder-caption"><em>In plain English: the market's own pricing (L1)
+      forecast these decisions best &mdash; every model that adds the tone index scored worse,
+      not better.</em></p>
       <p class="fine">
         <strong>Standing caveat: the market benchmark (L1) is the bar.</strong> L2&ndash;L4
         must show genuine skill above L1 to be worth anything &mdash; matching or beating
@@ -379,6 +399,17 @@
         the methodology log for every modelling choice and the full per-meeting breakdown in
         <code>data/ladder_v1.json</code>.
       </p>
+    </div>
+
+    <hr class="divider">
+    <p class="subhead">Headline statistical test (Spec 3)</p>
+    <div id="inference-status" class="fine">Loading&hellip;</div>
+    <div id="inference-content" style="display:none">
+      <p id="spec3-line" style="margin:0 0 12px"></p>
+      <!-- DRAFT: JF to revise -->
+      <p class="fine" id="spec3-caption" style="margin-top:0"><em>In plain English: one test
+      finds a weak link between the previous minutes' tone and how the decision surprised the
+      market, but it fades after 2023 and a stricter test finds nothing.</em></p>
     </div>
   </section>
 
@@ -444,7 +475,7 @@ function fetchJSON(path) {
 }
 function fmtDate(iso, opts) {
   return new Date(iso).toLocaleDateString('en-GB',
-    opts || { day: 'numeric', month: 'short', year: 'numeric' });
+    opts || { day: 'numeric', month: 'long', year: 'numeric' });
 }
 // One decision classifier, matching pipeline/decision_label.py: the verb
 // adjacent to "Bank Rate", not the first word of a (possibly compound) string.
@@ -465,10 +496,9 @@ fetch('data/ladder_v1.json')
   });
 
 function renderLadder(d) {
-  document.getElementById('ladder-heading').innerHTML =
-    `Results: benchmark ladder <span class="count">(${d.schema})</span>`;
+  document.getElementById('ladder-schema').textContent = `(${d.schema})`;
   document.getElementById('ladder-meta').innerHTML =
-    `Scheduled meetings only, evaluated ${d.eval_start} &rarr; present ` +
+    `Scheduled meetings only, evaluated ${fmtDate(d.eval_start)} &rarr; present ` +
     `(<strong>n=${d.n_scheduled}</strong>) &middot; ${d.n_specials} special meeting(s) reported ` +
     `separately, not blended in &middot; log-score probability floor ${d.log_score_probability_clip}.`;
 
@@ -485,6 +515,34 @@ function renderLadder(d) {
 
   document.getElementById('ladder-status').style.display = 'none';
   document.getElementById('ladder-content').style.display = 'block';
+}
+
+// Spec 3 / Spec 2 headline inference. Values are shown exactly as they
+// appear in data/inference_v1.json - no re-rounding.
+fetchJSON('data/inference_v1.json')
+  .then(renderInference)
+  .catch(err => {
+    document.getElementById('inference-status').textContent =
+      'Could not load data/inference_v1.json (' + err.message + ').';
+  });
+
+function renderInference(d) {
+  const full = d.full_sample.spec3_surprise_on_lagged_index;
+  const li = full.coefficients.lagged_index;
+  const frag = d.fragility_check_subsample;
+  const fragLi = frag.results.spec3_surprise_on_lagged_index.coefficients.lagged_index;
+  const lr = d.full_sample.spec2_ordered_logit_lr_test;
+  document.getElementById('spec3-line').innerHTML =
+    `Regressing each meeting's market surprise on the <em>previous</em> meeting's index ` +
+    `(OLS, Newey&ndash;West standard errors, ${full.newey_west_maxlags} lags, n=${full.n} ` +
+    `scheduled meetings): coefficient <strong>${li.coef}</strong>, t = ${li.t}, ` +
+    `<strong>p = ${li.p}</strong>. On the post-hiking-cycle subsample ` +
+    `(from ${fmtDate(frag.start_date)}, n=${frag.results.n}) the result does not replicate: ` +
+    `coefficient ${fragLi.coef}, p = ${fragLi.p}. Spec 2, an ordered-logit likelihood-ratio ` +
+    `test on the discrete decision, finds nothing: LR = ${lr.lr_statistic}, ` +
+    `p = ${lr.p_value}. Full output: <code>data/inference_v1.json</code>.`;
+  document.getElementById('inference-status').style.display = 'none';
+  document.getElementById('inference-content').style.display = 'block';
 }
 
 Promise.all([
@@ -556,7 +614,7 @@ function renderTrackRecord(d) {
   const hasLocked = d.records.some(r => r.kind === 'locked');
   const note = document.getElementById('track-empty-note');
   if (!hasLocked) {
-    note.textContent = `First pre-registered call: ${fmtDate(d.first_pre_registered_call, { day: 'numeric', month: 'long', year: 'numeric' })}.`;
+    note.textContent = `First pre-registered call: ${fmtDate(d.first_pre_registered_call)}.`;
     note.style.display = 'block';
   }
 
@@ -572,9 +630,7 @@ function renderCallCard(p) {
   badge.classList.add(locked ? 'locked' : 'dry-run');
   badge.textContent = locked ? 'LOCKED CALL' : 'DRY RUN · NOT A FORECAST';
 
-  const announceDate = new Date(p.meeting_announcement).toLocaleDateString('en-GB', {
-    day: 'numeric', month: 'long', year: 'numeric',
-  });
+  const announceDate = fmtDate(p.meeting_announcement);
   document.getElementById('call-heading').innerHTML =
     `Next announcement: <strong>${announceDate}</strong> &middot; ` +
     (locked
@@ -610,7 +666,7 @@ function renderLatest(data) {
   const cls = net > 0 ? 'sign-hawk' : (net < 0 ? 'sign-dove' : '');
   const word = net > 0 ? 'net hawkish' : (net < 0 ? 'net dovish' : 'neutral');
   document.getElementById('docline').innerHTML =
-    `MPC minutes, meeting ending <strong>${doc.meeting_end}</strong> &middot; published ${doc.published}` +
+    `MPC minutes, meeting ending <strong>${fmtDate(doc.meeting_end)}</strong> &middot; published ${fmtDate(doc.published)}` +
     ` &middot; decision: ${doc.decision} &middot; vote ${doc.vote}`;
   document.getElementById('score').innerHTML =
     `<span class="${cls}">${doc.abg_net_index.toFixed(3)}</span>` +
@@ -625,7 +681,7 @@ function renderLatest(data) {
 
   const gen = document.getElementById('gen-note');
   if (gen && data.generated_utc) {
-    gen.textContent = 'Index data generated ' + data.generated_utc.slice(0, 10) + '.';
+    gen.textContent = 'Index data generated ' + fmtDate(data.generated_utc) + '.';
   }
 }
 
@@ -718,7 +774,7 @@ function renderChart(data, context) {
     const tri = `${cx},${cy + dy} ${cx - 4},${cy + dy + (hawk ? -6 : 6)} ${cx + 4},${cy + dy + (hawk ? -6 : 6)}`;
     const marker = el('polygon', { points: tri, fill: color });
     const title = el('title', {});
-    title.textContent = `${d.doc_id}: ${d.decision} (${d.published})`;
+    title.textContent = `${d.doc_id}: ${d.decision} (${fmtDate(d.published)})`;
     marker.appendChild(title);
     decisionLayer.appendChild(marker);
   });
@@ -814,8 +870,8 @@ function renderContext(ctx) {
   // (a) OIS-implied path for the next 3 meetings
   const op = ctx.ois_path;
   document.getElementById('ois-sub').innerHTML =
-    `Curve as of <b style="color:var(--text)">${op.curve_as_of}</b> vs SONIA ${op.sonia_pct.toFixed(3)}% ` +
-    `(${op.sonia_as_of}) &middot; two-state &plusmn;${op.assumed_move_bp}bp assumption.`;
+    `Curve as of <b style="color:var(--text)">${fmtDate(op.curve_as_of)}</b> vs SONIA ${op.sonia_pct.toFixed(3)}% ` +
+    `(${fmtDate(op.sonia_as_of)}) &middot; two-state &plusmn;${op.assumed_move_bp}bp assumption.`;
   const rowsEl = document.getElementById('ois-rows');
   rowsEl.innerHTML = '';
   op.meetings.forEach(m => {
@@ -924,7 +980,7 @@ function drawSparkline(svgId, series, color) {
       x: i === 0 ? PAD_L : W - PAD_R, y: H - 4, fill: '#6b7280',
       'font-size': 9, 'font-family': 'system-ui, sans-serif',
       'text-anchor': i === 0 ? 'start' : 'end',
-    })).textContent = fmtDate(s[0], { month: 'short', year: '2-digit' });
+    })).textContent = fmtDate(s[0], { month: 'short', year: 'numeric' });
   });
 }
 
