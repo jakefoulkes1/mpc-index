@@ -39,6 +39,7 @@ Changes apply forward only; nothing is retrofitted. Locked calls are never touch
 - 2026-07-12 — [Track record section (`data/track_record.json`, `index.html`)](#2026-07-12--track-record-section-datatrack_recordjson-indexhtml)
 - 2026-07-13 — [final polish: Spec 3 published, lexicon sparsity, repo front door](#2026-07-13--final-polish-spec-3-published-lexicon-sparsity-repo-front-door)
 - 2026-07-13 — [ERRATUM: entry header dates corrected against commit evidence](#2026-07-13--erratum-entry-header-dates-corrected-against-commit-evidence)
+- 2026-07-13 — [CI portability: Spec 2 synthetic test moved off the degeneracy cliff](#2026-07-13--ci-portability-spec-2-synthetic-test-moved-off-the-degeneracy-cliff)
 
 ## 2026-07-05 — repo created
 - **Thesis:** does the tone of MPC communication carry information about the next
@@ -1328,3 +1329,23 @@ entry.
 | lock rehearsal (dry run, fresh curve) | 2026-08-08 | 2026-07-11 | 95a9af7 |
 | site v2 (design, interactivity, context panel, annotations, methodology) | 2026-08-08 | 2026-07-12 | c2356a2 |
 | final polish: Spec 3 published, lexicon sparsity, repo front door | 2026-07-12 | 2026-07-13 | uncommitted (this session; `date` = 2026-07-13) |
+
+## 2026-07-13 — CI portability: Spec 2 synthetic test moved off the degeneracy cliff
+
+- **First CI run failed on Linux while the identical suite passed on macOS
+  with identical library versions** (scipy 1.18.0, statsmodels 0.14.6,
+  numpy 2.5.1 on both). Root cause, diagnosed not guessed:
+  `test_spec2_lr_test_detects_informative_added_feature` built its
+  synthetic data with an index effect of 30, driving the fitted ordered-
+  logit coefficient close to `fit_ordered_logit`'s |param| > 50 degeneracy
+  guard - close enough that BLAS-level floating-point differences
+  (Accelerate on macOS vs OpenBLAS on Linux) tipped the same fit over the
+  threshold on one platform and not the other.
+- **Fix is in the test only** - the effect size drops from 30 to 10, where
+  the fitted parameters are O(1) (checked: max |param| ≈ 3.1) and the LR
+  test still detects the feature decisively (p ≈ 0.004). No frozen code
+  touched; `pipeline/inference.py` unchanged, so `data/inference_v1.json`
+  is byte-identical on rebuild. Standardising features inside spec2 (the
+  ladder's documented fix for the same guard-vs-scale artefact) was
+  considered and deliberately NOT done this close to the lock, since it
+  could flip the published fragility subsample's `converged: false`.

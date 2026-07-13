@@ -39,8 +39,14 @@ def test_spec2_lr_test_detects_informative_added_feature():
     for i in range(60):
         implied = random.uniform(-20, 20)
         index_val = random.uniform(0, 2)
-        # outcome driven by BOTH implied and a strong index effect
-        score = implied + 30 * (index_val - 1)
+        # outcome driven by BOTH implied and a clearly informative index
+        # effect. Kept moderate (10, not 30) on purpose: a stronger effect
+        # pushes the fitted index coefficient toward fit_ordered_logit's
+        # |param| > 50 degeneracy guard, where BLAS-level floating-point
+        # differences made this test pass on macOS but fail on Linux CI
+        # (found 2026-07-13, first CI run). At 10 the fitted params are O(1)
+        # and the LR test still detects the feature decisively (p ~ 0.004).
+        score = implied + 10 * (index_val - 1)
         outcome = "hike" if score > 10 else ("cut" if score < -10 else "hold")
         if random.random() < 0.1:  # a little label noise, avoids quasi-complete separation
             outcome = random.choice(["hike", "hold", "cut"])
