@@ -1012,7 +1012,7 @@ function renderEpisodes(d) {
   const status = document.getElementById('episodes-status');
   const list = document.getElementById('episodes-list');
   if (!d.episodes || d.episodes.length === 0) {
-    status.textContent = 'No episodes published yet.';
+    status.textContent = 'First episode: 30 July 2026.';
     return;
   }
   list.innerHTML = d.episodes.map(ep => {

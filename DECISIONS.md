@@ -41,6 +41,7 @@ Changes apply forward only; nothing is retrofitted. Locked calls are never touch
 - 2026-07-13 — [ERRATUM: entry header dates corrected against commit evidence](#2026-07-13--erratum-entry-header-dates-corrected-against-commit-evidence)
 - 2026-07-13 — [CI portability: Spec 2 synthetic test moved off the degeneracy cliff](#2026-07-13--ci-portability-spec-2-synthetic-test-moved-off-the-degeneracy-cliff)
 - 2026-07-28 — [pre-lock rehearsal + LOCKDAY runbook](#2026-07-28--pre-lock-rehearsal--lockday-runbook)
+- 2026-07-28 — [placeholder episode removed from the published site](#2026-07-28--placeholder-episode-removed-from-the-published-site)
 
 ## 2026-07-05 — repo created
 - **Thesis:** does the tone of MPC communication carry information about the next
@@ -1408,3 +1409,40 @@ entry.
   table, a public-facing change nobody asked for on a rehearsal day. Tuesday's
   runbook step 7 rebuilds it as part of the real lock, which sweeps the
   rehearsal row in then, correctly badged.
+
+## 2026-07-28 — placeholder episode removed from the published site
+
+- **`site/annotations/2021-11-the-hold-that-wasnt.md` deleted.** It was the
+  single placeholder episode created with the annotations machinery on
+  2026-07-12, body `TODO(Jake): write this episode in your own words`. With a
+  real locked call now on the site, a published TODO addressed to the
+  maintainer is not something a stranger should read. `data/annotations.json`
+  rebuilt: 0 episodes. No episode text was written to replace it - all episode
+  text is Jake's, per the 2026-07-12 entry.
+- **Episodes section keeps its empty state rather than being hidden.**
+  `renderEpisodes()`'s existing zero-episode branch text changed from "No
+  episodes published yet." to **"First episode: 30 July 2026."**, matching the
+  Track record section's "First pre-registered call:" convention - a forward
+  commitment with a date attached, not an apology for missing content. The
+  section stays rendered; verified by feeding the site's own unmodified
+  `renderEpisodes()` the real 0-episode `annotations.json` in a browser.
+- **Site layer only.** No science-layer file, no data schema, and nothing under
+  `data/predictions/` was touched; `lock-2026-07.json` is unmodified. 107/107
+  tests green (the annotations contract test iterates episodes, so an empty
+  list passes without a test change).
+- **Placeholder inventory taken, nothing rewritten.** 9 `DRAFT` markers across
+  `index.html` and `methodology.html` catalogued for Jake to draft replacements
+  himself. Two things the inventory turned up, recorded because they are
+  reader-visible on a live site: the Results section carries a visible
+  `[DRAFT - Jake to rewrite this paragraph... Placeholder framing:]` block
+  directly above the headline ladder table (`index.html:375`), and
+  `methodology.html` renders five visible "DRAFT - JF TO REVISE" badges, one
+  per section. A case-sensitive `grep DRAFT` does not match those five badges
+  (their text is "Draft"); they were found via `draft-note`. Left in place per
+  instruction - they are Jake's to write.
+- **Deployment note, not a decision:** GitHub Pages had not rebuilt for the
+  lock commit `2726581` (pushed 19:19Z) as of 19:30Z - the live site was still
+  serving `5019698`, with `lock-2026-07.json` returning 404 and the card
+  reading DRY RUN. No `pages-build-deployment` run exists for that push, while
+  every earlier push to `main` has one. Recorded here so the gap between "lock
+  pushed" and "lock visible" is on the record.
