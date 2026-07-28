@@ -1,0 +1,31 @@
+{
+  "schema": "prediction-v1",
+  "meeting_announcement": "2026-07-30",
+  "lock_timestamp": "2026-07-28T19:08:36+00:00",
+  "code_version": "5019698962033e53ab13302f6d6a7a294cf185b6",
+  "input_hashes": {
+    "corpus_index_json_sha256": "eb2ae9be6a838b14f9bc062ee8a3ea184f718d3e656ce6cbdb501af3c9e3f38e",
+    "ois_snapshot_sha256": "bcecad663224b7a905eb16812e2cbcb18ecbc0115fbc1ecb97b9c6d6a9e5ce03"
+  },
+  "m0_market_only": {
+    "meeting_date": "2026-07-30",
+    "curve_as_of": "2026-07-27",
+    "sonia_as_of": "2026-07-24",
+    "forward_rate_pct": 3.7404,
+    "sonia_pct": 3.7307,
+    "assumed_move_bp": 25.0,
+    "lock_offset_days": 3,
+    "implied_change_bp": 0.97,
+    "p_hike": 0.0386,
+    "p_hold": 0.9614,
+    "p_cut": 0.0
+  },
+  "index_current": 1.7143,
+  "index_current_doc_id": "minutes-2026-06",
+  "index_trailing_mean": 1.0536,
+  "index_trailing_n": 4,
+  "point_call": "hold",
+  "rationale": "Hold at 3.75%. The communication index is recorded as context and does not enter the call: L3 scores −0.6729 against the market-only benchmark and Spec 2 returns p = 0.4918, so there is no warrant on this project's own evidence for letting tone override L1. p(hike) is shaded modestly below m0's 3.86% for two regime-specific reasons. First, with the short curve steeply upward-sloping (near 4.25% priced within six months) a forward read, at meeting plus three days, interpolated across whole-month buckets, absorbs September's expectations along with July's and overstates the probability attaching to this meeting. Second, the fiscal repricing of 20 July, which carried the ten-year gilt to 5.04%, is a risk premium rather than an expectation of Bank Rate — the contamination this methodology's first limitation anticipates. Both claims are testable against the September lock, when the near-month slope will differ. The macro flow since 18 June runs against the two dissenters on nearly every measure they invoked. Headline CPI fell to 2.6% against a 2.7% consensus, its lowest in fifteen months; services eased to 3.6%; regular pay growth slowed to 3.4%, joint-slowest since October 2020; input producer prices decelerated to 7.3% from 9.3% as Brent retraced. Greene and Pill dissented on an energy shock now unwinding. The counter-observation, recorded rather than passed over, is services producer price inflation at 4.3% in Q2, up from 3.2%.",
+  "outcome": null,
+  "scores": null
+}
