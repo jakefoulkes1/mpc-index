@@ -40,6 +40,7 @@ Changes apply forward only; nothing is retrofitted. Locked calls are never touch
 - 2026-07-13 — [final polish: Spec 3 published, lexicon sparsity, repo front door](#2026-07-13--final-polish-spec-3-published-lexicon-sparsity-repo-front-door)
 - 2026-07-13 — [ERRATUM: entry header dates corrected against commit evidence](#2026-07-13--erratum-entry-header-dates-corrected-against-commit-evidence)
 - 2026-07-13 — [CI portability: Spec 2 synthetic test moved off the degeneracy cliff](#2026-07-13--ci-portability-spec-2-synthetic-test-moved-off-the-degeneracy-cliff)
+- 2026-07-28 — [pre-lock rehearsal + LOCKDAY runbook](#2026-07-28--pre-lock-rehearsal--lockday-runbook)
 
 ## 2026-07-05 — repo created
 - **Thesis:** does the tone of MPC communication carry information about the next
@@ -1349,3 +1350,61 @@ entry.
   ladder's documented fix for the same guard-vs-scale artefact) was
   considered and deliberately NOT done this close to the lock, since it
   could flip the published fragility subsample's `converged: false`.
+
+## 2026-07-28 — pre-lock rehearsal + LOCKDAY runbook
+
+- **Rehearsal only: nothing locked, nothing tagged, science layer untouched.**
+  `python -m pipeline.predict.lock 2026-07-30 rehearsal-2026-07-26` run end to
+  end against live data. 107/107 tests green before and after. Curve as of
+  **2026-07-27**, 1 business day old at run time, so `assert_curve_is_fresh`
+  passed without being bypassed (SONIA as of 2026-07-24 - the usual few-day
+  publication lag between the two sources, as recorded 2026-07-11).
+- **The curve HAS repriced since the 2026-07-09 rehearsal, and repriced
+  HAWKISH.** m0 for 30 Jul moved from `implied_change_bp` 0.68 / p_hike 0.0271
+  to **0.97 / 0.0386**; on the same 2026-07-27 curve, 17 Sep prices 8.47bp
+  (p_hike 0.3388) and 5 Nov prices 23.15bp (p_hike 0.9259), against 6.08 /
+  12.86bp on the older 2026-06-30 curve under the same +3-day convention. The
+  freshness question this check was set up to answer is answered - the numbers
+  are not frozen, so this is a live file, not a stale one. The *direction* is
+  recorded here as an observation and nothing more: it runs against the dovish
+  repricing that had been expected from the June CPI print, and this project
+  does not have an inflation-expectations model that could adjudicate why. No
+  attempt was made to explain, adjust, or reconcile it - see the Sep/Nov
+  caveat below before treating the move as fully like-for-like.
+- **Sep/Nov comparison is against a 2026-06-30 curve, not the 2026-07-09 one.**
+  The 9 July rehearsal recorded only the 30 Jul meeting; the only earlier Sep/Nov
+  figures on file are the 2026-06-30 diagnostic table in the 2026-07-11
+  smoothed-curve entry. The 30 Jul comparison is like-for-like; the Sep/Nov
+  comparison spans 27 days of curve, not 18. Stated rather than papered over.
+- **`data/predictions/rehearsal-2026-07-26.json` carries a hand-added
+  `_rehearsal` key** (`is_rehearsal`, `not_a_locked_call`, a plain-English note,
+  and the real generation timestamp) so the file cannot be mistaken for a call
+  by a reader who only opens the JSON. Added **by hand after** the script ran:
+  `pipeline/predict/lock.py` is frozen and does not emit this key, and no
+  existing schema changed - `build_track_record.py` checks for required fields
+  and ignores extras, and already classifies `rehearsal-*` by filename prefix.
+- **Filename says 07-26, file was generated 07-28.** The name was specified in
+  the prompt (the originally scheduled rehearsal date); the run happened on the
+  28th. Rather than silently renaming or silently accepting it, the file's own
+  `_rehearsal.filename_date_note` records the discrepancy and points at
+  `lock_timestamp` as authoritative. Flagged for Jake to rename if he prefers.
+- **`point_call` / `rationale` confirmed unwritable by machine.** Repo-wide
+  grep: the only assignment to either field anywhere is
+  `pipeline/predict/lock.py:107-108` (`None` / the `TODO(Jake)` placeholder).
+  Every other reference - `index.html`, `build_track_record.py`, the tests -
+  reads. `score_outcomes.py` writes `outcome` and `scores` only. Asserted in
+  `pipeline/tests/test_lock.py:55,58` as well as checked by hand here.
+- **`LOCKDAY.md` written at the repo root**, correcting two things that would
+  have failed on the day: (1) `lock.py` takes positional args, there is no
+  `--name` flag; (2) the call card cannot flip to locked styling without
+  repointing `PREDICTION_FILE` at `index.html:465`, which still hardcodes
+  `dryrun-2026-07.json` - the manual step anticipated in the 2026-07-11 call
+  card entry. It also states the narrow exception to "lock files are never
+  modified": Thursday's `score_outcomes` run fills `outcome` and `scores`, the
+  two fields the schema leaves null for that purpose, and nothing else - which
+  is why the `lock-2026-07` tag is pushed on Tuesday, before the announcement.
+- **`data/track_record.json` deliberately NOT rebuilt in this session.**
+  Regenerating it would add the rehearsal row to the live site's Track record
+  table, a public-facing change nobody asked for on a rehearsal day. Tuesday's
+  runbook step 7 rebuilds it as part of the real lock, which sweeps the
+  rehearsal row in then, correctly badged.

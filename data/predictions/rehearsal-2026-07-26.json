@@ -1,0 +1,38 @@
+{
+  "schema": "prediction-v1",
+  "_rehearsal": {
+    "is_rehearsal": true,
+    "not_a_locked_call": true,
+    "note": "REHEARSAL ONLY - NOT A FORECAST AND NOT A LOCKED CALL. Written by a pre-lock rehearsal of the lock procedure ahead of the 30 July 2026 MPC announcement. point_call is null and rationale is the untouched TODO(Jake) placeholder: no human call has been made in this file and none will be. The real locked call lives in data/predictions/lock-2026-07.json, written separately by Jake. This key was added by hand after running pipeline/predict/lock.py; the script itself (frozen science layer) was not modified and does not emit it.",
+    "generated_utc": "2026-07-28T09:59:42+00:00",
+    "filename_date_note": "The filename says 2026-07-26 (the originally scheduled rehearsal date). This file was actually generated on 2026-07-28 - see lock_timestamp and generated_utc above, which are authoritative."
+  },
+  "meeting_announcement": "2026-07-30",
+  "lock_timestamp": "2026-07-28T09:59:42+00:00",
+  "code_version": "5a579139de52b425c174229674e98ef08b5d3c7c",
+  "input_hashes": {
+    "corpus_index_json_sha256": "eb2ae9be6a838b14f9bc062ee8a3ea184f718d3e656ce6cbdb501af3c9e3f38e",
+    "ois_snapshot_sha256": "bcecad663224b7a905eb16812e2cbcb18ecbc0115fbc1ecb97b9c6d6a9e5ce03"
+  },
+  "m0_market_only": {
+    "meeting_date": "2026-07-30",
+    "curve_as_of": "2026-07-27",
+    "sonia_as_of": "2026-07-24",
+    "forward_rate_pct": 3.7404,
+    "sonia_pct": 3.7307,
+    "assumed_move_bp": 25.0,
+    "lock_offset_days": 3,
+    "implied_change_bp": 0.97,
+    "p_hike": 0.0386,
+    "p_hold": 0.9614,
+    "p_cut": 0.0
+  },
+  "index_current": 1.7143,
+  "index_current_doc_id": "minutes-2026-06",
+  "index_trailing_mean": 1.0536,
+  "index_trailing_n": 4,
+  "point_call": null,
+  "rationale": "TODO(Jake) - written by me before lock",
+  "outcome": null,
+  "scores": null
+}
