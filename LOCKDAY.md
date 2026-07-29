@@ -264,6 +264,30 @@ git add -A && git commit -m "Outcome: 30 July 2026 MPC" && git push origin main
 No new tag on Thursday. `lock-2026-07` must keep pointing at Tuesday's commit —
 that is the whole point of it.
 
+### 6b. If the site has not updated after ~5 minutes — the empty-commit fallback
+
+Why this step exists: the 28 July lock commit pushed fine but **GitHub Pages
+never built it** — no `pages build and deployment` run was created for that push
+— so the locked call was not visible on the deployed site for about an hour,
+while the live page still showed DRY RUN. The push itself was not at fault.
+
+Check whether Pages actually built your push:
+
+```bash
+gh run list --limit 5
+```
+
+If there is a `tests` run for "Outcome: 30 July 2026 MPC" but **no**
+`pages build and deployment` run alongside it, push an empty commit to
+re-trigger the build. It changes no files:
+
+```bash
+git commit --allow-empty -m "Trigger Pages rebuild" && git push origin main
+```
+
+Then re-check `gh run list --limit 5` for a `pages build and deployment` entry,
+and give it a minute or two before hard-refreshing the site.
+
 ### 7. What to verify on the live site
 
 Hard-refresh <https://jakefoulkes1.github.io/mpc-index/> (**Cmd+Shift+R**) and

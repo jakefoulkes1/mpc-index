@@ -42,6 +42,7 @@ Changes apply forward only; nothing is retrofitted. Locked calls are never touch
 - 2026-07-13 — [CI portability: Spec 2 synthetic test moved off the degeneracy cliff](#2026-07-13--ci-portability-spec-2-synthetic-test-moved-off-the-degeneracy-cliff)
 - 2026-07-28 — [pre-lock rehearsal + LOCKDAY runbook](#2026-07-28--pre-lock-rehearsal--lockday-runbook)
 - 2026-07-28 — [placeholder episode removed from the published site](#2026-07-28--placeholder-episode-removed-from-the-published-site)
+- 2026-07-29 — [Results framing: author's text; Pages fallback in LOCKDAY](#2026-07-29--results-framing-authors-text-pages-fallback-in-lockday)
 
 ## 2026-07-05 — repo created
 - **Thesis:** does the tone of MPC communication carry information about the next
@@ -1446,3 +1447,39 @@ entry.
   reading DRY RUN. No `pages-build-deployment` run exists for that push, while
   every earlier push to `main` has one. Recorded here so the gap between "lock
   pushed" and "lock visible" is on the record.
+
+## 2026-07-29 — Results framing: author's text; Pages fallback in LOCKDAY
+
+- **The Results section's framing paragraph is now Jake's own prose, published
+  verbatim.** It replaces the placeholder that had been visible on the live site
+  above the ladder table (`index.html:375`, flagged HIGH in the 2026-07-28
+  inventory). The text was supplied by Jake and inserted **without editing,
+  expansion, or rewording** - the only changes are house-style HTML entities
+  (`&mdash;`, `&minus;`) so the rendered characters match the source exactly.
+  The `<em>` wrapper and the `[...]` brackets that gave it draft treatment are
+  gone; the `.results-framing` block styling (serif, accent left border) is
+  unchanged, so it reads as finished prose.
+- **Every figure in that paragraph was cross-checked against
+  `data/ladder_v1.json` before publishing, and all of them hold**: evaluation
+  from 1 January 2019; 60 scheduled meetings with the 2 specials reported
+  separately; `L3.skill_vs_l1 = -0.6729`; and no model beating L1 (L2 -0.1171,
+  L3 -0.6729, L4 -0.8166). Nothing in the ladder data was recomputed or
+  touched - this was a read-only check of a claim before it went on a live page.
+- **"Remove the surrounding DRAFT comment" had no target.** There is no DRAFT
+  HTML comment adjacent to that paragraph; the nearest comment is the structural
+  `<!-- 3. Results -->` section label. The two DRAFT comments elsewhere in the
+  Results section (`index.html:391`, `:409`) govern the ladder and Spec 3
+  captions, which are still draft and were explicitly reserved for Jake, so they
+  were left in place rather than swept up. 13 draft markers remain.
+- **`site/annotations/.gitkeep` added.** Deleting the placeholder episode on
+  2026-07-28 emptied the directory, and git does not track empty directories -
+  a fresh clone would not have had `site/annotations/` at all, so the documented
+  "drop a new .md file in site/annotations/" workflow would have needed an
+  undocumented `mkdir` first.
+- **LOCKDAY.md gains a Thursday step 6b: the empty-commit Pages fallback.**
+  Recorded because it is a real failure this project hit, not a hypothetical:
+  the 28 July lock commit pushed cleanly but GitHub Pages created no
+  `pages build and deployment` run for it, and the locked call was invisible on
+  the deployed site for about an hour while the page still read DRY RUN. The
+  fallback is `git commit --allow-empty` - it changes no files, so it cannot
+  touch the locked prediction, and it re-triggers a Pages build.

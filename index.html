@@ -372,13 +372,17 @@
     <div id="ladder-content" style="display:none">
       <p class="fine" id="ladder-meta"></p>
       <p class="results-framing">
-        <em>[DRAFT &mdash; Jake to rewrite this paragraph in his own words before this is
-        considered final. Placeholder framing: this table compares five models' ability to
-        forecast each MPC decision ahead of time, evaluated only on meetings that could
-        actually have been pre-registered (scheduled meetings; two 2020 emergency meetings
-        are reported separately, since nobody could have forecast them in advance). Lower
-        Brier and log scores are better. Skill is measured against L1, the market-only
-        benchmark &mdash; not against always-hold.]</em>
+        This table pits five forecasters against one another over every scheduled MPC
+        decision since 1 January 2019, each restricted to information that existed before
+        the meeting it is forecasting. Scheduled meetings only: the two emergency meetings
+        of March 2020 are reported separately rather than blended in, because no forecast
+        could have been pre-registered for a meeting that had not yet been announced.
+        Lower Brier and log scores are better, and skill is measured against L1, the
+        market-implied benchmark &mdash; not against L0, since beating always-hold is trivial
+        and any model that cannot clear L1 has added nothing. The finding is that no
+        text-augmented model beat market pricing out-of-sample &mdash; L3 comes in at
+        &minus;0.6729 against L1 &mdash; which offers no warrant for letting the tone index
+        override what the curve already implies.
       </p>
       <div class="table-scroll">
         <table id="ladder-table">
