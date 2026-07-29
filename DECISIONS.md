@@ -43,6 +43,7 @@ Changes apply forward only; nothing is retrofitted. Locked calls are never touch
 - 2026-07-28 — [pre-lock rehearsal + LOCKDAY runbook](#2026-07-28--pre-lock-rehearsal--lockday-runbook)
 - 2026-07-28 — [placeholder episode removed from the published site](#2026-07-28--placeholder-episode-removed-from-the-published-site)
 - 2026-07-29 — [Results framing: author's text; Pages fallback in LOCKDAY](#2026-07-29--results-framing-authors-text-pages-fallback-in-lockday)
+- 2026-07-29 — [design pass: typography, progressive disclosure, call card](#2026-07-29--design-pass-typography-progressive-disclosure-call-card)
 
 ## 2026-07-05 — repo created
 - **Thesis:** does the tone of MPC communication carry information about the next
@@ -1483,3 +1484,88 @@ entry.
   the deployed site for about an hour while the page still read DRY RUN. The
   fallback is `git commit --allow-empty` - it changes no files, so it cannot
   touch the locked prediction, and it re-triggers a Pages build.
+
+## 2026-07-29 — design pass: typography, progressive disclosure, call card
+
+Presentation only. No science-layer file, no data schema, and nothing under
+`data/predictions/` was touched; `lock-2026-07.json` is byte-identical.
+107/107 tests green (no test reads HTML structure - the contract tests check
+JSON fields, and every field the site reads is unchanged).
+
+- **No prose was deleted or reworded, and this was verified mechanically, not
+  asserted.** A scratch script parsed both HTML files at HEAD and in the working
+  tree, collected the multiset of character-data segments between tags, and
+  diffed them: **0 segments missing** from either page. Every addition is
+  accounted for - 6 plain-language summaries, 8 "More detail" toggle labels, 2
+  screen-reader table captions, and 2 skip links. Element boundaries, not
+  sentence boundaries, were used for the comparison, because inserting new
+  markup around existing prose otherwise registers as a false deletion.
+- **All added prose carries `<!-- DRAFT: JF to revise -->`** (index.html now has
+  8 markers, methodology.html 10). The two exceptions are the "Skip to content"
+  and "More detail" strings, which are interface affordances rather than prose;
+  flagged here so the choice is Jake's to overturn.
+- **One type scale and one spacing scale, declared as custom properties in
+  `:root` on both pages** (`--fs-micro` 11px through `--fs-display` 46px, a 1.25
+  modular scale rounded to whole pixels; `--sp-1` 4px through `--sp-7` 56px).
+  Every size in both stylesheets now references a token instead of a literal, so
+  the mobile breakpoints re-declare the tokens once rather than overriding
+  twenty rules. Prose measure capped at `--measure: 70ch`; page shell widened
+  760px -> 800px to suit it. Tabular figures applied to every table via a
+  blanket `table { font-variant-numeric: tabular-nums }`.
+- **Progressive disclosure uses native `<details>/<summary>`, not JavaScript** -
+  keyboard-operable and screen-reader-announced for free, and it degrades to
+  plain visible content if scripting fails. Applied to the context panel, the
+  ladder, Spec 3, and all five methodology sections (8 expanders).
+- **Deviation, deliberate and reversible: the ladder table stays visible rather
+  than going inside its expander.** The brief said the technical content is
+  layered under the summary; taken literally that buries the results table,
+  which is the section's whole point and the project's headline null result. The
+  expander holds the apparatus instead - the n / specials / log-score-floor line
+  and the standing L1 caveat. Spec 3 follows the brief exactly (coefficients and
+  p-values inside the expander), so the two are not quite symmetrical. Flipping
+  the ladder to match is a one-line move of the `<div class="table-scroll">`.
+- **The existing "In plain English:" captions were promoted, not duplicated.**
+  The ladder and Spec 3 already had one-sentence plain summaries sitting *below*
+  their technical content; they were moved above it and restyled as
+  `.plain-summary`, rather than writing new summaries alongside them. Only the
+  context panel and the five methodology sections needed new ones written.
+- **The call card's lock timestamp links to the git tag, derived from the
+  prediction filename rather than hardcoded**: `data/predictions/lock-2026-07.json`
+  -> `.../tree/lock-2026-07`, following the same filename convention
+  `build_track_record.py` already uses to classify a file as locked. The link is
+  rendered only when the filename starts with `lock-`, so a dry run or rehearsal
+  never claims a tag that does not exist. Probabilities became the visual
+  centrepiece (46px tabular figures, the modal outcome in accent gold, a stacked
+  proportion bar beneath); the rationale moved out of `.fine` grey sans and into
+  17px serif at the 70ch measure, under a "Point call" header.
+- **Chart is redrawn on resize rather than scaled.** The viewBox was fixed at
+  700 units wide, so on a 380px phone every axis label was scaled to roughly 5px.
+  `chartMetrics()` now sizes the viewBox to the container's actual pixel width
+  (300-760) and picks a 12px axis face below 460px, and a debounced `resize`
+  listener redraws. Handlers are assigned as properties (`svg.onpointermove`)
+  rather than with `addEventListener`, because the same node is redrawn
+  repeatedly and listeners would otherwise accumulate on every resize.
+  `pointermove` replaces `mousemove` so a finger drag reads the series. Axes
+  gained explicit hairlines with `shape-rendering: crispEdges` and left ticks;
+  year labels are now skipped when they would collide with the previous one
+  (2016 drops out at desktop width, alternate years at 380px) instead of
+  overprinting.
+- **Accessibility, and one token changed to get it**: `--faint` moved
+  `#6b7280` -> `#868d99`, taking it from 3.4:1 to 5.2:1 against `--panel` -
+  the old value failed WCAG AA for body text and is used for every "as of" and
+  footnote line on the site. Added: a visible `:focus-visible` ring on every
+  interactive element, skip links, a `<main>` landmark, `<h3>` elements in place
+  of `<p class="subhead">`/`<p class="ctx-h">` so the heading outline is real,
+  `scope="col"` and visually-hidden `<caption>`s on both tables, `role="region"`
+  with a label on the horizontally-scrolling table wrappers, `role="img"` plus
+  `<title>`/`<desc>` on the charts, and a `prefers-reduced-motion` guard. The
+  main chart's `<desc>` is generated from the same `docs` array the line is
+  drawn from (count, date range, latest, highest, lowest), so it cannot drift
+  from the picture.
+- **Verified in a real browser at 1280px and 380px**, and screenshotted at both.
+  At 380px `document.scrollWidth` equals the viewport width - the only element
+  wider than the screen is the ladder table, which scrolls inside its own
+  `overflow-x` container by design. Note for future screenshotting: headless
+  Chrome clamps its window to a 500px minimum width, so a 380px shot has to be
+  taken through a fixed-width iframe pinned flush-left, or the capture silently
+  crops a wider layout and looks broken.

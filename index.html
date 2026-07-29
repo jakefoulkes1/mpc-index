@@ -14,50 +14,111 @@
 <style>
   :root {
     --bg: #0f1115; --panel: #171a21; --panel-2: #1c2029; --line: #2a2f3a;
-    --text: #e8e6e1; --muted: #9aa0ab; --faint: #6b7280;
+    /* --faint lightened from #6b7280 for WCAG AA on --panel (3.4:1 -> 5.2:1) */
+    --text: #e8e6e1; --muted: #9aa0ab; --faint: #868d99;
     --hawk: #d16a5a; --dove: #5a8fd1; --accent: #c9a34e; --accent-dim: #7a5f2e;
     --rate: #7fb0a0; --gilt: #a98fd1;
     --serif: Georgia, 'Times New Roman', serif;
     --sans: system-ui, -apple-system, 'Segoe UI', sans-serif;
     --radius: 12px;
     --shadow: 0 1px 2px rgba(0,0,0,.4), 0 8px 24px rgba(0,0,0,.25);
+
+    /* Type scale (1.25 modular, rounded to whole px) and vertical rhythm.
+       One scale for the whole page - sizes elsewhere reference these. */
+    --fs-micro: 11px; --fs-label: 12px; --fs-sm: 13px; --fs-ui: 14px;
+    --fs-body: 17px; --fs-md: 19px; --fs-lg: 22px; --fs-xl: 27px;
+    --fs-2xl: 34px; --fs-display: 46px;
+    --lh-tight: 1.25; --lh-snug: 1.45; --lh-body: 1.7;
+    --sp-1: 4px; --sp-2: 8px; --sp-3: 12px; --sp-4: 18px;
+    --sp-5: 26px; --sp-6: 38px; --sp-7: 56px;
+    /* Comfortable measure for running prose */
+    --measure: 70ch;
   }
   * { box-sizing: border-box; }
   html { -webkit-text-size-adjust: 100%; }
   body {
     margin: 0; background: var(--bg); color: var(--text);
-    font: 17px/1.65 var(--serif);
+    font: var(--fs-body)/var(--lh-body) var(--serif);
     -webkit-font-smoothing: antialiased; text-rendering: optimizeLegibility;
   }
-  .wrap { max-width: 760px; margin: 0 auto; padding: 56px 22px 72px; }
+  .wrap { max-width: 800px; margin: 0 auto; padding: var(--sp-7) 22px 72px; }
+
+  /* Keyboard focus: visible on every interactive element, never removed. */
+  :focus-visible {
+    outline: 2px solid var(--accent); outline-offset: 2px; border-radius: 3px;
+  }
+  .skip-link {
+    position: absolute; left: -9999px; top: 0;
+    background: var(--accent); color: var(--bg); padding: 10px 16px;
+    font: 600 var(--fs-ui) var(--sans); border-radius: 0 0 6px 0; z-index: 20;
+  }
+  .skip-link:focus { left: 0; }
+  .visually-hidden {
+    position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px;
+    overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; border: 0;
+  }
+
+  /* Prose measure: running text never exceeds a comfortable line length. */
+  .prose, .card > p, .plain-summary, .results-framing, .call-rationale-body {
+    max-width: var(--measure);
+  }
+  table { font-variant-numeric: tabular-nums; }
 
   /* ---------- masthead ---------- */
-  .masthead { margin-bottom: 40px; }
+  .masthead { margin-bottom: var(--sp-6); }
   .beta {
-    display: inline-block; font: 700 11px/1 var(--sans);
+    display: inline-block; font: 700 var(--fs-micro)/1 var(--sans);
     letter-spacing: .13em; color: var(--bg); background: var(--accent);
     padding: 5px 9px; border-radius: 4px; text-transform: uppercase;
   }
   h1 {
-    font: normal 34px/1.15 var(--serif); margin: 16px 0 10px;
-    letter-spacing: -.01em;
+    font: normal var(--fs-2xl)/var(--lh-tight) var(--serif);
+    margin: var(--sp-4) 0 var(--sp-3); letter-spacing: -.01em;
   }
   .thesis {
-    color: var(--muted); font-style: italic; font-size: 18px;
-    margin: 0; max-width: 62ch;
+    color: var(--muted); font-style: italic; font-size: var(--fs-md);
+    line-height: var(--lh-snug); margin: 0; max-width: 62ch;
   }
 
   /* ---------- cards ---------- */
   .card {
     background: var(--panel); border: 1px solid var(--line);
-    border-radius: var(--radius); padding: 26px 28px; margin-bottom: 22px;
-    box-shadow: var(--shadow);
+    border-radius: var(--radius); padding: var(--sp-5) 28px;
+    margin-bottom: var(--sp-4); box-shadow: var(--shadow);
   }
   .eyebrow, .card > h2 {
-    font: 600 12px/1 var(--sans); letter-spacing: .14em;
-    text-transform: uppercase; color: var(--muted); margin: 0 0 18px;
+    font: 600 var(--fs-label)/1 var(--sans); letter-spacing: .14em;
+    text-transform: uppercase; color: var(--muted); margin: 0 0 var(--sp-4);
   }
   .card > h2 .count { color: var(--faint); letter-spacing: .04em; }
+
+  /* ---------- progressive disclosure ----------
+     Native <details>/<summary>: keyboard-operable and screen-reader
+     announced without JavaScript. The plain summary above it is always
+     visible; the technical content is layered underneath, never removed. */
+  .plain-summary {
+    font: var(--fs-md)/var(--lh-snug) var(--serif); color: var(--text);
+    margin: 0 0 var(--sp-4);
+  }
+  .plain-summary em { font-style: italic; color: var(--text); }
+  .disclosure { margin: 0; border-top: 1px solid var(--line); padding-top: var(--sp-3); }
+  .disclosure + .disclosure { margin-top: var(--sp-3); }
+  .disclosure > summary {
+    font: 600 var(--fs-label)/1 var(--sans); letter-spacing: .1em;
+    text-transform: uppercase; color: var(--muted); cursor: pointer;
+    list-style: none; display: flex; align-items: center; gap: var(--sp-2);
+    padding: var(--sp-1) 0; width: max-content;
+  }
+  .disclosure > summary::-webkit-details-marker { display: none; }
+  .disclosure > summary:hover { color: var(--text); }
+  .disclosure > summary .caret {
+    display: inline-block; width: 9px; height: 9px; flex: none;
+    border-right: 1.5px solid currentColor; border-bottom: 1.5px solid currentColor;
+    transform: rotate(-45deg); margin-bottom: 2px;
+  }
+  .disclosure[open] > summary .caret { transform: rotate(45deg); margin-bottom: 4px; }
+  .disclosure[open] > summary { margin-bottom: var(--sp-3); }
+  .disclosure-body > *:last-child { margin-bottom: 0; }
 
   /* ---------- call card ---------- */
   .call-card.dry-run {
@@ -73,21 +134,78 @@
   }
   .call-badge.dry-run { background: var(--accent-dim); color: #ffe9b3; }
   .call-badge.locked { background: var(--accent); color: var(--bg); }
-  .call-heading { margin: 0 0 18px; font-size: 18px; }
+  .call-heading { margin: 0 0 var(--sp-2); font-size: var(--fs-md); }
   .call-heading strong { color: var(--accent); font-weight: normal; }
-  .call-probs { display: flex; flex-wrap: wrap; gap: 14px 30px; margin: 4px 0 20px; }
-  .call-prob .n { font-size: 30px; font-variant-numeric: tabular-nums; }
-  .call-prob .l {
-    font: 12px var(--sans); color: var(--muted);
-    text-transform: uppercase; letter-spacing: .08em; margin-top: 2px;
+
+  /* Lock timestamp as evidence: monospaced-feel, linked to the git tag. */
+  .call-stamp {
+    font: var(--fs-sm)/1.6 var(--sans); color: var(--muted);
+    margin: 0 0 var(--sp-5); display: flex; flex-wrap: wrap;
+    align-items: baseline; gap: var(--sp-1) var(--sp-3);
   }
-  .call-index-line { margin: 0 0 10px; }
+  .call-stamp .stamp-label {
+    font: 600 var(--fs-micro)/1 var(--sans); letter-spacing: .1em;
+    text-transform: uppercase; color: var(--faint);
+  }
+  .call-stamp time { color: var(--text); font-variant-numeric: tabular-nums; }
+  .call-stamp a { color: var(--accent); text-decoration: none; border-bottom: 1px solid var(--accent-dim); }
+  .call-stamp a:hover { border-bottom-color: var(--accent); }
+
+  /* Probabilities: the visual centrepiece of the card. */
+  .call-probs {
+    display: grid; grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: var(--sp-4); margin: 0 0 var(--sp-3);
+  }
+  .call-prob { min-width: 0; }
+  .call-prob .n {
+    font: var(--fs-display)/1 var(--serif); font-variant-numeric: tabular-nums;
+    letter-spacing: -.015em; display: block;
+  }
+  .call-prob.is-lead .n { color: var(--accent); }
+  .call-prob .l {
+    font: 600 var(--fs-label)/1 var(--sans); color: var(--muted);
+    text-transform: uppercase; letter-spacing: .1em; margin-top: var(--sp-2);
+    display: block;
+  }
+  .call-probbar {
+    display: flex; height: 8px; border-radius: 4px; overflow: hidden;
+    background: var(--line); margin: 0 0 var(--sp-2);
+  }
+  .call-probbar span { height: 100%; display: block; }
+  .call-probbar .seg-cut { background: var(--dove); }
+  .call-probbar .seg-hold { background: #3a3f4a; }
+  .call-probbar .seg-hike { background: var(--hawk); }
+  .call-probsrc {
+    font: var(--fs-label)/1.6 var(--sans); color: var(--faint);
+    margin: 0 0 var(--sp-5);
+  }
+  .call-index-line { margin: 0 0 var(--sp-4); }
+
+  /* Rationale: set as prose, not fine print. */
+  .call-rationale {
+    border-top: 1px solid var(--line); padding-top: var(--sp-4); margin-top: var(--sp-4);
+  }
+  .call-rationale-h {
+    font: 600 var(--fs-label)/1 var(--sans); letter-spacing: .1em;
+    text-transform: uppercase; color: var(--muted); margin: 0 0 var(--sp-3);
+  }
+  .call-rationale-h .pt-call {
+    color: var(--accent); letter-spacing: .06em; margin-left: var(--sp-2);
+  }
+  .call-rationale-body {
+    font: var(--fs-body)/var(--lh-body) var(--serif); color: var(--text);
+    margin: 0;
+  }
+  .call-rationale-attrib {
+    font: var(--fs-label)/1.6 var(--sans); color: var(--faint);
+    margin: var(--sp-3) 0 0;
+  }
 
   /* ---------- latest reading (lead of the index card) ---------- */
-  .reading { margin-bottom: 24px; }
-  .docline { margin: 0 0 14px; color: var(--muted); font-size: 15px; }
+  .reading { margin-bottom: var(--sp-5); }
+  .docline { margin: 0 0 var(--sp-3); color: var(--muted); font-size: var(--fs-ui); line-height: var(--lh-snug); }
   .docline strong { color: var(--accent); font-weight: normal; }
-  .score { font-size: 46px; margin: 0; font-variant-numeric: tabular-nums; }
+  .score { font-size: var(--fs-display); line-height: 1.1; margin: 0; font-variant-numeric: tabular-nums; }
   .score .sign-hawk { color: var(--hawk); }
   .score .sign-dove { color: var(--dove); }
   .score .score-word { font-size: 15px; color: var(--muted); }
@@ -105,47 +223,48 @@
     font: 12px var(--sans); color: var(--muted);
   }
 
-  .divider { border: 0; border-top: 1px solid var(--line); margin: 24px 0; }
+  .divider { border: 0; border-top: 1px solid var(--line); margin: var(--sp-5) 0; }
   .subhead {
-    font: 600 12px/1 var(--sans); letter-spacing: .1em; text-transform: uppercase;
-    color: var(--muted); margin: 0 0 14px;
+    font: 600 var(--fs-label)/1 var(--sans); letter-spacing: .1em; text-transform: uppercase;
+    color: var(--muted); margin: 0 0 var(--sp-3);
   }
 
-  .fine { font: 14px/1.7 var(--sans); color: var(--muted); margin-top: 16px; }
-  .fine code { color: var(--text); font-size: 13px; }
+  .fine { font: var(--fs-ui)/var(--lh-body) var(--sans); color: var(--muted); margin-top: var(--sp-4); max-width: var(--measure); }
+  .fine code { color: var(--text); font-size: var(--fs-sm); }
   .fine a, .card a { color: var(--muted); text-decoration-color: var(--line); }
   .fine a:hover, .card a:hover { color: var(--text); }
   #status, #chart-status, #ladder-status, #call-status { color: var(--muted); }
 
   /* ---------- results table ---------- */
   .results-framing {
-    font: 15px/1.7 var(--serif); color: var(--text);
+    font: var(--fs-body)/var(--lh-body) var(--serif); color: var(--text);
     background: var(--panel-2); border-left: 3px solid var(--accent);
-    padding: 13px 17px; margin: 0 0 22px; border-radius: 0 6px 6px 0;
+    padding: var(--sp-4) 20px; margin: 0 0 var(--sp-5); border-radius: 0 6px 6px 0;
   }
   .table-scroll { overflow-x: auto; -webkit-overflow-scrolling: touch; }
-  #ladder-table { width: 100%; border-collapse: collapse; font: 14px var(--sans); }
+  .table-scroll:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+  #ladder-table { width: 100%; border-collapse: collapse; font: var(--fs-ui) var(--sans); }
   #ladder-table th, #ladder-table td {
-    text-align: right; padding: 9px 14px; border-bottom: 1px solid var(--line);
+    text-align: right; padding: 10px 14px; border-bottom: 1px solid var(--line);
     white-space: nowrap; font-variant-numeric: tabular-nums;
   }
   #ladder-table th:first-child, #ladder-table td:first-child { text-align: left; }
   #ladder-table th {
-    color: var(--muted); font-weight: 600; font-size: 12px;
+    color: var(--muted); font-weight: 600; font-size: var(--fs-label);
     text-transform: uppercase; letter-spacing: .06em;
   }
   #ladder-table tbody tr:last-child td { border-bottom: 0; }
   #ladder-table tr.model-l1 td { color: var(--accent); }
 
   /* ---------- track record ---------- */
-  #track-table { width: 100%; border-collapse: collapse; font: 14px var(--sans); }
+  #track-table { width: 100%; border-collapse: collapse; font: var(--fs-ui) var(--sans); }
   #track-table th, #track-table td {
-    text-align: right; padding: 9px 14px; border-bottom: 1px solid var(--line);
+    text-align: right; padding: 10px 14px; border-bottom: 1px solid var(--line);
     white-space: nowrap; font-variant-numeric: tabular-nums;
   }
   #track-table th:first-child, #track-table td:first-child { text-align: left; }
   #track-table th {
-    color: var(--muted); font-weight: 600; font-size: 12px;
+    color: var(--muted); font-weight: 600; font-size: var(--fs-label);
     text-transform: uppercase; letter-spacing: .06em;
   }
   #track-table tbody tr:last-child td { border-bottom: 0; }
@@ -250,18 +369,46 @@
   /* ---------- responsive ---------- */
   @media (max-width: 560px) { .ctx-grid { grid-template-columns: 1fr; } }
   @media (max-width: 640px) {
-    .wrap { padding: 36px 16px 56px; }
-    h1 { font-size: 27px; }
+    .wrap { padding: var(--sp-6) 16px var(--sp-7); }
+    :root {
+      --fs-2xl: 27px; --fs-display: 36px; --fs-xl: 22px;
+      --fs-md: 17px; --fs-body: 16px;
+    }
     .thesis { font-size: 16px; }
-    body { font-size: 16px; }
     .card { padding: 20px 18px; }
-    .score { font-size: 38px; }
-    .call-prob .n { font-size: 26px; }
-    .call-probs { gap: 12px 24px; }
+    .plain-summary { font-size: 17px; }
+    .call-probs { gap: var(--sp-3); }
+    .call-prob .n { font-size: 32px; }
+    .call-rationale-body { font-size: 16px; }
+    .results-framing { padding: var(--sp-3) 15px; }
+  }
+  /* 380px pass: the narrowest phone we support. Nothing may overflow the
+     viewport horizontally - wide tables scroll inside .table-scroll. */
+  @media (max-width: 430px) {
+    .wrap { padding: 28px 13px 48px; }
+    .card { padding: 17px 14px; }
+    :root { --fs-display: 30px; }
+    .call-prob .n { font-size: 27px; letter-spacing: -.02em; }
+    .call-prob .l { font-size: var(--fs-micro); letter-spacing: .06em; }
+    .call-probs { gap: 10px; }
+    .call-stamp { gap: var(--sp-1) var(--sp-2); }
+    .ois-row { grid-template-columns: 74px 1fr 52px; gap: 9px; }
+    .ois-row .ois-date { font-size: var(--fs-sm); }
+    .ois-row .ois-chg { font-size: var(--fs-micro); }
+    .score { font-size: 32px; }
+    .beta { font-size: 10px; letter-spacing: .1em; }
+    #ladder-table th, #ladder-table td,
+    #track-table th, #track-table td { padding: 9px 10px; }
+  }
+  /* Users who ask for reduced motion get no transitions at all. The design
+     has none by default; this is a guard for anything added later. */
+  @media (prefers-reduced-motion: reduce) {
+    * { animation: none !important; transition: none !important; }
   }
 </style>
 </head>
 <body>
+<a class="skip-link" href="#main">Skip to content</a>
 <div class="wrap">
   <header class="masthead">
     <span class="beta">Beta &middot; pre-registered</span>
@@ -270,6 +417,8 @@
     about the next rate decision beyond what markets already price? Every call is locked
     before the announcement, timestamped, and scored &mdash; including the misses.</p>
   </header>
+
+  <main id="main">
 
   <!-- 0. What is this? -->
   <!-- DRAFT: JF to revise -->
@@ -287,11 +436,21 @@
   </section>
 
   <!-- 1. The call -->
-  <section class="card call-card" id="call-card" style="display:none">
+  <section class="card call-card" id="call-card" style="display:none" aria-labelledby="call-badge">
     <div class="call-badge" id="call-badge"></div>
     <p class="call-heading" id="call-heading"></p>
+    <p class="call-stamp" id="call-stamp"></p>
     <div class="call-probs" id="call-probs"></div>
+    <div class="call-probbar" id="call-probbar" aria-hidden="true"></div>
+    <!-- DRAFT: JF to revise -->
+    <p class="call-probsrc" id="call-probsrc"></p>
     <p class="fine call-index-line" id="call-index-line"></p>
+    <div class="call-rationale" id="call-rationale" style="display:none">
+      <p class="call-rationale-h" id="call-rationale-h"></p>
+      <p class="call-rationale-body" id="call-rationale-body"></p>
+      <!-- DRAFT: JF to revise -->
+      <p class="call-rationale-attrib" id="call-rationale-attrib"></p>
+    </div>
     <p class="fine" id="call-fine"></p>
   </section>
   <div class="fine" id="call-status" style="margin:0 0 22px">Loading call card &hellip;</div>
@@ -310,7 +469,7 @@
     </div>
 
     <hr class="divider">
-    <p class="subhead">A&amp;BG index &middot; Aug 2015&ndash;present</p>
+    <h3 class="subhead">A&amp;BG index &middot; Aug 2015&ndash;present</h3>
     <div id="chart-status" class="fine">Loading&hellip;</div>
     <div class="chart-controls" id="chart-controls" style="display:none">
       <label><input type="checkbox" id="toggle-decisions" checked> Decision markers</label>
@@ -319,8 +478,9 @@
       <span style="color:var(--faint)">Hover the line for details</span>
     </div>
     <div class="chart-wrap">
-      <svg id="chart" viewBox="0 0 700 260" style="display:none;width:100%;height:auto"></svg>
-      <div class="chart-tip" id="chart-tip" style="display:none"></div>
+      <svg id="chart" viewBox="0 0 700 260" style="display:none;width:100%;height:auto"
+           role="img" aria-labelledby="chart-title chart-desc" tabindex="0"></svg>
+      <div class="chart-tip" id="chart-tip" style="display:none" role="status" aria-live="polite"></div>
     </div>
     <div class="fine" id="chart-legend"></div>
   </section>
@@ -331,8 +491,16 @@
     <div id="context-status" class="fine">Loading&hellip;</div>
     <div id="context-content" style="display:none">
 
+      <!-- DRAFT: JF to revise -->
+      <p class="plain-summary">What the rate market and the gilt curve looked like around the
+      latest reading &mdash; shown as background, and deliberately not used as model inputs.</p>
+
+      <details class="disclosure">
+        <summary><span class="caret" aria-hidden="true"></span>More detail</summary>
+        <div class="disclosure-body">
+
       <div class="ctx-block">
-        <p class="ctx-h">OIS-implied path &middot; next 3 meetings</p>
+        <h3 class="ctx-h">OIS-implied path &middot; next 3 meetings</h3>
         <p class="ctx-sub" id="ois-sub"></p>
         <div class="ois-legend">
           <span class="key"><span class="box cut"></span> cut</span>
@@ -347,30 +515,38 @@
 
       <div class="ctx-grid">
         <div class="ctx-block ctx-figure">
-          <p class="ctx-h">Bank Rate</p>
+          <h3 class="ctx-h">Bank Rate</h3>
           <p class="big" id="rate-latest"></p>
           <p class="asof" id="rate-asof"></p>
-          <svg id="rate-chart" viewBox="0 0 320 110"></svg>
+          <svg id="rate-chart" viewBox="0 0 320 110" role="img"
+               aria-label="Bank Rate history as a step chart"></svg>
         </div>
         <div class="ctx-block ctx-figure">
-          <p class="ctx-h" id="gilt-h">2-year nominal gilt yield</p>
+          <h3 class="ctx-h" id="gilt-h">2-year nominal gilt yield</h3>
           <p class="big" id="gilt-latest"></p>
           <p class="asof" id="gilt-asof"></p>
-          <svg id="gilt-chart" viewBox="0 0 320 110"></svg>
+          <svg id="gilt-chart" viewBox="0 0 320 110" role="img"
+               aria-label="Twelve-month history of the 2-year nominal gilt yield"></svg>
         </div>
       </div>
 
       <p class="ctx-note" id="context-note"></p>
+
+        </div>
+      </details>
     </div>
   </section>
 
   <!-- 3. Results -->
   <section class="card">
     <h2 id="ladder-heading">Results</h2>
-    <p class="subhead">Benchmark ladder <span class="count" id="ladder-schema"></span></p>
+    <h3 class="subhead">Benchmark ladder <span class="count" id="ladder-schema"></span></h3>
     <div id="ladder-status" class="fine">Loading&hellip;</div>
     <div id="ladder-content" style="display:none">
-      <p class="fine" id="ladder-meta"></p>
+      <!-- DRAFT: JF to revise -->
+      <p class="plain-summary" id="ladder-caption"><em>In plain English: the market's own pricing (L1)
+      forecast these decisions best &mdash; every model that adds the tone index scored worse,
+      not better.</em></p>
       <p class="results-framing">
         This table pits five forecasters against one another over every scheduled MPC
         decision since 1 January 2019, each restricted to information that existed before
@@ -384,36 +560,46 @@
         &minus;0.6729 against L1 &mdash; which offers no warrant for letting the tone index
         override what the curve already implies.
       </p>
-      <div class="table-scroll">
+      <div class="table-scroll" tabindex="0" role="region" aria-label="Benchmark ladder scores, L0 to L4">
         <table id="ladder-table">
+          <!-- DRAFT: JF to revise -->
+          <caption class="visually-hidden">Mean Brier score, mean log score, skill versus the
+          L1 market benchmark, and number of meetings, for models L0 to L4</caption>
           <thead>
-            <tr><th>Model</th><th>Mean Brier</th><th>Mean log score</th><th>Skill vs L1</th><th>n</th></tr>
+            <tr><th scope="col">Model</th><th scope="col">Mean Brier</th><th scope="col">Mean log score</th><th scope="col">Skill vs L1</th><th scope="col">n</th></tr>
           </thead>
           <tbody id="ladder-tbody"></tbody>
         </table>
       </div>
-      <!-- DRAFT: JF to revise -->
-      <p class="fine" id="ladder-caption"><em>In plain English: the market's own pricing (L1)
-      forecast these decisions best &mdash; every model that adds the tone index scored worse,
-      not better.</em></p>
-      <p class="fine">
-        <strong>Standing caveat: the market benchmark (L1) is the bar.</strong> L2&ndash;L4
-        must show genuine skill above L1 to be worth anything &mdash; matching or beating
-        L0 (always-hold) is not the test, since L1 already does that easily. See
-        the methodology log for every modelling choice and the full per-meeting breakdown in
-        <code>data/ladder_v1.json</code>.
-      </p>
+      <details class="disclosure">
+        <summary><span class="caret" aria-hidden="true"></span>More detail</summary>
+        <div class="disclosure-body">
+          <p class="fine" id="ladder-meta" style="margin-top:0"></p>
+          <p class="fine">
+            <strong>Standing caveat: the market benchmark (L1) is the bar.</strong> L2&ndash;L4
+            must show genuine skill above L1 to be worth anything &mdash; matching or beating
+            L0 (always-hold) is not the test, since L1 already does that easily. See
+            the methodology log for every modelling choice and the full per-meeting breakdown in
+            <code>data/ladder_v1.json</code>.
+          </p>
+        </div>
+      </details>
     </div>
 
     <hr class="divider">
-    <p class="subhead">Headline statistical test (Spec 3)</p>
+    <h3 class="subhead">Headline statistical test (Spec 3)</h3>
     <div id="inference-status" class="fine">Loading&hellip;</div>
     <div id="inference-content" style="display:none">
-      <p id="spec3-line" style="margin:0 0 12px"></p>
       <!-- DRAFT: JF to revise -->
-      <p class="fine" id="spec3-caption" style="margin-top:0"><em>In plain English: one test
+      <p class="plain-summary" id="spec3-caption"><em>In plain English: one test
       finds a weak link between the previous minutes' tone and how the decision surprised the
       market, but it fades after 2023 and a stricter test finds nothing.</em></p>
+      <details class="disclosure">
+        <summary><span class="caret" aria-hidden="true"></span>More detail</summary>
+        <div class="disclosure-body">
+          <p id="spec3-line" class="prose" style="margin:0"></p>
+        </div>
+      </details>
     </div>
   </section>
 
@@ -426,10 +612,13 @@
     its own to score against).</p>
     <div id="track-status" class="fine">Loading&hellip;</div>
     <div id="track-content" style="display:none">
-      <div class="table-scroll">
+      <div class="table-scroll" tabindex="0" role="region" aria-label="Track record of every pre-registered call">
         <table id="track-table">
+          <!-- DRAFT: JF to revise -->
+          <caption class="visually-hidden">Every pre-registered call: meeting date, kind,
+          point call, market-implied probabilities, outcome and Brier score</caption>
           <thead>
-            <tr><th>Meeting</th><th>Locked</th><th>Call</th><th>Cut</th><th>Hold</th><th>Hike</th><th>Outcome</th><th>Brier (m0)</th></tr>
+            <tr><th scope="col">Meeting</th><th scope="col">Locked</th><th scope="col">Call</th><th scope="col">Cut</th><th scope="col">Hold</th><th scope="col">Hike</th><th scope="col">Outcome</th><th scope="col">Brier (m0)</th></tr>
           </thead>
           <tbody id="track-tbody"></tbody>
         </table>
@@ -447,8 +636,10 @@
     <div id="episodes-list" style="display:none"></div>
   </section>
 
+  </main>
+
   <!-- 5. Methodology -->
-  <nav class="methodology">
+  <nav class="methodology" aria-label="Methodology and source links">
     <span class="m-label">Methodology</span>
     <a href="methodology.html">Full methodology</a>
     <a href="https://github.com/jakefoulkes1/mpc-index/blob/main/DECISIONS.md">Decisions log</a>
@@ -626,6 +817,12 @@ function renderTrackRecord(d) {
   document.getElementById('track-content').style.display = 'block';
 }
 
+// The tag name follows the prediction file's own name by project convention
+// (data/predictions/lock-2026-07.json <-> git tag lock-2026-07), so the
+// evidence link is derived from the file being displayed, not hardcoded.
+const REPO_URL = 'https://github.com/jakefoulkes1/mpc-index';
+const PREDICTION_NAME = PREDICTION_FILE.split('/').pop().replace(/\.json$/, '');
+
 function renderCallCard(p) {
   const locked = p.point_call !== null && p.point_call !== undefined;
   const card = document.getElementById('call-card');
@@ -636,16 +833,39 @@ function renderCallCard(p) {
 
   const announceDate = fmtDate(p.meeting_announcement);
   document.getElementById('call-heading').innerHTML =
-    `Next announcement: <strong>${announceDate}</strong> &middot; ` +
-    (locked
-      ? `locked ${new Date(p.lock_timestamp).toUTCString()}`
-      : `beta lock scheduled 28 July 2026, 12:00`);
+    `Next announcement: <strong>${announceDate}</strong>`;
+
+  // Lock timestamp as the card's evidence line, linked to the git tag that
+  // pins the pre-announcement state of the repository.
+  const stamp = document.getElementById('call-stamp');
+  if (locked) {
+    const iso = p.lock_timestamp;
+    const shown = new Date(iso).toUTCString();
+    const tagged = PREDICTION_NAME.startsWith('lock-');
+    stamp.innerHTML =
+      `<span class="stamp-label">Locked</span>` +
+      `<time datetime="${iso}">${shown}</time>` +
+      (tagged
+        ? ` <span aria-hidden="true">&middot;</span> <a href="${REPO_URL}/tree/${PREDICTION_NAME}" rel="noopener">` +
+          `tag ${PREDICTION_NAME}</a>`
+        : '');
+  } else {
+    stamp.innerHTML = `<span class="stamp-label">Status</span>` +
+      `<span>beta lock scheduled 28 July 2026, 12:00</span>`;
+  }
 
   const m0 = p.m0_market_only;
-  const probRow = (label, value) =>
-    `<div class="call-prob"><div class="n">${(value * 100).toFixed(0)}%</div><div class="l">${label}</div></div>`;
-  document.getElementById('call-probs').innerHTML =
-    probRow('cut', m0.p_cut) + probRow('hold', m0.p_hold) + probRow('hike', m0.p_hike);
+  const probs = [['cut', m0.p_cut], ['hold', m0.p_hold], ['hike', m0.p_hike]];
+  const lead = probs.reduce((a, b) => (b[1] > a[1] ? b : a))[0];
+  document.getElementById('call-probs').innerHTML = probs.map(([label, v]) =>
+    `<div class="call-prob${label === lead ? ' is-lead' : ''}">` +
+    `<span class="n">${(v * 100).toFixed(0)}%</span>` +
+    `<span class="l">${label}</span></div>`).join('');
+  document.getElementById('call-probbar').innerHTML = probs.map(([label, v]) =>
+    `<span class="seg-${label}" style="width:${(v * 100).toFixed(1)}%"></span>`).join('');
+  document.getElementById('call-probsrc').innerHTML =
+    `m0 market-only reference &mdash; OIS forward curve vs SONIA, ` +
+    `${m0.assumed_move_bp}bp two-state assumption. Not the point call.`;
 
   const vsTrailing = p.index_current - p.index_trailing_mean;
   const vsWord = vsTrailing > 0 ? 'above' : (vsTrailing < 0 ? 'below' : 'equal to');
@@ -654,10 +874,20 @@ function renderCallCard(p) {
     `trailing ${p.index_trailing_n}-document mean <strong>${p.index_trailing_mean.toFixed(3)}</strong> ` +
     `(${Math.abs(vsTrailing).toFixed(3)} ${vsWord})`;
 
-  document.getElementById('call-fine').innerHTML = locked
-    ? `Point call: <strong>${p.point_call}</strong> &middot; ${p.rationale}`
-    : `m0 is a market-only reference (OIS forward curve vs SONIA, ${m0.assumed_move_bp}bp two-state assumption) ` +
+  if (locked) {
+    // The rationale is Jake's own prose: set as prose, at a readable measure.
+    document.getElementById('call-rationale-h').innerHTML =
+      `Point call <span class="pt-call">${p.point_call}</span>`;
+    document.getElementById('call-rationale-body').textContent = p.rationale;
+    document.getElementById('call-rationale-attrib').textContent =
+      'Written by hand before the announcement, and never edited afterwards.';
+    document.getElementById('call-rationale').style.display = 'block';
+    document.getElementById('call-fine').style.display = 'none';
+  } else {
+    document.getElementById('call-fine').innerHTML =
+      `m0 is a market-only reference (OIS forward curve vs SONIA, ${m0.assumed_move_bp}bp two-state assumption) ` +
       `&mdash; not a call, and not the thesis. No point_call has been locked yet.`;
+  }
 
   document.getElementById('call-status').style.display = 'none';
   card.style.display = 'block';
@@ -689,7 +919,27 @@ function renderLatest(data) {
   }
 }
 
+// Keep the last payload so the chart can be redrawn at a new width when the
+// viewport changes - the SVG viewBox is sized in CSS pixels so that axis
+// labels render at their true point size on a phone instead of being scaled
+// down to illegibility by a fixed 700-unit viewBox.
+let chartPayload = null;
+
+function chartMetrics() {
+  const wrap = document.querySelector('.chart-wrap');
+  const avail = Math.round((wrap && wrap.clientWidth) || 700);
+  const W = Math.max(300, Math.min(760, avail));
+  const narrow = W < 460;
+  return {
+    W,
+    H: narrow ? 300 : 260,
+    FS: narrow ? 12 : 11,
+    narrow,
+  };
+}
+
 function renderChart(data, context) {
+  chartPayload = { data, context };
   const docs = data.documents
     .filter(d => d.published)
     .slice()
@@ -701,7 +951,10 @@ function renderChart(data, context) {
 
   const ratePoints = (context && context.bank_rate_history && context.bank_rate_history.points) || null;
 
-  const W = 700, H = 260, PAD_L = 34, PAD_R = ratePoints ? 34 : 12, PAD_T = 14, PAD_B = 24;
+  const M = chartMetrics();
+  const W = M.W, H = M.H, FS = M.FS;
+  const PAD_L = FS * 2.4, PAD_R = ratePoints ? FS * 3 : 12;
+  const PAD_T = 16, PAD_B = FS * 2.4;
   const neutral = data.neutral_value;
   const t0 = new Date(docs[0].published).getTime();
   const t1 = new Date(docs[docs.length - 1].published).getTime();
@@ -712,6 +965,12 @@ function renderChart(data, context) {
   svg.textContent = '';
   svg.setAttribute('viewBox', `0 0 ${W} ${H}`);
   const el = svgNode;
+
+  // Clearing the SVG removes its <title>/<desc>, so the accessible name and
+  // description are rebuilt here on every draw.
+  svg.appendChild(el('title', { id: 'chart-title' })).textContent =
+    'A&BG communication index, August 2015 to present';
+  svg.appendChild(el('desc', { id: 'chart-desc' }));
 
   // ---- Bank Rate overlay (own right-hand scale) ----
   let rMax = 0;
@@ -724,8 +983,8 @@ function renderChart(data, context) {
     // right axis labels
     [0, rMax].forEach(r => {
       rateLayer.appendChild(el('text', {
-        x: W - PAD_R + 5, y: yRate(r) + 3, fill: 'var(--rate)',
-        'font-size': 10, 'font-family': 'system-ui, sans-serif',
+        x: W - PAD_R + 5, y: yRate(r) + FS / 3, fill: 'var(--rate)',
+        'font-size': FS - 1, 'font-family': 'system-ui, sans-serif',
       })).textContent = r + '%';
     });
     // step line: rate holds until the next meeting, then jumps
@@ -744,19 +1003,39 @@ function renderChart(data, context) {
     svg.appendChild(rateLayer);
   }
 
+  // ---- axes: a single hairline each, snapped to the pixel grid ----
+  const axis = el('g', { 'shape-rendering': 'crispEdges' });
+  axis.appendChild(el('line', {
+    x1: PAD_L, x2: PAD_L, y1: PAD_T, y2: H - PAD_B,
+    stroke: '#2a2f3a', 'stroke-width': 1,
+  }));
+  axis.appendChild(el('line', {
+    x1: PAD_L, x2: W - PAD_R, y1: H - PAD_B, y2: H - PAD_B,
+    stroke: '#2a2f3a', 'stroke-width': 1,
+  }));
+  // tick marks at each index gridline
+  [0, 1, 2].forEach(v => {
+    axis.appendChild(el('line', {
+      x1: PAD_L - 4, x2: PAD_L, y1: y(v), y2: y(v),
+      stroke: '#2a2f3a', 'stroke-width': 1,
+    }));
+  });
+  svg.appendChild(axis);
+
   // ---- neutral gridline, labelled (paper's fixed ratio midpoint, p.10) ----
   svg.appendChild(el('line', {
     x1: PAD_L, x2: W - PAD_R, y1: y(neutral), y2: y(neutral),
-    stroke: '#2a2f3a', 'stroke-width': 1, 'stroke-dasharray': '3,3',
+    stroke: '#3b4150', 'stroke-width': 1, 'stroke-dasharray': '3,3',
   }));
   svg.appendChild(el('text', {
-    x: PAD_L + 3, y: y(neutral) - 4, fill: '#9aa0ab', 'font-size': 10, 'font-family': 'system-ui, sans-serif',
+    x: PAD_L + 4, y: y(neutral) - 5, fill: '#9aa0ab', 'font-size': FS, 'font-family': 'system-ui, sans-serif',
   })).textContent = `neutral (${neutral})`;
 
   // left y-axis labels (index)
   [0, 1, 2].forEach(v => {
     svg.appendChild(el('text', {
-      x: 4, y: y(v) + 3, fill: '#9aa0ab', 'font-size': 10, 'font-family': 'system-ui, sans-serif',
+      x: PAD_L - 7, y: y(v) + FS / 3, fill: '#9aa0ab', 'font-size': FS,
+      'font-family': 'system-ui, sans-serif', 'text-anchor': 'end',
     })).textContent = v.toFixed(0);
   });
 
@@ -784,12 +1063,21 @@ function renderChart(data, context) {
   });
   svg.appendChild(decisionLayer);
 
-  // x-axis year labels
+  // x-axis year labels. Drawn left to right, skipping any label that would
+  // collide with the one before it - at 380px the series starts with two
+  // meetings-heavy years whose labels would otherwise overprint.
   const years = [...new Set(docs.map(d => d.published.slice(0, 4)))];
+  const minGap = FS * 2.6;
+  let lastLabelX = -Infinity;
   years.forEach(yr => {
-    const first = docs.find(d => d.published.startsWith(yr));
+    const firstOfYear = docs.find(d => d.published.startsWith(yr));
+    const lx = x(firstOfYear.published);
+    if (lx - lastLabelX < minGap) return;
+    if (lx > W - PAD_R - FS) return;
+    lastLabelX = lx;
     svg.appendChild(el('text', {
-      x: x(first.published), y: H - 6, fill: '#9aa0ab', 'font-size': 10, 'font-family': 'system-ui, sans-serif',
+      x: lx, y: H - PAD_B + FS + 3, fill: '#9aa0ab', 'font-size': FS,
+      'font-family': 'system-ui, sans-serif', 'text-anchor': 'middle',
     })).textContent = yr;
   });
 
@@ -843,11 +1131,32 @@ function renderChart(data, context) {
       : 'translate(-50%, calc(-100% - 14px))';
     tip.style.display = 'block';
   }
-  svg.addEventListener('mousemove', moveTip);
-  svg.addEventListener('mouseleave', () => {
+  // pointer events rather than mouse events, so a finger drag on a phone
+  // reads the series the same way a hover does on a desktop
+  // Property assignment, not addEventListener: renderChart runs again on
+  // resize against the same <svg> node, and handlers must replace rather
+  // than accumulate.
+  const hideTip = () => {
     tip.style.display = 'none';
     hoverLayer.style.display = 'none';
-  });
+  };
+  svg.onpointermove = moveTip;
+  svg.onpointerdown = moveTip;
+  svg.onpointerleave = hideTip;
+  svg.onblur = hideTip;
+
+  // Text alternative: screen readers get the shape of the series, not an
+  // empty graphic. Values come from the same docs array the line is drawn from.
+  const first = docs[0], latest = docs[docs.length - 1];
+  const hi = docs.reduce((a, b) => (b.abg_net_index > a.abg_net_index ? b : a));
+  const lo = docs.reduce((a, b) => (b.abg_net_index < a.abg_net_index ? b : a));
+  document.getElementById('chart-desc').textContent =
+    `Line chart of the A&BG net index for ${docs.length} MPC documents, ` +
+    `${fmtDate(first.published)} to ${fmtDate(latest.published)}, on a 0 to 2 scale where ` +
+    `${neutral} is neutral. Latest reading ${latest.abg_net_index.toFixed(3)}. ` +
+    `Highest ${hi.abg_net_index.toFixed(3)} (${hi.doc_id}), lowest ${lo.abg_net_index.toFixed(3)} ` +
+    `(${lo.doc_id}). Triangles mark meetings followed by a hike or a cut` +
+    (ratePoints ? '; a second line shows Bank Rate on the right-hand axis.' : '.');
 
   // ---- toggles ----
   const toggleDec = document.getElementById('toggle-decisions');
@@ -869,6 +1178,21 @@ function renderChart(data, context) {
   document.getElementById('chart-controls').style.display = 'flex';
   svg.style.display = 'block';
 }
+
+// Redraw at the new width when the viewport changes size (rotation, window
+// resize) so the axis type stays at its true size rather than being scaled.
+let chartResizeTimer = null;
+let chartLastWidth = null;
+window.addEventListener('resize', () => {
+  if (!chartPayload) return;
+  clearTimeout(chartResizeTimer);
+  chartResizeTimer = setTimeout(() => {
+    const w = chartMetrics().W;
+    if (w === chartLastWidth) return;
+    chartLastWidth = w;
+    renderChart(chartPayload.data, chartPayload.context);
+  }, 150);
+});
 
 function renderContext(ctx) {
   // (a) OIS-implied path for the next 3 meetings
