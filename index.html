@@ -8,8 +8,21 @@
 <meta name="author" content="Jake Foulkes">
 <meta name="theme-color" content="#0f1115">
 <meta property="og:type" content="website">
+<meta property="og:site_name" content="MPC Communication Index">
+<meta property="og:url" content="https://jakefoulkes1.github.io/mpc-index/">
 <meta property="og:title" content="MPC Communication Index">
 <meta property="og:description" content="Does the tone of Bank of England MPC communication predict the next Bank Rate decision beyond what markets already price? Calls locked before each announcement, scored after — including the misses.">
+<!-- Share card: built at build time by pipeline/build_og_image.py from
+     data/index.json, so the picture is the real series, not an illustration. -->
+<meta property="og:image" content="https://jakefoulkes1.github.io/mpc-index/og-image.png">
+<meta property="og:image:type" content="image/png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="The A&BG communication index for Bank of England MPC minutes, August 2015 to June 2026, plotted against its neutral value.">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="MPC Communication Index">
+<meta name="twitter:description" content="A pre-registered call for each Bank of England rate decision — locked and timestamped before the announcement, scored after, misses included.">
+<meta name="twitter:image" content="https://jakefoulkes1.github.io/mpc-index/og-image.png">
 <link rel="icon" href="data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='0%200%2032%2032'%3E%3Crect%20width='32'%20height='32'%20rx='7'%20fill='%230f1115'/%3E%3Cpolyline%20points='4,22%2011,14%2016,18%2022,7%2028,12'%20fill='none'%20stroke='%23c9a34e'%20stroke-width='2.6'%20stroke-linecap='round'%20stroke-linejoin='round'/%3E%3C/svg%3E">
 <style>
   :root {
@@ -151,6 +164,27 @@
   .call-stamp a { color: var(--accent); text-decoration: none; border-bottom: 1px solid var(--accent-dim); }
   .call-stamp a:hover { border-bottom-color: var(--accent); }
 
+  /* The verification path. This is the site's central claim - that the call
+     existed, in this form, before the announcement - so it is set as a
+     visible block rather than a footnote. */
+  .call-verify {
+    font: var(--fs-ui)/var(--lh-body) var(--sans); color: var(--text);
+    background: var(--panel-2); border-left: 3px solid var(--accent);
+    border-radius: 0 6px 6px 0; padding: var(--sp-3) 16px;
+    margin: 0 0 var(--sp-5); max-width: var(--measure);
+  }
+  .call-verify .vh {
+    display: block; font: 600 var(--fs-micro)/1 var(--sans);
+    letter-spacing: .1em; text-transform: uppercase; color: var(--accent);
+    margin-bottom: var(--sp-2);
+  }
+  .call-verify a { color: var(--accent); text-decoration-color: var(--accent-dim); }
+  .call-verify a:hover { color: var(--accent); text-decoration-color: var(--accent); }
+  .call-verify code {
+    font-size: var(--fs-sm); color: var(--text); background: rgba(0,0,0,.3);
+    padding: 1px 5px; border-radius: 3px; overflow-wrap: break-word;
+  }
+
   /* Probabilities: the visual centrepiece of the card. */
   .call-probs {
     display: grid; grid-template-columns: repeat(3, minmax(0, 1fr));
@@ -234,6 +268,30 @@
   .fine a, .card a { color: var(--muted); text-decoration-color: var(--line); }
   .fine a:hover, .card a:hover { color: var(--text); }
   #status, #chart-status, #ladder-status, #call-status { color: var(--muted); }
+
+  /* ---------- failure states ----------
+     Every JS-loaded section has one of these. It names the file that failed
+     and links to it on GitHub, so a reader who hits a broken load can still
+     read the numbers rather than staring at "Loading...". */
+  .section-error {
+    font: var(--fs-ui)/var(--lh-body) var(--sans); color: var(--text);
+    background: rgba(209,106,90,.09); border-left: 3px solid var(--hawk);
+    border-radius: 0 6px 6px 0; padding: var(--sp-3) 16px;
+    margin: var(--sp-3) 0; max-width: var(--measure);
+  }
+  .section-error strong { color: var(--hawk); font-weight: 600; }
+  .section-error a { color: var(--text); text-decoration-color: var(--line); }
+  .section-error a:hover { text-decoration-color: var(--text); }
+  .section-error code { font-size: var(--fs-sm); color: var(--muted); }
+
+  /* Rehearsal toggle on the track record: locked calls are never hidden. */
+  .row-toggle {
+    display: inline-flex; align-items: center; gap: 7px; cursor: pointer;
+    font: var(--fs-ui) var(--sans); color: var(--muted);
+    user-select: none; margin: 0 0 var(--sp-3);
+  }
+  .row-toggle input { accent-color: var(--accent); }
+  .row-toggle:hover { color: var(--text); }
 
   /* ---------- results table ---------- */
   .results-framing {
@@ -435,25 +493,47 @@
     is itself the finding.</p>
   </section>
 
-  <!-- 1. The call -->
-  <section class="card call-card" id="call-card" style="display:none" aria-labelledby="call-badge">
-    <div class="call-badge" id="call-badge"></div>
-    <p class="call-heading" id="call-heading"></p>
-    <p class="call-stamp" id="call-stamp"></p>
-    <div class="call-probs" id="call-probs"></div>
-    <div class="call-probbar" id="call-probbar" aria-hidden="true"></div>
+  <!-- 1. The call
+       Everything between fallback:call and /fallback:call is generated from
+       data/predictions/lock-2026-07.json and is what a reader sees if the
+       fetch fails or JavaScript never runs. renderCallCard() overwrites it
+       on success. pipeline/tests/test_static_fallback.py asserts these
+       figures still match the JSON - regenerate them, never retype them. -->
+  <!-- fallback:call -->
+  <section class="card call-card locked" id="call-card" aria-labelledby="call-badge">
+    <div class="call-badge locked" id="call-badge">LOCKED CALL</div>
+    <p class="call-heading" id="call-heading">Next announcement: <strong>30 July 2026</strong></p>
+    <p class="call-stamp" id="call-stamp"><span class="stamp-label">Locked</span><time
+      datetime="2026-07-28T19:08:36+00:00">Tue, 28 Jul 2026 19:08:36 GMT</time> <span
+      aria-hidden="true">&middot;</span> <a
+      href="https://github.com/jakefoulkes1/mpc-index/releases/tag/lock-2026-07" rel="noopener">tag lock-2026-07</a></p>
+
     <!-- DRAFT: JF to revise -->
-    <p class="call-probsrc" id="call-probsrc"></p>
-    <p class="fine call-index-line" id="call-index-line"></p>
-    <div class="call-rationale" id="call-rationale" style="display:none">
-      <p class="call-rationale-h" id="call-rationale-h"></p>
-      <p class="call-rationale-body" id="call-rationale-body"></p>
+    <p class="call-verify" id="call-verify">
+      <span class="vh">How to check this timestamp yourself</span>
+      The call above was tagged and pushed to GitHub before the announcement it is about:
+      open the <a href="https://github.com/jakefoulkes1/mpc-index/releases/tag/lock-2026-07"
+      rel="noopener">tag page</a>, which GitHub dates independently of anything in this repository,
+      or clone the repository and run
+      <code>git show lock-2026-07:data/predictions/lock-2026-07.json</code> to read the call exactly
+      as it stood when it was locked.
+    </p>
+
+    <div class="call-probs" id="call-probs"><div class="call-prob"><span class="n">0%</span><span class="l">cut</span></div><div class="call-prob is-lead"><span class="n">96%</span><span class="l">hold</span></div><div class="call-prob"><span class="n">4%</span><span class="l">hike</span></div></div>
+    <div class="call-probbar" id="call-probbar" aria-hidden="true"><span class="seg-cut" style="width:0.0%"></span><span class="seg-hold" style="width:96.1%"></span><span class="seg-hike" style="width:3.9%"></span></div>
+    <!-- DRAFT: JF to revise -->
+    <p class="call-probsrc" id="call-probsrc">m0 market-only reference &mdash; OIS forward curve vs SONIA, 25.0bp two-state assumption. Not the point call.</p>
+    <p class="fine call-index-line" id="call-index-line">A&amp;BG index (minutes-2026-06): <strong>1.714</strong> vs trailing 4-document mean <strong>1.054</strong> (0.661 above)</p>
+    <div class="call-rationale" id="call-rationale">
+      <p class="call-rationale-h" id="call-rationale-h">Point call <span class="pt-call">hold</span></p>
+      <p class="call-rationale-body" id="call-rationale-body">Hold at 3.75%. The communication index is recorded as context and does not enter the call: L3 scores &minus;0.6729 against the market-only benchmark and Spec 2 returns p = 0.4918, so there is no warrant on this project's own evidence for letting tone override L1. p(hike) is shaded modestly below m0's 3.86% for two regime-specific reasons. First, with the short curve steeply upward-sloping (near 4.25% priced within six months) a forward read, at meeting plus three days, interpolated across whole-month buckets, absorbs September's expectations along with July's and overstates the probability attaching to this meeting. Second, the fiscal repricing of 20 July, which carried the ten-year gilt to 5.04%, is a risk premium rather than an expectation of Bank Rate &mdash; the contamination this methodology's first limitation anticipates. Both claims are testable against the September lock, when the near-month slope will differ. The macro flow since 18 June runs against the two dissenters on nearly every measure they invoked. Headline CPI fell to 2.6% against a 2.7% consensus, its lowest in fifteen months; services eased to 3.6%; regular pay growth slowed to 3.4%, joint-slowest since October 2020; input producer prices decelerated to 7.3% from 9.3% as Brent retraced. Greene and Pill dissented on an energy shock now unwinding. The counter-observation, recorded rather than passed over, is services producer price inflation at 4.3% in Q2, up from 3.2%.</p>
       <!-- DRAFT: JF to revise -->
-      <p class="call-rationale-attrib" id="call-rationale-attrib"></p>
+      <p class="call-rationale-attrib" id="call-rationale-attrib">Written by hand before the announcement, and never edited afterwards.</p>
     </div>
-    <p class="fine" id="call-fine"></p>
+    <p class="fine" id="call-fine" style="display:none"></p>
   </section>
-  <div class="fine" id="call-status" style="margin:0 0 22px">Loading call card &hellip;</div>
+  <!-- /fallback:call -->
+  <div id="call-status" style="display:none"></div>
 
   <!-- 2. The index (latest reading + history chart) -->
   <section class="card">
@@ -475,7 +555,7 @@
       <label><input type="checkbox" id="toggle-decisions" checked> Decision markers</label>
       <label><input type="checkbox" id="toggle-bankrate" checked>
         <span class="swatch" style="background:var(--rate)"></span> Bank Rate</label>
-      <span style="color:var(--faint)">Hover the line for details</span>
+      <span style="color:var(--faint)" id="chart-hint">Hover or tap the line for details</span>
     </div>
     <div class="chart-wrap">
       <svg id="chart" viewBox="0 0 700 260" style="display:none;width:100%;height:auto"
@@ -540,12 +620,12 @@
   <!-- 3. Results -->
   <section class="card">
     <h2 id="ladder-heading">Results</h2>
-    <h3 class="subhead">Benchmark ladder <span class="count" id="ladder-schema"></span></h3>
-    <div id="ladder-status" class="fine">Loading&hellip;</div>
-    <div id="ladder-content" style="display:none">
+    <h3 class="subhead">Benchmark ladder <span class="count" id="ladder-schema">(ladder-v1)</span></h3>
+    <div id="ladder-status" style="display:none"></div>
+    <div id="ladder-content">
       <!-- DRAFT: JF to revise -->
       <p class="plain-summary" id="ladder-caption"><em>In plain English: the market's own pricing (L1)
-      forecast these decisions best &mdash; every model that adds the tone index scored worse,
+      called these decisions best &mdash; every model that adds the tone index scored worse,
       not better.</em></p>
       <p class="results-framing">
         This table pits five forecasters against one another over every scheduled MPC
@@ -568,13 +648,39 @@
           <thead>
             <tr><th scope="col">Model</th><th scope="col">Mean Brier</th><th scope="col">Mean log score</th><th scope="col">Skill vs L1</th><th scope="col">n</th></tr>
           </thead>
-          <tbody id="ladder-tbody"></tbody>
+          <!-- fallback:ladder - generated from data/ladder_v1.json, replaced by
+               renderLadder() on success, asserted by test_static_fallback.py. -->
+          <tbody id="ladder-tbody">
+            <tr><td>L0</td><td>0.6667</td><td>6.9078</td><td>&mdash;</td><td>60</td></tr>
+            <tr class="model-l1"><td>L1</td><td>0.0905</td><td>0.1454</td><td>&mdash;</td><td>60</td></tr>
+            <tr><td>L2</td><td>0.1011</td><td>0.1701</td><td>-0.1171</td><td>60</td></tr>
+            <tr><td>L3</td><td>0.1514</td><td>0.2664</td><td>-0.6729</td><td>60</td></tr>
+            <tr><td>L4</td><td>0.1644</td><td>0.263</td><td>-0.8166</td><td>60</td></tr>
+          </tbody>
+          <!-- /fallback:ladder -->
         </table>
       </div>
+
+      <!-- Why the n's differ. This is where a reader meets the first sample
+           size on the page, so the explanation sits here rather than in a
+           footnote. Canonical version: methodology.html#sample-sizes. -->
+      <!-- DRAFT: JF to revise -->
+      <p class="fine" id="sample-sizes-note"><strong>Why the sample sizes differ.</strong>
+      The corpus is <strong>94</strong> documents (August 2015 &ndash; June 2026, including the
+      two emergency meetings of March 2020). The ladder evaluates from 1 January 2019 onwards,
+      leaving everything earlier as training data only &mdash; <strong>62</strong> meetings, of
+      which the <strong>60</strong> scheduled ones carry the headline scores above and the 2
+      specials are scored separately. The Spec&nbsp;3 test below runs on the whole corpus rather
+      than the 2019 window, and on rate <em>surprises</em>, so it drops the 2 specials and
+      August 2015 (no preceding decision to measure a change from): <strong>91</strong>. The
+      fragility subsample is the <strong>23</strong> of those 91 falling on or after
+      1&nbsp;September 2023. <a href="methodology.html#sample-sizes">Full note in the
+      methodology</a>.</p>
+
       <details class="disclosure">
         <summary><span class="caret" aria-hidden="true"></span>More detail</summary>
         <div class="disclosure-body">
-          <p class="fine" id="ladder-meta" style="margin-top:0"></p>
+          <p class="fine" id="ladder-meta" style="margin-top:0">Scheduled meetings only, evaluated 1 January 2019 &rarr; present (<strong>n=60</strong>) &middot; 2 special meeting(s) reported separately, not blended in &middot; log-score probability floor 1e-09.</p>
           <p class="fine">
             <strong>Standing caveat: the market benchmark (L1) is the bar.</strong> L2&ndash;L4
             must show genuine skill above L1 to be worth anything &mdash; matching or beating
@@ -588,12 +694,15 @@
 
     <hr class="divider">
     <h3 class="subhead">Headline statistical test (Spec 3)</h3>
+    <!-- The plain-English summary is static and always visible: it is a
+         sentence, not a figure, so it should survive a failed fetch. Only
+         the numeric line below it waits on data/inference_v1.json. -->
+    <!-- DRAFT: JF to revise -->
+    <p class="plain-summary" id="spec3-caption"><em>In plain English: one test
+    finds a weak link between the previous minutes' tone and how the decision surprised the
+    market, but it fades after 2023 and a stricter test finds nothing.</em></p>
     <div id="inference-status" class="fine">Loading&hellip;</div>
     <div id="inference-content" style="display:none">
-      <!-- DRAFT: JF to revise -->
-      <p class="plain-summary" id="spec3-caption"><em>In plain English: one test
-      finds a weak link between the previous minutes' tone and how the decision surprised the
-      market, but it fades after 2023 and a stricter test finds nothing.</em></p>
       <details class="disclosure">
         <summary><span class="caret" aria-hidden="true"></span>More detail</summary>
         <div class="disclosure-body">
@@ -606,16 +715,21 @@
   <!-- 3b. Track record -->
   <section class="card">
     <h2>Track record</h2>
-    <p class="fine" style="margin-top:-6px">Every pre-registered call, dry runs and rehearsals
-    included &mdash; locked calls are marked and can never be edited after the fact. Brier is
-    for the m0 market-only reference (a locked point call has no probability distribution of
-    its own to score against).</p>
+    <!-- DRAFT: JF to revise -->
+    <p class="fine" style="margin-top:-6px">Every locked call &mdash; marked as such, and never
+    editable after the fact. Dry runs and rehearsals are hidden by default and can be shown
+    below. Brier is for the m0 market-only reference (a locked point call has no probability
+    distribution of its own to score against).</p>
     <div id="track-status" class="fine">Loading&hellip;</div>
     <div id="track-content" style="display:none">
-      <div class="table-scroll" tabindex="0" role="region" aria-label="Track record of every pre-registered call">
+      <label class="row-toggle" id="track-toggle-wrap" style="display:none">
+        <input type="checkbox" id="toggle-rehearsals">
+        <span id="track-toggle-label">Show rehearsals and dry runs</span>
+      </label>
+      <div class="table-scroll" tabindex="0" role="region" aria-label="Track record of every locked call">
         <table id="track-table">
           <!-- DRAFT: JF to revise -->
-          <caption class="visually-hidden">Every pre-registered call: meeting date, kind,
+          <caption class="visually-hidden">Every locked call: meeting date, kind,
           point call, market-implied probabilities, outcome and Brier score</caption>
           <thead>
             <tr><th scope="col">Meeting</th><th scope="col">Locked</th><th scope="col">Call</th><th scope="col">Cut</th><th scope="col">Hold</th><th scope="col">Hike</th><th scope="col">Outcome</th><th scope="col">Brier (m0)</th></tr>
@@ -650,9 +764,16 @@
   <footer>
     <p class="nia"><strong>Not investment advice.</strong> A research project, not a
     recommendation to buy, sell, or hold anything.</p>
+    <p><strong>Built and maintained by Jake Foulkes</strong> &middot;
+    <a href="mailto:jakefoulkes@aol.com">jakefoulkes@aol.com</a></p>
     <p>Source documents &copy; Bank of England, linked not republished &middot;
     Lexicon: Apel &amp; Blix Grimaldi (2012), implemented verbatim (see the decisions log)
     &middot; <span id="gen-note"></span></p>
+    <!-- fallback:buildinfo - generated from data/build_info.json by
+         pipeline/build_build_info.py, refreshed by JS when it loads. -->
+    <p><span id="build-note">Site last updated 29 July 2026 (<a
+      href="https://github.com/jakefoulkes1/mpc-index/commit/56cd77cbe6c43c4768843df09b19e354394603db"><code>56cd77c</code></a>).</span></p>
+    <!-- /fallback:buildinfo -->
   </footer>
 </div>
 
@@ -665,8 +786,48 @@ function svgNode(tag, attrs) {
   for (const k in attrs) n.setAttribute(k, attrs[k]);
   return n;
 }
-function fetchJSON(path) {
-  return fetch(path).then(r => { if (!r.ok) throw new Error(r.status); return r.json(); });
+// ---------- loading, and failing visibly ----------
+// Every section on this page is filled in by a fetch. A fetch that hangs
+// used to leave its section reading "Loading..." for ever; these three
+// helpers make that impossible. Budget is deliberately short: this is a
+// handful of small static JSON files on the same origin.
+const FETCH_TIMEOUT_MS = 8000;
+const REPO_URL = 'https://github.com/jakefoulkes1/mpc-index';
+const RAW_BASE = REPO_URL + '/blob/main/';
+
+function fetchJSON(path, timeoutMs) {
+  const budget = timeoutMs || FETCH_TIMEOUT_MS;
+  const ctrl = new AbortController();
+  const timer = setTimeout(() => ctrl.abort(), budget);
+  return fetch(path, { signal: ctrl.signal })
+    .then(r => {
+      if (!r.ok) throw new Error('HTTP ' + r.status);
+      return r.json();
+    })
+    .catch(err => {
+      // AbortError is the timeout firing; anything else keeps its own message.
+      throw new Error(err && err.name === 'AbortError'
+        ? 'no response within ' + Math.round(budget / 1000) + ' seconds'
+        : (err && err.message) || String(err));
+    })
+    .finally(() => clearTimeout(timer));
+}
+
+// One visible failure state per section: what failed, why, and a link to the
+// same file on GitHub so the reader can still get at the numbers.
+// opts.fallback = the section is already showing built-in figures, so say so.
+function failSection(statusId, path, reason, opts) {
+  const el = document.getElementById(statusId);
+  if (!el) return;
+  const o = opts || {};
+  el.className = 'section-error';
+  el.style.display = 'block';
+  el.innerHTML =
+    `<strong>Could not load ${path}</strong> &mdash; ${reason}. ` +
+    (o.fallback
+      ? 'The figures shown below are the last published values, built into this page. '
+      : (o.consequence ? o.consequence + ' ' : '')) +
+    `<a href="${RAW_BASE}${path}" rel="noopener">Read ${path} on GitHub</a>.`;
 }
 function fmtDate(iso, opts) {
   return new Date(iso).toLocaleDateString('en-GB',
@@ -682,12 +843,12 @@ function classifyDecision(decision) {
   return verb === 'increase' ? 'hike' : (verb === 'reduce' ? 'cut' : 'hold');
 }
 
-fetch('data/ladder_v1.json')
-  .then(r => { if (!r.ok) throw new Error(r.status); return r.json(); })
+fetchJSON('data/ladder_v1.json')
   .then(renderLadder)
   .catch(err => {
-    document.getElementById('ladder-status').textContent =
-      'Could not load data/ladder_v1.json (' + err.message + ').';
+    // The table below is already populated with the last published figures,
+    // so the reader loses nothing but freshness.
+    failSection('ladder-status', 'data/ladder_v1.json', err.message, { fallback: true });
   });
 
 function renderLadder(d) {
@@ -697,7 +858,10 @@ function renderLadder(d) {
     `(<strong>n=${d.n_scheduled}</strong>) &middot; ${d.n_specials} special meeting(s) reported ` +
     `separately, not blended in &middot; log-score probability floor ${d.log_score_probability_clip}.`;
 
+  // Clear the built-in fallback rows first - this replaces them, it does
+  // not add to them.
   const tbody = document.getElementById('ladder-tbody');
+  tbody.innerHTML = '';
   const scores = d.headline_scores_scheduled_only;
   ['L0', 'L1', 'L2', 'L3', 'L4'].forEach(model => {
     const s = scores[model];
@@ -717,8 +881,8 @@ function renderLadder(d) {
 fetchJSON('data/inference_v1.json')
   .then(renderInference)
   .catch(err => {
-    document.getElementById('inference-status').textContent =
-      'Could not load data/inference_v1.json (' + err.message + ').';
+    failSection('inference-status', 'data/inference_v1.json', err.message,
+      { consequence: 'The plain-English summary above still stands.' });
   });
 
 function renderInference(d) {
@@ -740,48 +904,70 @@ function renderInference(d) {
   document.getElementById('inference-content').style.display = 'block';
 }
 
-Promise.all([
-  fetchJSON('data/index.json'),
-  fetchJSON('data/site_context.json').catch(err => {
+const indexPromise = fetchJSON('data/index.json');
+const contextPromise = fetchJSON('data/site_context.json');
+
+// The context panel resolves on its own. It used to be handled inside the
+// Promise.all below, which meant a failed data/index.json left this section
+// reading "Loading..." for ever - the exact dead state the failure states
+// exist to prevent.
+contextPromise
+  .then(renderContext)
+  .catch(err => {
     console.warn('site_context.json unavailable:', err.message);
-    return null;
-  }),
+    failSection('context-status', 'data/site_context.json', err.message,
+      { consequence: 'This panel is context only and feeds no model.' });
+  });
+
+// The chart draws its Bank Rate overlay from the context file, but must not
+// go down with it: a missing context file just means no second series.
+Promise.all([
+  indexPromise,
+  contextPromise.catch(() => null),
 ]).then(([index, context]) => {
   renderLatest(index);
   renderChart(index, context);
-  if (context) {
-    renderContext(context);
-  } else {
-    document.getElementById('context-status').textContent =
-      'Could not load data/site_context.json. Run: python -m pipeline.site_context';
-  }
 }).catch(err => {
-  const msg = 'Could not load data/index.json (' + err.message + '). Serve over http://, e.g. python -m http.server';
-  document.getElementById('status').textContent = msg;
-  document.getElementById('chart-status').textContent = msg;
+  failSection('status', 'data/index.json', err.message,
+    { consequence: 'The latest reading cannot be shown.' });
+  failSection('chart-status', 'data/index.json', err.message,
+    { consequence: 'The chart cannot be drawn.' });
 });
 
-fetch(PREDICTION_FILE)
-  .then(r => { if (!r.ok) throw new Error(r.status); return r.json(); })
+fetchJSON(PREDICTION_FILE)
   .then(renderCallCard)
   .catch(err => {
-    document.getElementById('call-status').textContent =
-      'No prediction file yet (' + err.message + ').';
+    failSection('call-status', PREDICTION_FILE, err.message, { fallback: true });
   });
 
 fetchJSON('data/annotations.json')
   .then(renderEpisodes)
   .catch(err => {
-    document.getElementById('episodes-status').textContent =
-      'Could not load episodes (' + err.message + '). Run: python -m pipeline.build_annotations';
+    failSection('episodes-status', 'data/annotations.json', err.message,
+      { consequence: 'Published episodes cannot be listed.' });
   });
 
 fetchJSON('data/track_record.json')
   .then(renderTrackRecord)
   .catch(err => {
-    document.getElementById('track-status').textContent =
-      'Could not load track record (' + err.message + '). Run: python -m pipeline.build_track_record';
+    failSection('track-status', 'data/track_record.json', err.message,
+      { consequence: 'The locked calls themselves are unaffected &mdash; they live in the repository.' });
   });
+
+// Footer stamp. It never shows "Loading...": the page ships with the last
+// built value and this only refreshes it.
+fetchJSON('data/build_info.json')
+  .then(renderBuildInfo)
+  .catch(err => { console.warn('build_info.json unavailable:', err.message); });
+
+function renderBuildInfo(b) {
+  const el = document.getElementById('build-note');
+  if (!el || !b.last_commit_iso) return;
+  el.innerHTML =
+    `Site last updated ${fmtDate(b.last_commit_iso)} (` +
+    `<a href="${REPO_URL}/commit/${b.last_commit_sha}" rel="noopener">` +
+    `<code>${b.last_commit_short_sha}</code></a>).`;
+}
 
 function renderTrackRecord(d) {
   const tbody = document.getElementById('track-tbody');
@@ -806,10 +992,34 @@ function renderTrackRecord(d) {
     tbody.appendChild(tr);
   });
 
+  // Locked calls are the record and are always visible. Rehearsals and dry
+  // runs are working material: hidden by default, one click away, and never
+  // silently dropped - the toggle says how many there are.
+  const drafts = d.records.filter(r => r.kind !== 'locked').length;
+  const wrap = document.getElementById('track-toggle-wrap');
+  const toggle = document.getElementById('toggle-rehearsals');
+  const applyFilter = () => {
+    const show = toggle.checked;
+    tbody.querySelectorAll('tr').forEach(tr => {
+      if (!tr.classList.contains('kind-locked')) {
+        tr.style.display = show ? '' : 'none';
+      }
+    });
+  };
+  if (drafts > 0) {
+    document.getElementById('track-toggle-label').textContent =
+      `Show rehearsals and dry runs (${drafts})`;
+    wrap.style.display = 'inline-flex';
+    toggle.onchange = applyFilter;
+    applyFilter();
+  } else {
+    wrap.style.display = 'none';
+  }
+
   const hasLocked = d.records.some(r => r.kind === 'locked');
   const note = document.getElementById('track-empty-note');
   if (!hasLocked) {
-    note.textContent = `First pre-registered call: ${fmtDate(d.first_pre_registered_call)}.`;
+    note.textContent = `First locked call: ${fmtDate(d.first_pre_registered_call)}.`;
     note.style.display = 'block';
   }
 
@@ -820,16 +1030,21 @@ function renderTrackRecord(d) {
 // The tag name follows the prediction file's own name by project convention
 // (data/predictions/lock-2026-07.json <-> git tag lock-2026-07), so the
 // evidence link is derived from the file being displayed, not hardcoded.
-const REPO_URL = 'https://github.com/jakefoulkes1/mpc-index';
 const PREDICTION_NAME = PREDICTION_FILE.split('/').pop().replace(/\.json$/, '');
+const TAG_URL = REPO_URL + '/releases/tag/' + PREDICTION_NAME;
 
 function renderCallCard(p) {
   const locked = p.point_call !== null && p.point_call !== undefined;
   const card = document.getElementById('call-card');
   const badge = document.getElementById('call-badge');
-  card.classList.add(locked ? 'locked' : 'dry-run');
-  badge.classList.add(locked ? 'locked' : 'dry-run');
-  badge.textContent = locked ? 'LOCKED CALL' : 'DRY RUN · NOT A FORECAST';
+  // Set both classes explicitly rather than only adding one: the card ships
+  // with the locked state built in, so a dry-run file has to be able to
+  // clear it again.
+  card.classList.toggle('locked', locked);
+  card.classList.toggle('dry-run', !locked);
+  badge.classList.toggle('locked', locked);
+  badge.classList.toggle('dry-run', !locked);
+  badge.textContent = locked ? 'LOCKED CALL' : 'DRY RUN · NOT A CALL';
 
   const announceDate = fmtDate(p.meeting_announcement);
   document.getElementById('call-heading').innerHTML =
@@ -838,20 +1053,38 @@ function renderCallCard(p) {
   // Lock timestamp as the card's evidence line, linked to the git tag that
   // pins the pre-announcement state of the repository.
   const stamp = document.getElementById('call-stamp');
+  const verify = document.getElementById('call-verify');
+  const tagged = locked && PREDICTION_NAME.startsWith('lock-');
   if (locked) {
     const iso = p.lock_timestamp;
     const shown = new Date(iso).toUTCString();
-    const tagged = PREDICTION_NAME.startsWith('lock-');
     stamp.innerHTML =
       `<span class="stamp-label">Locked</span>` +
       `<time datetime="${iso}">${shown}</time>` +
       (tagged
-        ? ` <span aria-hidden="true">&middot;</span> <a href="${REPO_URL}/tree/${PREDICTION_NAME}" rel="noopener">` +
+        ? ` <span aria-hidden="true">&middot;</span> <a href="${TAG_URL}" rel="noopener">` +
           `tag ${PREDICTION_NAME}</a>`
         : '');
   } else {
     stamp.innerHTML = `<span class="stamp-label">Status</span>` +
       `<span>beta lock scheduled 28 July 2026, 12:00</span>`;
+  }
+  // The verification path is the site's central claim, so it is rebuilt from
+  // the file actually on display and hidden outright when there is no tag to
+  // point at - it must never invite a reader to check something that isn't there.
+  if (verify) {
+    if (tagged) {
+      verify.innerHTML =
+        `<span class="vh">How to check this timestamp yourself</span>` +
+        `The call above was tagged and pushed to GitHub before the announcement it is about: ` +
+        `open the <a href="${TAG_URL}" rel="noopener">tag page</a>, which GitHub dates ` +
+        `independently of anything in this repository, or clone the repository and run ` +
+        `<code>git show ${PREDICTION_NAME}:${PREDICTION_FILE}</code> to read the call ` +
+        `exactly as it stood when it was locked.`;
+      verify.style.display = 'block';
+    } else {
+      verify.style.display = 'none';
+    }
   }
 
   const m0 = p.m0_market_only;
@@ -884,9 +1117,12 @@ function renderCallCard(p) {
     document.getElementById('call-rationale').style.display = 'block';
     document.getElementById('call-fine').style.display = 'none';
   } else {
+    // Clear the built-in locked content: this file has no call in it.
+    document.getElementById('call-rationale').style.display = 'none';
     document.getElementById('call-fine').innerHTML =
       `m0 is a market-only reference (OIS forward curve vs SONIA, ${m0.assumed_move_bp}bp two-state assumption) ` +
       `&mdash; not a call, and not the thesis. No point_call has been locked yet.`;
+    document.getElementById('call-fine').style.display = 'block';
   }
 
   document.getElementById('call-status').style.display = 'none';
@@ -1131,19 +1367,54 @@ function renderChart(data, context) {
       : 'translate(-50%, calc(-100% - 14px))';
     tip.style.display = 'block';
   }
-  // pointer events rather than mouse events, so a finger drag on a phone
-  // reads the series the same way a hover does on a desktop
-  // Property assignment, not addEventListener: renderChart runs again on
-  // resize against the same <svg> node, and handlers must replace rather
-  // than accumulate.
+  // Pointer events rather than mouse events, so one code path serves mouse,
+  // pen and finger. Property assignment, not addEventListener: renderChart
+  // runs again on resize against the same <svg> node, and handlers must
+  // replace rather than accumulate.
   const hideTip = () => {
     tip.style.display = 'none';
     hoverLayer.style.display = 'none';
   };
-  svg.onpointermove = moveTip;
-  svg.onpointerdown = moveTip;
-  svg.onpointerleave = hideTip;
+  // Touch has no hover, so a tap has to do the work - and the tooltip has to
+  // stay up afterwards, because there is no pointerleave to dismiss it.
+  // `touched` suppresses the pointerleave that some browsers synthesise
+  // immediately after a tap, which would otherwise hide the tip instantly.
+  let touched = false;
+  // A mouse move also clears `touched`: on a hybrid laptop, one earlier tap
+  // must not stop hover-out from dismissing the tip for the rest of the session.
+  svg.onpointermove = evt => {
+    if (evt.pointerType === 'touch') return;
+    touched = false;
+    moveTip(evt);
+  };
+  svg.onpointerdown = evt => {
+    touched = evt.pointerType === 'touch';
+    moveTip(evt);
+  };
+  svg.onpointerleave = evt => { if (!touched) hideTip(); };
   svg.onblur = hideTip;
+  // A tap anywhere else on the page, or any scroll, dismisses it - the same
+  // affordance as closing a popover. Registered once, on the document.
+  if (!window.__chartTipDismissBound) {
+    window.__chartTipDismissBound = true;
+    document.addEventListener('pointerdown', evt => {
+      const chart = document.getElementById('chart');
+      if (chart && !chart.contains(evt.target)) {
+        const t = document.getElementById('chart-tip');
+        const layer = document.getElementById('layer-hover');
+        if (t) t.style.display = 'none';
+        if (layer) layer.style.display = 'none';
+      }
+    }, true);
+    window.addEventListener('scroll', () => {
+      const t = document.getElementById('chart-tip');
+      if (t && t.style.display !== 'none') {
+        t.style.display = 'none';
+        const layer = document.getElementById('layer-hover');
+        if (layer) layer.style.display = 'none';
+      }
+    }, { passive: true });
+  }
 
   // Text alternative: screen readers get the shape of the series, not an
   // empty graphic. Values come from the same docs array the line is drawn from.

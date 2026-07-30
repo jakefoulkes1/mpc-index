@@ -44,6 +44,7 @@ Changes apply forward only; nothing is retrofitted. Locked calls are never touch
 - 2026-07-28 — [placeholder episode removed from the published site](#2026-07-28--placeholder-episode-removed-from-the-published-site)
 - 2026-07-29 — [Results framing: author's text; Pages fallback in LOCKDAY](#2026-07-29--results-framing-authors-text-pages-fallback-in-lockday)
 - 2026-07-29 — [design pass: typography, progressive disclosure, call card](#2026-07-29--design-pass-typography-progressive-disclosure-call-card)
+- 2026-07-30 — [audit fixes: failure states, verification path, metadata](#2026-07-30--audit-fixes-failure-states-verification-path-metadata)
 
 ## 2026-07-05 — repo created
 - **Thesis:** does the tone of MPC communication carry information about the next
@@ -1569,3 +1570,126 @@ JSON fields, and every field the site reads is unchanged).
   Chrome clamps its window to a 500px minimum width, so a 380px shot has to be
   taken through a fixed-width iframe pinned flush-left, or the capture silently
   crops a wider layout and looks broken.
+
+## 2026-07-30 — audit fixes: failure states, verification path, metadata
+
+Presentation and robustness only. No science-layer file, no data schema, and
+nothing under `data/predictions/` was touched; `lock-2026-07.json` is
+byte-identical. 107 -> 115 tests, all green (8 new, all in one new file).
+Jake's authored Results paragraph and the methodology specification prose were
+not reworded; the one exception is the meeting-schedule sentence, corrected
+against the Bank's own statement under a standing instruction to do so (below).
+
+- **Every JS-loaded section now fails visibly, and cannot sit on "Loading..."**
+  A shared `fetchJSON(path)` wraps every fetch in an `AbortController` with an
+  8-second budget, and a shared `failSection()` renders one house-style error
+  block naming the file, the reason (`HTTP 404`, `no response within 8 seconds`,
+  the browser's own message) and a link to that file on GitHub so the reader can
+  still get the numbers. Applied to all eight: call card, latest reading, chart,
+  context panel, ladder, Spec 3, track record, episodes.
+- **One real dead state was found by testing, not by reading.** The context
+  panel was resolved inside the same `Promise.all` as `data/index.json`, so a
+  failure of the *index* file skipped the context branch entirely and left that
+  section reading "Loading..." for ever - the exact defect this task set out to
+  remove. The context fetch now has its own `.then/.catch` chain and the
+  `Promise.all` only feeds the chart, whose Bank Rate overlay is optional.
+- **The timeout was verified against a real hung request, not a stub.** A first
+  attempt stubbed `window.fetch` with a promise that never settles; it never
+  aborted, because a stub ignores the abort signal that a real fetch honours -
+  the test was measuring the stub, not the code. Re-run against a local server
+  that sleeps 60s on `data/ladder_v1.json`: the section failed at 8s with
+  "no response within 8 seconds" and the built-in table stayed on screen.
+- **Progressive enhancement: the ladder table and the locked call now ship in
+  the static HTML.** Both were generated from `data/ladder_v1.json` and
+  `data/predictions/lock-2026-07.json` by a scratch script and pasted in - no
+  figure was retyped - and both are wrapped in `<!-- fallback:NAME -->` markers.
+  `renderLadder()` and `renderCallCard()` overwrite them on success;
+  `renderLadder()` gained a `tbody.innerHTML = ''` it did not have, without
+  which the fetched rows appended to the fallback rows and the table rendered
+  ten rows deep (caught in a browser, not in review).
+- **`pipeline/tests/test_static_fallback.py` (8 tests) regenerates every
+  fallback string from the JSON and asserts it appears in the markup**, using
+  the same formatting rules the JS uses (`toFixed`, `toUTCString`, the en-GB
+  date format). The rationale is compared character-for-character after undoing
+  the house-style entities, so a fallback that quietly paraphrased Jake's prose
+  would fail. It also asserts no `fetch(` bypasses the timeout helper and that
+  every status element has a `failSection` call.
+- **The verification path is now a block on the call card, not a footnote.**
+  The lock timestamp links to `/releases/tag/lock-2026-07` (was `/tree/`), and a
+  bordered `.call-verify` block states how a reader checks it: open the tag page,
+  which GitHub dates independently of anything in this repository, or run
+  `git show lock-2026-07:data/predictions/lock-2026-07.json`. It is rebuilt from
+  the prediction filename and **hidden outright when the file is not a `lock-*`**,
+  so a dry run can never invite a reader to check a tag that does not exist.
+- **CORRECTION, sourced to the Bank: the move to eight meetings a year took
+  effect in 2016, not 2017.** methodology.html said "monthly through 2015-2016
+  and moved to eight per year from 2017". The Bank's own news release
+  *Confirmation of changes to the Monetary Policy Committee meeting schedule*
+  (9 May 2016) is headed "We have changed the schedule of Monetary Policy
+  Committee meetings from September 2016" and states that the meeting ending
+  13 October 2016 "will be the first to be dropped under the new arrangements";
+  the earlier release of 24 September 2015 sets out the same plan in advance.
+  The two sources agree - no conflict, so no HARD STOP. The corpus agrees too:
+  11 documents for 2016 (October absent) and 8 for 2017. The sentence now dates
+  the change to 2016, notes 2017 as the first full calendar year with eight, and
+  links both Bank releases. **The 2026-07-11 era-corpus entry carries the same
+  error in its own wording and has been left exactly as written** - this log is
+  forward-only, and this entry is the correction of record.
+- **A "why the sample sizes differ" note explains all five n's** (94 / 62 / 60 /
+  91 / 23), placed under the ladder table where a reader first meets one, with
+  the fuller version as its own always-visible card on methodology.html. It was
+  first written inside that page's Data disclosure and moved out on noticing
+  that `#sample-sizes` would otherwise link into collapsed content. The 91 is
+  derived, not asserted: `data/surprises.csv` holds 91 rows because
+  `build_surprises.py` excludes the 2 specials and August 2015 has no preceding
+  decision to difference against, and `load_surprises_with_lags()` drops nothing
+  further. **No rationale was invented for the 1 January 2019 evaluation start** -
+  the ladder entry does not give one, so the note says only what is true, that
+  everything earlier is training data.
+- **Chart: tap now works on touch.** `pointerdown` reads the series on a finger
+  tap and the tooltip stays up afterwards (a `touched` flag suppresses the
+  synthetic `pointerleave` some browsers fire straight after a tap); a tap
+  elsewhere or any scroll dismisses it. Hint text is now "Hover or tap the line
+  for details". A hybrid-device bug was caught while testing: `touched` was only
+  cleared on `pointerdown`, so after one tap a mouse-out stopped dismissing the
+  tip - a non-touch `pointermove` now clears it too.
+- **Track record: rehearsals and dry runs are behind a default-off toggle**,
+  labelled with how many are hidden ("Show rehearsals and dry runs (3)").
+  Filtering is by the existing `kind-locked` class, so **a locked row can never
+  be hidden** by this control, whatever else the file gains.
+- **`og-image.png`, 1200x630, drawn from `data/index.json` at build time** by
+  the new `pipeline/build_og_image.py` (additive, read-only, Pillow) - the real
+  series, so a share card cannot show a shape the page does not. `og:image` and
+  `twitter:card` meta added to both pages. Pillow is now in requirements.txt.
+  The script prefers Georgia/Arial if present and falls back to Pillow's own
+  scalable default, so a rebuild on another machine may substitute fonts; that
+  is cosmetic, and recorded here rather than left to surprise someone.
+- **"Last updated" comes from `git log -1`, via `pipeline/build_build_info.py`
+  -> `data/build_info.json`.** Ordering matters and is written into the script's
+  docstring: commit the content, run the script, then commit `build_info.json`
+  alone. That second commit changes no content, so the stamp names the commit
+  the reader is actually looking at. index.html refreshes the stamp by fetch;
+  methodology.html runs no JavaScript by design, so its stamp is static - and is
+  asserted against the JSON by the fallback test rather than trusted.
+- **Methodology citations now name the entry, not just the date.** 23 citations
+  were retitled; `2026-07-11` alone matches 25 entries, so each bare date was
+  resolved by reading the entries rather than guessed - e.g. the
+  `assert_curve_is_fresh` citation resolves to *curve freshness fix*, which is
+  where that assertion is introduced, not to *lock and scoring machinery*.
+- **Terminology unified to "call"** in the site's own chrome (badge, table
+  caption and region labels, track-record framing, the ladder plain-summary,
+  the "no prediction file" status). "Forecast" is left wherever it is
+  technically the right word - the ladder's five forecasters, "pure forecasts"
+  in Limitations - and **Jake's authored Results paragraph is untouched**.
+- **New prose carries `<!-- DRAFT: JF to revise -->`** (index.html 11 markers,
+  methodology.html 12), and the new methodology card carries the same visible
+  "Draft - JF to revise" badge as the other five. The deliberate exceptions are
+  the failure-state strings and the toggle label, which are interface
+  affordances rather than prose, on the same reasoning as "More detail" and
+  "Skip to content" in the 2026-07-29 entry.
+- **Screenshot note, correcting the 2026-07-29 one:** this Chrome renders a
+  `--window-size=390` headless window at a true 390px, but the capture is still
+  a crop of a wider layout - the first 390px shot showed sentences running off
+  the right edge. The fixed-width-iframe workaround recorded on 2026-07-29 is
+  still required; it produced a clean 390px capture with no horizontal overflow.
+  Verified at 1280px and 390px on both pages.

@@ -5,7 +5,23 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Methodology — MPC Communication Index</title>
 <meta name="description" content="How the MPC Communication Index is built and evaluated: data, index construction, market benchmark, evaluation, and limitations.">
+<meta name="author" content="Jake Foulkes">
 <meta name="theme-color" content="#0f1115">
+<meta property="og:type" content="article">
+<meta property="og:site_name" content="MPC Communication Index">
+<meta property="og:url" content="https://jakefoulkes1.github.io/mpc-index/methodology.html">
+<meta property="og:title" content="Methodology — MPC Communication Index">
+<meta property="og:description" content="How the MPC Communication Index is built and evaluated: data, index construction, market benchmark, evaluation, and limitations.">
+<!-- Same share card as the index page: built by pipeline/build_og_image.py. -->
+<meta property="og:image" content="https://jakefoulkes1.github.io/mpc-index/og-image.png">
+<meta property="og:image:type" content="image/png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="The A&BG communication index for Bank of England MPC minutes, August 2015 to June 2026, plotted against its neutral value.">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Methodology — MPC Communication Index">
+<meta name="twitter:description" content="Data, index construction, market benchmark, evaluation and limitations — every choice traceable to code or a dated entry in the decisions log.">
+<meta name="twitter:image" content="https://jakefoulkes1.github.io/mpc-index/og-image.png">
 <link rel="icon" href="data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='0%200%2032%2032'%3E%3Crect%20width='32'%20height='32'%20rx='7'%20fill='%230f1115'/%3E%3Cpolyline%20points='4,22%2011,14%2016,18%2022,7%2028,12'%20fill='none'%20stroke='%23c9a34e'%20stroke-width='2.6'%20stroke-linecap='round'%20stroke-linejoin='round'/%3E%3C/svg%3E">
 <style>
   :root {
@@ -137,6 +153,7 @@
 
   <nav class="toc" id="main" aria-label="Sections">
     <a href="#data">Data</a>
+    <a href="#sample-sizes">Sample sizes</a>
     <a href="#index-construction">Index construction</a>
     <a href="#market-benchmark">Market benchmark</a>
     <a href="#evaluation">Evaluation</a>
@@ -162,27 +179,39 @@
     Monetary Policy Committee from August 2015 to June 2026: <strong>94 documents</strong>
     &mdash; 92 from the regular meeting cycle plus 2 special (emergency) meetings, the
     10&nbsp;March and 19&nbsp;March 2020 Covid-19 decisions.
-    <span class="ref">(DECISIONS.md 2026-07-11 corpus audit; 2026-07-11 special meeting.)</span></p>
+    <span class="ref">(DECISIONS.md 2026-07-11 &mdash; corpus audit: full-text repair + special meetings; 2026-07-11 &mdash; 19 March 2020 special meeting added.)</span></p>
+    <!-- DRAFT: JF to revise - the 2016/2017 correction, sourced to the Bank -->
     <p>The window starts at the August 2015 regime change: from that meeting the Bank
     began publishing the policy summary and minutes on the day of the decision
-    (&ldquo;Super Thursday&rdquo;). Meetings were monthly through 2015&ndash;2016 and moved
-    to eight per year from 2017; the scraper probes every month and tolerates the months
-    with no meeting rather than hardcoding the schedule.
-    <span class="ref">(pipeline/scrape/era.py; DECISIONS.md 2026-07-11.)</span></p>
+    (&ldquo;Super Thursday&rdquo;). Meetings were monthly from 2015 until the autumn of
+    <strong>2016</strong>, not 2017: the Bank confirmed the move to eight regular meetings
+    a year on 9&nbsp;May 2016, once the Bank of England and Financial Services Act 2016 had
+    received Royal Assent, and the meeting scheduled for 13&nbsp;October 2016 was
+    &ldquo;the first to be dropped under the new arrangements&rdquo;. 2017 is therefore the
+    first full calendar year with eight, and this corpus holds 11 documents for 2016 and 8
+    for 2017. The scraper probes every month and tolerates the months with no meeting rather
+    than hardcoding the schedule.
+    <span class="ref">(Bank of England,
+    <a href="https://www.bankofengland.co.uk/news/2016/may/confirmation-of-changes-to-the-mpc-meeting-schedule">Confirmation
+    of changes to the Monetary Policy Committee meeting schedule</a>, 9 May 2016, and
+    <a href="https://www.bankofengland.co.uk/news/2015/september/mpc-publication-dates-for-2016-and-provisional-dates-for-2017">MPC
+    publication dates for 2016 and provisional dates for 2017</a>, 24 September 2015;
+    pipeline/scrape/era.py; DECISIONS.md 2026-07-11 &mdash; era corpus; 2026-07-30 &mdash;
+    audit fixes.)</span></p>
     <p>Until August 2021 the Bank published the full minutes as a separate PDF, with only
     the summary on the HTML page; 52 of the 94 documents were therefore reconstructed
     from the Bank's own PDF minutes, and every document records whether its text came
     from HTML or PDF. <span class="ref">(pipeline/scrape/backfill_pdf.py; DECISIONS.md
-    2026-07-11.)</span></p>
+    2026-07-11 &mdash; corpus audit: full-text repair + special meetings.)</span></p>
     <p>The corpus was reconciled against the Bank's own sitemap (zero missing, zero
     extra within the window) and against the voting record. A document's
     <code>published</code> date is <code>meeting_end + 1 day</code>, applied uniformly;
     the five known one-day gaps against the Bank's voting sheet are individually logged,
     and joins between the two sources use a &plusmn;3-day tolerance.
-    <span class="ref">(DECISIONS.md 2026-07-11; 2026-07-11 validation join.)</span></p>
+    <span class="ref">(DECISIONS.md 2026-07-11 &mdash; corpus audit: full-text repair + special meetings; 2026-07-11 &mdash; validation join fixed: voting-sheet date is canonical.)</span></p>
     <p>Raw source texts are &copy; Bank of England and stay in a local, gitignored
     cache; the repository publishes derived scores and SHA-256 hashes only, with links
-    to the source pages. <span class="ref">(DECISIONS.md 2026-07-05.)</span></p>
+    to the source pages. <span class="ref">(DECISIONS.md 2026-07-05 &mdash; repo created.)</span></p>
 
     <h3>Voting record</h3>
     <p>The Bank's published MPC voting spreadsheet, parsed to one row per
@@ -190,10 +219,42 @@
     <code>skew</code> is the average of all voting members' preferred rates minus the
     decided rate, following Apel &amp; Blix Grimaldi (2012, p.13, after Gerlach-Kristen
     2004). The sheet's date column is the announcement date, confirmed against known
-    meetings. <span class="ref">(pipeline/build_votes.py; DECISIONS.md 2026-07-11.)</span></p>
+    meetings. <span class="ref">(pipeline/build_votes.py; DECISIONS.md 2026-07-11 &mdash; voting-record parsing and reconciliation.)</span></p>
 
       </div>
     </details>
+  </section>
+
+  <section class="card" id="sample-sizes">
+    <!-- DRAFT: JF to revise -->
+    <h2>Why the sample sizes differ</h2>
+    <span class="draft-note">Draft &mdash; JF to revise</span>
+
+    <p>Five different n's appear across this site, and they are not
+    inconsistencies. The <strong>94</strong> above is the whole corpus: every MPC
+    minutes publication from August 2015 to June 2026, including the two emergency
+    meetings of March 2020.</p>
+    <ul>
+    <li><strong>62 evaluated.</strong> The benchmark ladder scores only meetings from
+    1&nbsp;January 2019 onwards; everything earlier is training data for the expanding
+    window and is never scored. That leaves 62 meetings inside the evaluation window.</li>
+    <li><strong>60 scheduled.</strong> Of those 62, the 2 March 2020 emergency meetings
+    are scored separately rather than blended in, because no call could have been locked
+    for a meeting that had not yet been announced. The headline ladder figures are the
+    remaining 60.</li>
+    <li><strong>91 in Spec&nbsp;3.</strong> The regression uses the whole corpus rather
+    than the 2019 window, and its dependent variable is the rate <em>surprise</em>. That
+    drops the 2 specials, and August 2015 as well &mdash; the first document in the corpus
+    has no preceding decision to measure a change from. 94 &minus; 2 &minus; 1 = 91.</li>
+    <li><strong>23 in the fragility check.</strong> The post-hiking-cycle subsample is
+    those of the 91 falling on or after 1&nbsp;September 2023.</li>
+    </ul>
+    <p>So the ladder and Spec&nbsp;3 answer different questions over deliberately different
+    windows, and neither is a subset of the other by accident.
+    <span class="ref">(data/ladder_v1.json; data/inference_v1.json;
+    pipeline/build_surprises.py; DECISIONS.md 2026-07-11 &mdash; the benchmark ladder,
+    L0&ndash;L4; 2026-07-11 &mdash; the headline inference; 2026-07-30 &mdash; audit
+    fixes.)</span></p>
   </section>
 
   <section class="card" id="index-construction">
@@ -214,14 +275,14 @@
     described in the paper from a retrieved copy (not reconstructed from memory); the
     verbatim term lists and page references are stored in
     <code>pipeline/score/lexicon/abg_2012.json</code>.
-    <span class="ref">(DECISIONS.md 2026-07-11 A&amp;BG baseline.)</span></p>
+    <span class="ref">(DECISIONS.md 2026-07-11 &mdash; A&amp;BG (2012) baseline lexicon.)</span></p>
     <div class="formula">
       Net&nbsp;Index = [ (#hawk / (#hawk + #dove)) &minus; (#dove / (#hawk + #dove)) ] + 1
       &nbsp;&nbsp;<span class="ref">(paper p.10)</span>
     </div>
     <p>Range [0,&nbsp;2]; <strong>1.0 is neutral</strong> (the ratio's fixed midpoint, not a
     fitted value). A document with zero hits is defined as neutral.
-    <span class="ref">(pipeline/score/abg.py NEUTRAL_VALUE; DECISIONS.md 2026-07-11.)</span></p>
+    <span class="ref">(pipeline/score/abg.py NEUTRAL_VALUE; DECISIONS.md 2026-07-11 &mdash; neutral_value published in index.json.)</span></p>
     <p>Counting rule, per the paper: the whole document is lowercased and tokenised
     (word tokens; no sentence splitting &mdash; the paper counts across the full text).
     Each adjacent adjective-then-noun pair (&ldquo;higher inflation&rdquo;) counts as one
@@ -231,12 +292,12 @@
     used; the paper's four-noun robustness extension is stored but unused. Immediate
     adjacency in the adjective-then-noun direction is an interpretation of the paper's
     worked examples, logged as such. There is no negation handling &mdash; the paper has
-    none. <span class="ref">(pipeline/score/abg.py; DECISIONS.md 2026-07-11.)</span></p>
+    none. <span class="ref">(pipeline/score/abg.py; DECISIONS.md 2026-07-11 &mdash; A&amp;BG (2012) baseline lexicon.)</span></p>
     <p><strong>Lag convention:</strong> a meeting's minutes are published simultaneously
     with its own decision, so in every predictive use (the benchmark ladder's L3 and the
     Spec&nbsp;2/Spec&nbsp;3 tests) the tone feature for a meeting is the <em>previous</em>
-    meeting's index. <span class="ref">(DECISIONS.md 2026-07-11 ladder; 2026-07-11
-    inference.)</span></p>
+    meeting's index. <span class="ref">(DECISIONS.md 2026-07-11 &mdash; the benchmark ladder, L0&ndash;L4;
+    2026-07-11 &mdash; the headline inference.)</span></p>
 
       </div>
     </details>
@@ -261,8 +322,8 @@
     2009&ndash;2015 / 2016&ndash;2024 / 2025&ndash;present, plus the separate
     &ldquo;latest yield curve data&rdquo; file updated daily &mdash; whichever is
     fresher wins), and SONIA from the Bank's Interactive Statistical Database (series
-    IUDSOIA). <span class="ref">(pipeline/market/ois.py; DECISIONS.md 2026-07-11 market
-    benchmark; 2026-07-11 curve freshness fix.)</span></p>
+    IUDSOIA). <span class="ref">(pipeline/market/ois.py; DECISIONS.md 2026-07-11 &mdash; market
+    benchmark: OIS forward curve + SONIA; 2026-07-11 &mdash; curve freshness fix.)</span></p>
     <p><strong>Implied change.</strong> The forward rate is read from the curve at
     <em>meeting date + 3 days</em>, linearly interpolated between the curve's
     whole-month maturity buckets, minus SONIA. The +3-day convention compensates for
@@ -271,22 +332,22 @@
     alternative was rejected because it would overlap the next meeting in the
     monthly-meeting era. One implementation serves the live call card and the
     historical backtest. <span class="ref">(pipeline/predict/market_probs.py,
-    LOCK_OFFSET_DAYS=3; DECISIONS.md 2026-07-11 smoothed-curve bias.)</span></p>
+    LOCK_OFFSET_DAYS=3; DECISIONS.md 2026-07-11 &mdash; smoothed-curve bias: quantified, offset convention chosen.)</span></p>
     <p><strong>Two-state &plusmn;25bp mapping.</strong> The market is assumed to price a
     single possible move in one direction, of fixed 25bp size:
     p<sub>hike</sub> or p<sub>cut</sub> = clip(|implied change| / 25, 0, 1) in the
     direction of the implied change, remainder p<sub>hold</sub>. A documented
     simplification &mdash; real market pricing can imply multi-directional or
-    non-25bp moves. <span class="ref">(DECISIONS.md 2026-07-11 market_probs.)</span></p>
+    non-25bp moves. <span class="ref">(DECISIONS.md 2026-07-11 &mdash; market_probs: two-state &plusmn;25bp assumption.)</span></p>
     <p><strong>Historical benchmark.</strong> For each of the 94 meetings, the lock
     date is announcement &minus; 2 calendar days, walked back day-by-day to the nearest
     available trading day (capped at 10 days, else a hard stop; in practice zero
     walk-backs occurred). Output: <code>data/market_history.csv</code>.
-    <span class="ref">(pipeline/market/ois_history.py; DECISIONS.md 2026-07-11.)</span></p>
+    <span class="ref">(pipeline/market/ois_history.py; DECISIONS.md 2026-07-11 &mdash; historical market benchmark.)</span></p>
     <p><strong>Freshness guard.</strong> A live lock refuses to write if the curve
     snapshot is more than 2 business days old.
     <span class="ref">(pipeline/predict/lock.py assert_curve_is_fresh; DECISIONS.md
-    2026-07-11.)</span></p>
+    2026-07-11 &mdash; curve freshness fix.)</span></p>
 
       </div>
     </details>
@@ -318,27 +379,27 @@
     (62 meetings). Outcomes are coded by sign only &mdash; {cut, hold, hike} &mdash;
     with one shared classifier (the verb adjacent to &ldquo;Bank Rate&rdquo; in the
     decision text). <span class="ref">(pipeline/ladder.py;
-    pipeline/decision_label.py; DECISIONS.md 2026-07-11.)</span></p>
+    pipeline/decision_label.py; DECISIONS.md 2026-07-11 &mdash; the benchmark ladder, L0&ndash;L4.)</span></p>
     <p><strong>Scheduled-only rule.</strong> Headline scores use the 60 scheduled
     meetings only: at lock time (2 business days before an announcement) nobody could
     have pre-registered a forecast for an emergency meeting not yet known to exist.
     The 2 specials are scored separately as a robustness line, never blended in.
-    <span class="ref">(DECISIONS.md 2026-07-11 scheduled vs special.)</span></p>
+    <span class="ref">(DECISIONS.md 2026-07-11 &mdash; scheduled vs special meetings split; probability-clip logged.)</span></p>
     <p><strong>Scoring rules.</strong> Three-class Brier score (sum of squared
     probability errors across {cut, hold, hike}; range [0,&nbsp;2]) and log score
     &minus;log&nbsp;p(actual outcome), with p floored at the clip constant
     <strong>1e&#8209;9</strong> to avoid &minus;log(0) for a confidently wrong call; the
     clip is published in <code>data/ladder_v1.json</code> as
     <code>log_score_probability_clip</code>.
-    <span class="ref">(pipeline/predict/score_outcomes.py; DECISIONS.md 2026-07-11;
-    2026-07-11.)</span></p>
+    <span class="ref">(pipeline/predict/score_outcomes.py; DECISIONS.md 2026-07-11 &mdash; lock and scoring
+    machinery; 2026-07-11 &mdash; scheduled vs special meetings split; probability-clip logged.)</span></p>
     <p><strong>Fallbacks.</strong> An ordered-logit window with under 10 training
     examples, fewer than 2 outcome classes, or a non-converged fit (two-part check,
     including a degenerate-parameter guard) falls back to L1's probabilities and is
     logged in <code>data/ladder_v1.json</code>'s <code>fallback_log</code> &mdash; 11 of
     62 L3 windows, all before the sample's first cut in March 2020.
     <span class="ref">(pipeline/predict/ordered_logit.py; DECISIONS.md 2026-07-11
-    scipy entry.)</span></p>
+    &mdash; scipy added, for the ordered logit models only.)</span></p>
 
     <h3>Statistical tests (Spec 2 and Spec 3)</h3>
     <p><strong>Spec 3</strong>: OLS of the market surprise (actual minus market-implied
@@ -350,7 +411,7 @@
     of the three-class decision over the market-implied change alone, with a
     minimum-sample guard of 10 observations.
     <span class="ref">(pipeline/inference.py &rarr; data/inference_v1.json;
-    DECISIONS.md 2026-07-11 headline inference.)</span></p>
+    DECISIONS.md 2026-07-11 &mdash; the headline inference (Spec 3 OLS + Spec 2 ordered-logit LR test).)</span></p>
 
     <h3>Lock-and-score protocol</h3>
     <p>Before an announcement, <code>pipeline/predict/lock.py</code> freezes the
@@ -359,7 +420,7 @@
     rationale, and the committed <code>data/predictions/lock-*</code> file is the
     pre-registered record &mdash; never modified afterwards, misses included. Locks
     refuse stale curve data (see the freshness guard above).
-    <span class="ref">(DECISIONS.md 2026-07-11 lock machinery.)</span></p>
+    <span class="ref">(DECISIONS.md 2026-07-11 &mdash; lock and scoring machinery.)</span></p>
 
       </div>
     </details>
@@ -380,7 +441,7 @@
     <ul>
       <li><strong>Risk premia in forwards.</strong> OIS forward rates embed risk/term
       premia as well as rate expectations, so the market-implied probabilities are not
-      pure forecasts. <span class="ref">(DECISIONS.md 2026-07-11 market benchmark.)</span></li>
+      pure forecasts. <span class="ref">(DECISIONS.md 2026-07-11 &mdash; market benchmark: OIS forward curve + SONIA.)</span></li>
       <li><strong>Sparse lexicon hits.</strong> Across the 94 documents, the median
       number of A&amp;BG bigram hits per document (hawkish + dovish) is
       <strong>2</strong>, with an interquartile range of <strong>2</strong>
@@ -391,7 +452,7 @@
       <li><strong>Lexicon vintage and topic-vs-stance.</strong> The term lists are the
       paper's 2012 vintage, used unmodified; a match such as &ldquo;higher
       inflation&rdquo; reflects what the Committee discussed, which need not be the
-      stance it took. <span class="ref">(DECISIONS.md 2026-07-11 A&amp;BG baseline.)</span></li>
+      stance it took. <span class="ref">(DECISIONS.md 2026-07-11 &mdash; A&amp;BG (2012) baseline lexicon.)</span></li>
       <li><strong>No negation handling.</strong> Per the paper, a phrase like
       &ldquo;no case for higher rates&rdquo; still counts its inner bigram; the paper's
       method has no negation rule and none was added.
@@ -400,7 +461,7 @@
       over the discrete jump at a meeting date; the +3-day convention recovers only
       part of the understated move (quantified at up to a few tenths of a basis point
       on the 2026 curve, expected larger on steep historical curves).
-      <span class="ref">(DECISIONS.md 2026-07-11 smoothed-curve bias.)</span></li>
+      <span class="ref">(DECISIONS.md 2026-07-11 &mdash; smoothed-curve bias: quantified, offset convention chosen.)</span></li>
       <li><strong>Small n.</strong> 94 documents in total; 60 scheduled meetings in the
       ladder's evaluation window; 23 in the fragility subsample.
       <span class="ref">(data/ladder_v1.json; data/inference_v1.json.)</span></li>
@@ -408,15 +469,23 @@
       continuous surprise) is nominally significant on the full sample (p&nbsp;=&nbsp;0.0316)
       but does not replicate post-September-2023 (p&nbsp;=&nbsp;0.1422); Spec 2 (ordered
       logit on the discrete decision) finds nothing (p&nbsp;=&nbsp;0.4918). Both are
-      reported. <span class="ref">(data/inference_v1.json; DECISIONS.md 2026-07-11.)</span></li>
+      reported. <span class="ref">(data/inference_v1.json; DECISIONS.md 2026-07-11 &mdash; the headline inference.)</span></li>
     </ul>
       </div>
     </details>
   </section>
 
   <footer>
-    <a href="index.html">&larr; Back to the index</a> &middot; Not investment advice &middot;
-    Source documents &copy; Bank of England, linked not republished.
+    <p><a href="index.html">&larr; Back to the index</a> &middot; Not investment advice &middot;
+    Source documents &copy; Bank of England, linked not republished.</p>
+    <p><strong>Built and maintained by Jake Foulkes</strong> &middot;
+    <a href="mailto:jakefoulkes@aol.com">jakefoulkes@aol.com</a></p>
+    <!-- fallback:buildinfo - this page runs no JavaScript by design, so the
+         stamp is static; pipeline/tests/test_static_fallback.py fails if it
+         ever drifts from data/build_info.json. -->
+    <p>Site last updated 29 July 2026 (<a
+      href="https://github.com/jakefoulkes1/mpc-index/commit/56cd77cbe6c43c4768843df09b19e354394603db"><code>56cd77c</code></a>).</p>
+    <!-- /fallback:buildinfo -->
   </footer>
 </div>
 </body>
