@@ -25,7 +25,16 @@
   "index_trailing_mean": 1.0536,
   "index_trailing_n": 4,
   "point_call": "hold",
-  "rationale": "Hold at 3.75%. The communication index is recorded as context and does not enter the call: L3 scores −0.6729 against the market-only benchmark and Spec 2 returns p = 0.4918, so there is no warrant on this project's own evidence for letting tone override L1. p(hike) is shaded modestly below m0's 3.86% for two regime-specific reasons. First, with the short curve steeply upward-sloping (near 4.25% priced within six months) a forward read, at meeting plus three days, interpolated across whole-month buckets, absorbs September's expectations along with July's and overstates the probability attaching to this meeting. Second, the fiscal repricing of 20 July, which carried the ten-year gilt to 5.04%, is a risk premium rather than an expectation of Bank Rate — the contamination this methodology's first limitation anticipates. Both claims are testable against the September lock, when the near-month slope will differ. The macro flow since 18 June runs against the two dissenters on nearly every measure they invoked. Headline CPI fell to 2.6% against a 2.7% consensus, its lowest in fifteen months; services eased to 3.6%; regular pay growth slowed to 3.4%, joint-slowest since October 2020; input producer prices decelerated to 7.3% from 9.3% as Brent retraced. Greene and Pill dissented on an energy shock now unwinding. The counter-observation, recorded rather than passed over, is services producer price inflation at 4.3% in Q2, up from 3.2%.",
-  "outcome": null,
-  "scores": null
+  "rationale": "Hold at 3.75%. The communication index is recorded as context and does not enter the call: L3 scores \u22120.6729 against the market-only benchmark and Spec 2 returns p = 0.4918, so there is no warrant on this project's own evidence for letting tone override L1. p(hike) is shaded modestly below m0's 3.86% for two regime-specific reasons. First, with the short curve steeply upward-sloping (near 4.25% priced within six months) a forward read, at meeting plus three days, interpolated across whole-month buckets, absorbs September's expectations along with July's and overstates the probability attaching to this meeting. Second, the fiscal repricing of 20 July, which carried the ten-year gilt to 5.04%, is a risk premium rather than an expectation of Bank Rate \u2014 the contamination this methodology's first limitation anticipates. Both claims are testable against the September lock, when the near-month slope will differ. The macro flow since 18 June runs against the two dissenters on nearly every measure they invoked. Headline CPI fell to 2.6% against a 2.7% consensus, its lowest in fifteen months; services eased to 3.6%; regular pay growth slowed to 3.4%, joint-slowest since October 2020; input producer prices decelerated to 7.3% from 9.3% as Brent retraced. Greene and Pill dissented on an energy shock now unwinding. The counter-observation, recorded rather than passed over, is services producer price inflation at 4.3% in Q2, up from 3.2%.",
+  "outcome": "hold",
+  "scores": {
+    "m0_market_only": {
+      "brier_score": 0.003,
+      "log_score": 0.0394
+    },
+    "always_hold_reference": {
+      "brier_score": 0.0,
+      "log_score": -0.0
+    }
+  }
 }

@@ -27,8 +27,8 @@
         "p_hold": 0.9614,
         "p_hike": 0.0386
       },
-      "outcome": null,
-      "brier_m0": null
+      "outcome": "hold",
+      "brier_m0": 0.003
     },
     {
       "filename": "rehearsal-2026-07-26.json",
