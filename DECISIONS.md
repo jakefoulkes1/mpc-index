@@ -45,6 +45,7 @@ Changes apply forward only; nothing is retrofitted. Locked calls are never touch
 - 2026-07-29 — [Results framing: author's text; Pages fallback in LOCKDAY](#2026-07-29--results-framing-authors-text-pages-fallback-in-lockday)
 - 2026-07-29 — [design pass: typography, progressive disclosure, call card](#2026-07-29--design-pass-typography-progressive-disclosure-call-card)
 - 2026-07-30 — [audit fixes: failure states, verification path, metadata](#2026-07-30--audit-fixes-failure-states-verification-path-metadata)
+- 2026-08-05 — [site polish: fallbacks, drafts cleared, typography](#2026-08-05--site-polish-fallbacks-drafts-cleared-typography)
 
 ## 2026-07-05 — repo created
 - **Thesis:** does the tone of MPC communication carry information about the next
@@ -1693,3 +1694,94 @@ against the Bank's own statement under a standing instruction to do so (below).
   the right edge. The fixed-width-iframe workaround recorded on 2026-07-29 is
   still required; it produced a clean 390px capture with no horizontal overflow.
   Verified at 1280px and 390px on both pages.
+
+## 2026-08-05 — site polish: fallbacks, drafts cleared, typography
+
+Presentation and robustness only. No science-layer file, no data schema, and
+nothing under `data/predictions/` was touched; `lock-2026-07.json` is
+byte-identical. 115 -> 121 tests, all green.
+
+- **The reported staleness was a browser cache, not a broken deploy - except
+  for one line, which was genuinely stale.** Checked before changing anything:
+  `origin/main` and local were both at `fa5428e`; the outcome commit
+  (`5e9ce52`) and episode commit (`c2b34ae`) were pushed; and Pages had built
+  **successfully** for `fa5428e` at 12:42Z. Fetching the live page confirmed it
+  was byte-identical to `HEAD:index.html`, with `annotations.json` carrying the
+  episode and `track_record.json` the scored row. Loading it in a browser
+  showed every status element already at `display:none`, no "Loading..."
+  anywhere in `innerText`, the episode rendered and the locked row reading
+  hold / 0.0030. **The one thing that was really stale was the footer stamp**,
+  still naming `a750062`: `build_build_info.py` had not been re-run after the
+  outcome and episode commits, so `data/build_info.json` still described the
+  commit before them. Regenerated as part of this session's stamp commit.
+  Recorded plainly because "the site is stale" was a reasonable read of a
+  footer that was, in fact, wrong.
+- **Track record and Spec 3 now ship static fallbacks, like the ladder.** Both
+  generated from `data/track_record.json` and `data/inference_v1.json` by the
+  same scratch generator that produces the other blocks - no figure was
+  retyped - and both wrapped in `<!-- fallback:NAME -->` markers with the
+  status/content default visibility flipped so the content shows and the
+  status hides. 6 new tests assert every figure against the JSON.
+- **The static track table carries locked rows only, deliberately.** The
+  show-rehearsals toggle is JavaScript; with scripting off it cannot hide
+  anything, so shipping the rehearsal rows statically would contradict the
+  default-off promise the toggle makes. `renderTrackRecord()` rebuilds the
+  full table and reveals the toggle on success. A test asserts no
+  `kind-dryrun` or `kind-rehearsal` row appears in the static block.
+- **The call card distinguishes a scored past call from an upcoming one.**
+  `scored` is true only when the locked file has both an `outcome` and a
+  `scores.m0_market_only.brier_score` - the two fields `score_outcomes.py` is
+  allowed to write. When scored: the badge reads `LOCKED CALL · SCORED`, the
+  heading changes from "Next announcement" (wrong the morning after the
+  announcement it named) to **"Call for 30 July 2026"**, and a new block shows
+  outcome `hold`, Brier `0.0030`, and whether the point call `matched`. The
+  match is derived by comparing `point_call` to `outcome`, not asserted.
+- **"Next announcement" is read from the Bank's calendar, never hardcoded.**
+  The next meeting is the first date in `site_context.json`'s `ois_path.meetings`
+  after the displayed call's own meeting - 17 September 2026. The line is
+  hidden while the call's own meeting is still ahead (the heading already names
+  it), and if `site_context.json` fails to load the static line is left alone
+  rather than blanked. If the calendar ever runs out, the card says so instead
+  of inventing a date.
+- **The five methodology sections Jake signed off lost their draft markers; a
+  sixth was deliberately left.** Data, Index construction, Market benchmark,
+  Evaluation and Limitations lost 5 visible badges and 11 governing comments.
+  The **"Why the sample sizes differ"** card still carries its badge: it was
+  added on 2026-07-30 and is not one of the five sections the sign-off covered.
+  Flagged for Jake rather than swept up with the rest.
+- **All 8 `<!-- DRAFT: JF to revise -->` comments removed from index.html, with
+  the no-prose-changed claim verified mechanically** rather than asserted: the
+  multiset of character-data segments between tags was compared before and
+  after, with comments and script/style stripped. **0 segments lost, 0 added** -
+  the removals were comments only, as intended.
+- **One reader-visible draft marker remains in the whole repo**, and it is the
+  sample-sizes badge above. The `TODO(Jake)` strings in
+  `data/predictions/dryrun-*.json` and `rehearsal-*.json` are **not** reader
+  visible: the site renders `rationale` only for `PREDICTION_FILE`, which is the
+  locked file. They are also immutable by project rule and deliberate by design
+  - `rehearsal-2026-07-26.json`'s own `_rehearsal` note explains the placeholder.
+  `pipeline/predict/lock.py:108` is the frozen source of that placeholder.
+- **Typography: 31 literal font sizes snapped onto the existing scale** (28 in
+  index.html, 3 in methodology.html), introducing no new sizes - the point was
+  to shrink the vocabulary, not extend it. Off-scale values (10, 15, 16, 21, 32,
+  34px) went to the nearest token. The 2026-07-29 entry's claim that "every size
+  in both stylesheets now references a token" was not true of the context panel,
+  the episodes block, or the breakpoint overrides; it is true now.
+- **The mobile breakpoints now change tokens, not rules.** Seven per-rule
+  `font-size` overrides that invented off-scale sizes were deleted and
+  `--fs-display` retuned instead (36 -> 34px at 640px, 30 -> 27px at 430px), so
+  the call-card figures and the index reading track one scale at every width.
+- **The rationale is typeset as an argument, not a caption**: its own 66ch
+  measure, 1.75 leading, `text-wrap: pretty`, and an accent left rule matching
+  the `.results-framing` idiom already on the page. No new colours. The text
+  itself is untouched - it is Jake's, and it is rendered from the locked file
+  with only house-style entity substitution.
+- **The lock timestamp now reads in the site's date format**, "28 July 2026,
+  19:08:36 UTC", via a new `fmtUTCStamp()`. `toUTCString()`'s
+  "Tue, 28 Jul 2026 19:08:36 GMT" was the only date on either page in a
+  different style. Precision is unchanged and the machine-readable
+  `datetime` attribute still carries the raw ISO instant.
+- **Terminology checked, nothing left to change.** Every remaining "forecast"
+  is either technically required (the ladder's five forecasters; "pure
+  forecasts" in Limitations; "could not have pre-registered a forecast") or
+  sits inside Jake's authored Results paragraph, which was not touched.

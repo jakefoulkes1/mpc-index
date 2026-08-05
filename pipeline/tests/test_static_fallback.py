@@ -24,6 +24,9 @@ METHODOLOGY_HTML = ROOT / "methodology.html"
 LADDER = ROOT / "data" / "ladder_v1.json"
 LOCK = ROOT / "data" / "predictions" / "lock-2026-07.json"
 BUILD_INFO = ROOT / "data" / "build_info.json"
+INFERENCE = ROOT / "data" / "inference_v1.json"
+TRACK = ROOT / "data" / "track_record.json"
+CONTEXT = ROOT / "data" / "site_context.json"
 
 LADDER_MODELS = ("L0", "L1", "L2", "L3", "L4")
 
@@ -101,9 +104,10 @@ def test_call_card_fallback_figures_match_lock_file(index_html):
 
     iso = lock["lock_timestamp"]
     assert f'datetime="{iso}"' in block, "the built-in lock timestamp is not the locked file's"
-    # JS renders new Date(iso).toUTCString().
+    # JS renders fmtUTCStamp(iso): the site's date format, to the second, UTC.
     utc = datetime.fromisoformat(iso).astimezone(timezone.utc)
-    assert utc.strftime("%a, %d %b %Y %H:%M:%S GMT") in block
+    expected = f"{utc.day} {utc.strftime('%B')} {utc.year}, {utc.strftime('%H:%M:%S')} UTC"
+    assert expected in block, f"the built-in lock timestamp does not read {expected!r}"
 
     for label in ("cut", "hold", "hike"):
         value = m0[f"p_{label}"]
@@ -149,6 +153,119 @@ def test_call_card_fallback_links_to_the_tag(index_html):
     tag = LOCK.stem  # lock-2026-07
     assert f"https://github.com/jakefoulkes1/mpc-index/releases/tag/{tag}" in block
     assert f"git show {tag}:data/predictions/{LOCK.name}" in block
+
+
+# ---------------------------------------------------------------- spec 3
+
+
+def test_spec3_fallback_matches_json(index_html):
+    """The built-in Spec 3 line carries the JSON's own figures, unrounded."""
+    inf = json.loads(INFERENCE.read_text())
+    block = region(index_html, "spec3")
+
+    full = inf["full_sample"]["spec3_surprise_on_lagged_index"]
+    li = full["coefficients"]["lagged_index"]
+    frag = inf["fragility_check_subsample"]
+    frag_li = frag["results"]["spec3_surprise_on_lagged_index"]["coefficients"]["lagged_index"]
+    lr = inf["full_sample"]["spec2_ordered_logit_lr_test"]
+
+    assert f"{full['newey_west_maxlags']} lags" in block
+    assert f"n={full['n']}" in block
+    assert f"<strong>{li['coef']}</strong>" in block
+    assert f"t = {li['t']}" in block
+    assert f"<strong>p = {li['p']}</strong>" in block
+    assert gb_date(frag["start_date"]) in block
+    assert f"n={frag['results']['n']}" in block
+    assert f"coefficient {frag_li['coef']}" in block
+    assert f"p = {frag_li['p']}" in block
+    assert f"LR = {lr['lr_statistic']}" in block
+    assert f"p = {lr['p_value']}" in block
+
+
+# ----------------------------------------------------------- track record
+
+
+def test_track_record_fallback_matches_json(index_html):
+    """Every locked row is reproduced from data/track_record.json."""
+    track = json.loads(TRACK.read_text())
+    block = region(index_html, "track")
+    locked = [r for r in track["records"] if r["kind"] == "locked"]
+    assert locked, "no locked record to build a fallback from"
+
+    for r in locked:
+        m0 = r["m0_market_only"]
+        brier = "&mdash;" if r["brier_m0"] is None else f"{r['brier_m0']:.4f}"
+        expected = (
+            f'<td>{gb_date(r["meeting_announcement"])}</td>'
+            f'<td><span class="track-badge locked">Locked</span></td>'
+            f'<td>{r["point_call"] or "&mdash;"}</td>'
+            f'<td>{m0["p_cut"] * 100:.0f}%</td>'
+            f'<td>{m0["p_hold"] * 100:.0f}%</td>'
+            f'<td>{m0["p_hike"] * 100:.0f}%</td>'
+            f'<td>{r["outcome"] or "&mdash;"}</td><td>{brier}</td>'
+        )
+        assert expected in block, (
+            f"the built-in track-record row for {r['filename']} no longer matches the JSON"
+        )
+
+
+def test_track_record_fallback_shows_locked_rows_only(index_html):
+    """No rehearsal or dry run in the static table.
+
+    The show-rehearsals toggle is JavaScript. With scripting off it cannot
+    hide anything, so shipping those rows statically would contradict the
+    default-off promise the toggle makes.
+    """
+    block = region(index_html, "track")
+    for kind in ("dryrun", "rehearsal", "other"):
+        assert f"kind-{kind}" not in block, f"static track table leaks a {kind} row"
+
+
+# --------------------------------------------------- scored call / next up
+
+
+def test_call_card_fallback_outcome_matches_lock_file(index_html):
+    """When the locked file has been scored, the card shows its outcome and
+    Brier - both read from the file, neither recomputed here."""
+    lock = json.loads(LOCK.read_text())
+    if lock["outcome"] is None or lock["scores"] is None:
+        pytest.skip("lock-2026-07.json is not scored yet")
+
+    block = region(index_html, "call")
+    brier = lock["scores"]["m0_market_only"]["brier_score"]
+    assert f'<span class="oc-v">{lock["outcome"]}</span>' in block
+    assert f'<span class="oc-v">{brier:.4f}</span>' in block
+    assert "SCORED" in block, "a scored call must say so in the badge"
+
+    hit = lock["point_call"] == lock["outcome"]
+    assert ("matched" if hit else "missed") in block
+
+
+def test_call_card_fallback_next_announcement_comes_from_the_calendar(index_html):
+    """The next announcement is the first meeting in site_context.json after
+    this call's own - never a hand-typed date."""
+    lock = json.loads(LOCK.read_text())
+    ctx = json.loads(CONTEXT.read_text())
+    block = region(index_html, "call")
+
+    later = sorted(
+        m["meeting_date"] for m in ctx["ois_path"]["meetings"]
+        if m["meeting_date"] > lock["meeting_announcement"]
+    )
+    assert later, "site_context.json lists no meeting after the locked call's"
+    assert f"<strong>{gb_date(later[0])}</strong>" in block, (
+        f"the built-in next announcement is not {gb_date(later[0])}, "
+        f"the next meeting in data/site_context.json"
+    )
+
+
+def test_call_card_heading_is_not_a_stale_forward_notice(index_html):
+    """A locked call names its own meeting. "Next announcement" in the heading
+    was wrong the morning after the announcement it named."""
+    block = region(index_html, "call")
+    heading = re.search(r'id="call-heading"[^>]*>(.*?)</p>', block, re.S)
+    assert heading, "no call heading in the fallback"
+    assert "Next announcement" not in heading.group(1)
 
 
 # ------------------------------------------------------------ build info

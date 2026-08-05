@@ -141,7 +141,7 @@
   }
   .call-card.locked { border: 1px solid var(--accent); }
   .call-badge {
-    display: inline-block; font: 700 11px/1 var(--sans);
+    display: inline-block; font: 700 var(--fs-micro)/1 var(--sans);
     letter-spacing: .12em; text-transform: uppercase; padding: 6px 10px;
     border-radius: 4px; margin-bottom: 18px;
   }
@@ -215,9 +215,43 @@
   }
   .call-index-line { margin: 0 0 var(--sp-4); }
 
-  /* Rationale: set as prose, not fine print. */
+  /* ---------- outcome (a scored call) ----------
+     Shown only once the announcement has happened and score_outcomes has
+     filled the locked file's outcome/scores fields. */
+  .call-outcome {
+    border-top: 1px solid var(--line); margin-top: var(--sp-5); padding-top: var(--sp-4);
+  }
+  .call-outcome-row {
+    display: flex; flex-wrap: wrap; gap: var(--sp-3) var(--sp-6); margin-bottom: var(--sp-3);
+  }
+  .oc-item { display: flex; flex-direction: column; gap: var(--sp-2); }
+  .oc-l {
+    font: 600 var(--fs-label)/1 var(--sans); letter-spacing: .1em;
+    text-transform: uppercase; color: var(--muted);
+  }
+  .oc-v {
+    font: var(--fs-lg)/1 var(--serif); color: var(--text);
+    font-variant-numeric: tabular-nums;
+  }
+  .oc-v.oc-hit { color: var(--accent); }
+  .oc-note { font: var(--fs-label)/1.6 var(--sans); color: var(--faint); margin: 0; }
+  .oc-note code { font-size: var(--fs-micro); color: var(--muted); }
+
+  /* Next announcement: a forward pointer, subordinate to the result above it. */
+  .call-next {
+    font: var(--fs-ui)/var(--lh-snug) var(--sans); color: var(--muted);
+    margin: var(--sp-4) 0 0; padding-top: var(--sp-3);
+    border-top: 1px solid var(--line);
+  }
+  .call-next strong { color: var(--text); font-weight: 600; }
+
+  /* ---------- rationale ----------
+     Long-form hand-written prose sitting in a card otherwise built for
+     figures and fine print. It gets its own measure, leading and rule so it
+     reads as an argument rather than as a caption. */
   .call-rationale {
-    border-top: 1px solid var(--line); padding-top: var(--sp-4); margin-top: var(--sp-4);
+    margin-top: var(--sp-5); padding-left: var(--sp-4);
+    border-left: 2px solid var(--accent-dim);
   }
   .call-rationale-h {
     font: 600 var(--fs-label)/1 var(--sans); letter-spacing: .1em;
@@ -227,12 +261,12 @@
     color: var(--accent); letter-spacing: .06em; margin-left: var(--sp-2);
   }
   .call-rationale-body {
-    font: var(--fs-body)/var(--lh-body) var(--serif); color: var(--text);
-    margin: 0;
+    font: var(--fs-body)/1.75 var(--serif); color: var(--text);
+    margin: 0; max-width: 66ch; text-wrap: pretty;
   }
   .call-rationale-attrib {
     font: var(--fs-label)/1.6 var(--sans); color: var(--faint);
-    margin: var(--sp-3) 0 0;
+    margin: var(--sp-4) 0 0;
   }
 
   /* ---------- latest reading (lead of the index card) ---------- */
@@ -242,7 +276,7 @@
   .score { font-size: var(--fs-display); line-height: 1.1; margin: 0; font-variant-numeric: tabular-nums; }
   .score .sign-hawk { color: var(--hawk); }
   .score .sign-dove { color: var(--dove); }
-  .score .score-word { font-size: 15px; color: var(--muted); }
+  .score .score-word { font-size: var(--fs-ui); color: var(--muted); }
   .scale {
     position: relative; height: 10px; border-radius: 5px; margin: 20px 0 7px;
     background: linear-gradient(90deg, var(--dove), #3a3f4a 50%, var(--hawk));
@@ -254,7 +288,7 @@
   }
   .scale-labels {
     display: flex; justify-content: space-between;
-    font: 12px var(--sans); color: var(--muted);
+    font: var(--fs-label) var(--sans); color: var(--muted);
   }
 
   .divider { border: 0; border-top: 1px solid var(--line); margin: var(--sp-5) 0; }
@@ -330,7 +364,7 @@
   #track-table tr.kind-locked td:first-child { border-left: 2px solid var(--accent); padding-left: 12px; }
   #track-table tr.kind-dryrun, #track-table tr.kind-rehearsal { color: var(--muted); }
   .track-badge {
-    display: inline-block; font: 700 10px/1 var(--sans); letter-spacing: .08em;
+    display: inline-block; font: 700 var(--fs-micro)/1 var(--sans); letter-spacing: .08em;
     text-transform: uppercase; padding: 3px 7px; border-radius: 4px; margin-left: 8px;
   }
   .track-badge.locked { background: var(--accent); color: var(--bg); }
@@ -340,16 +374,16 @@
   .methodology {
     display: flex; flex-wrap: wrap; gap: 10px 22px; align-items: baseline;
     margin: 34px 0 22px; padding-top: 22px; border-top: 1px solid var(--line);
-    font: 15px var(--sans);
+    font: var(--fs-ui) var(--sans);
   }
   .methodology .m-label {
-    font: 600 12px var(--sans); letter-spacing: .1em; text-transform: uppercase;
+    font: 600 var(--fs-label) var(--sans); letter-spacing: .1em; text-transform: uppercase;
     color: var(--muted);
   }
   .methodology a { color: var(--accent); text-decoration: none; }
   .methodology a:hover { text-decoration: underline; }
   footer {
-    font: 13px/1.7 var(--sans); color: var(--faint); margin-top: 8px;
+    font: var(--fs-sm)/1.7 var(--sans); color: var(--faint); margin-top: var(--sp-2);
   }
   footer a { color: var(--muted); }
   footer .nia { color: var(--muted); }
@@ -357,7 +391,7 @@
   /* ---------- chart interactivity ---------- */
   .chart-controls {
     display: flex; flex-wrap: wrap; gap: 8px 18px; margin: 0 0 12px;
-    font: 13px var(--sans); color: var(--muted);
+    font: var(--fs-sm) var(--sans); color: var(--muted);
   }
   .chart-controls label { display: inline-flex; align-items: center; gap: 7px; cursor: pointer; user-select: none; }
   .chart-controls input { accent-color: var(--accent); }
@@ -366,7 +400,7 @@
   .chart-tip {
     position: absolute; pointer-events: none; z-index: 5;
     background: #0c0e12; border: 1px solid var(--line); border-radius: 8px;
-    padding: 9px 11px; font: 12px/1.55 var(--sans); color: var(--text);
+    padding: 9px 11px; font: var(--fs-label)/1.55 var(--sans); color: var(--text);
     box-shadow: 0 6px 20px rgba(0,0,0,.55); width: max-content; max-width: 250px;
     transform: translate(-50%, calc(-100% - 14px));
   }
@@ -379,47 +413,47 @@
 
   /* ---------- market & macro context ---------- */
   .context-badge {
-    display: inline-block; font: 700 10px/1 var(--sans); letter-spacing: .1em;
+    display: inline-block; font: 700 var(--fs-micro)/1 var(--sans); letter-spacing: .1em;
     text-transform: uppercase; color: var(--muted); border: 1px solid var(--line);
     background: var(--panel-2); padding: 5px 9px; border-radius: 4px;
     margin-left: 12px; vertical-align: middle;
   }
   .ctx-block { margin: 0 0 26px; }
   .ctx-block:last-of-type { margin-bottom: 0; }
-  .ctx-h { font: 600 12px var(--sans); letter-spacing: .09em; text-transform: uppercase; color: var(--muted); margin: 0 0 3px; }
-  .ctx-sub { font: 13px/1.5 var(--sans); color: var(--faint); margin: 0 0 14px; }
-  .ois-legend { font: 12px var(--sans); color: var(--muted); margin: 0 0 12px; display: flex; gap: 16px; flex-wrap: wrap; }
+  .ctx-h { font: 600 var(--fs-label) var(--sans); letter-spacing: .09em; text-transform: uppercase; color: var(--muted); margin: 0 0 3px; }
+  .ctx-sub { font: var(--fs-sm)/1.5 var(--sans); color: var(--faint); margin: 0 0 14px; }
+  .ois-legend { font: var(--fs-label) var(--sans); color: var(--muted); margin: 0 0 12px; display: flex; gap: 16px; flex-wrap: wrap; }
   .ois-legend .key { display: inline-flex; align-items: center; gap: 6px; }
   .ois-legend .box { width: 11px; height: 11px; border-radius: 3px; display: inline-block; }
   .ois-legend .box.cut { background: var(--dove); }
   .ois-legend .box.hold { background: #3a3f4a; }
   .ois-legend .box.hike { background: var(--hawk); }
   .ois-row { display: grid; grid-template-columns: 96px 1fr 66px; align-items: center; gap: 14px; margin-bottom: 11px; }
-  .ois-row .ois-date { font: 14px var(--sans); color: var(--text); }
+  .ois-row .ois-date { font: var(--fs-ui) var(--sans); color: var(--text); }
   .ois-bar { display: flex; height: 22px; border-radius: 4px; overflow: hidden; background: var(--line); }
-  .ois-seg { height: 100%; display: flex; align-items: center; justify-content: center; font: 11px var(--sans); color: rgba(255,255,255,.92); overflow: hidden; }
+  .ois-seg { height: 100%; display: flex; align-items: center; justify-content: center; font: var(--fs-micro) var(--sans); color: rgba(255,255,255,.92); overflow: hidden; }
   .ois-seg.cut { background: var(--dove); }
   .ois-seg.hold { background: #3a3f4a; color: var(--muted); }
   .ois-seg.hike { background: var(--hawk); }
-  .ois-row .ois-chg { font: 12px var(--sans); color: var(--muted); text-align: right; font-variant-numeric: tabular-nums; }
+  .ois-row .ois-chg { font: var(--fs-label) var(--sans); color: var(--muted); text-align: right; font-variant-numeric: tabular-nums; }
   .ctx-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; }
-  .ctx-figure .big { font: 34px/1 var(--serif); font-variant-numeric: tabular-nums; }
-  .ctx-figure .big .unit { font-size: 15px; color: var(--muted); }
-  .ctx-figure .asof { font: 12px var(--sans); color: var(--faint); margin: 4px 0 10px; }
+  .ctx-figure .big { font: var(--fs-2xl)/1 var(--serif); font-variant-numeric: tabular-nums; }
+  .ctx-figure .big .unit { font-size: var(--fs-ui); color: var(--muted); }
+  .ctx-figure .asof { font: var(--fs-label) var(--sans); color: var(--faint); margin: 4px 0 10px; }
   .ctx-figure svg { width: 100%; height: auto; display: block; }
-  .ctx-note { font: 12px/1.6 var(--sans); color: var(--faint); margin: 18px 0 0; padding-top: 14px; border-top: 1px solid var(--line); }
-  .ctx-footnote { font: 12px/1.5 var(--sans); color: var(--faint); margin: 12px 0 0; }
+  .ctx-note { font: var(--fs-label)/1.6 var(--sans); color: var(--faint); margin: 18px 0 0; padding-top: 14px; border-top: 1px solid var(--line); }
+  .ctx-footnote { font: var(--fs-label)/1.5 var(--sans); color: var(--faint); margin: 12px 0 0; }
   .ctx-footnote a { color: var(--muted); }
 
   /* ---------- episodes ---------- */
   .episode { padding: 22px 0; border-bottom: 1px solid var(--line); }
   .episode:last-child { border-bottom: 0; padding-bottom: 2px; }
-  .episode h3 { font: normal 21px/1.3 var(--serif); margin: 0 0 4px; }
-  .episode .ep-date { font: 12px var(--sans); color: var(--muted); text-transform: uppercase; letter-spacing: .06em; margin: 0 0 13px; }
-  .ep-body { font: 16px/1.7 var(--serif); color: var(--text); }
+  .episode h3 { font: normal var(--fs-lg)/1.3 var(--serif); margin: 0 0 4px; }
+  .episode .ep-date { font: var(--fs-label) var(--sans); color: var(--muted); text-transform: uppercase; letter-spacing: .06em; margin: 0 0 13px; }
+  .ep-body { font: var(--fs-body)/var(--lh-body) var(--serif); color: var(--text); }
   .ep-body p { margin: 0 0 12px; }
   .ep-body p:last-child { margin-bottom: 0; }
-  .ep-body h3, .ep-body h4, .ep-body h5 { font-family: var(--sans); color: var(--muted); text-transform: uppercase; letter-spacing: .06em; font-size: 12px; margin: 16px 0 8px; }
+  .ep-body h3, .ep-body h4, .ep-body h5 { font-family: var(--sans); color: var(--muted); text-transform: uppercase; letter-spacing: .06em; font-size: var(--fs-label); font-weight: 600; margin: var(--sp-5) 0 var(--sp-2); }
   .ep-body a { color: var(--accent); }
   .ep-body ul { margin: 0 0 12px; padding-left: 20px; }
   .ep-body li { margin: 0 0 5px; }
@@ -429,15 +463,11 @@
   @media (max-width: 640px) {
     .wrap { padding: var(--sp-6) 16px var(--sp-7); }
     :root {
-      --fs-2xl: 27px; --fs-display: 36px; --fs-xl: 22px;
+      --fs-2xl: 27px; --fs-display: 34px; --fs-xl: 22px;
       --fs-md: 17px; --fs-body: 16px;
     }
-    .thesis { font-size: 16px; }
     .card { padding: 20px 18px; }
-    .plain-summary { font-size: 17px; }
     .call-probs { gap: var(--sp-3); }
-    .call-prob .n { font-size: 32px; }
-    .call-rationale-body { font-size: 16px; }
     .results-framing { padding: var(--sp-3) 15px; }
   }
   /* 380px pass: the narrowest phone we support. Nothing may overflow the
@@ -445,16 +475,15 @@
   @media (max-width: 430px) {
     .wrap { padding: 28px 13px 48px; }
     .card { padding: 17px 14px; }
-    :root { --fs-display: 30px; }
-    .call-prob .n { font-size: 27px; letter-spacing: -.02em; }
+    :root { --fs-display: 27px; }
+    .call-prob .n { letter-spacing: -.02em; }
     .call-prob .l { font-size: var(--fs-micro); letter-spacing: .06em; }
     .call-probs { gap: 10px; }
     .call-stamp { gap: var(--sp-1) var(--sp-2); }
     .ois-row { grid-template-columns: 74px 1fr 52px; gap: 9px; }
     .ois-row .ois-date { font-size: var(--fs-sm); }
     .ois-row .ois-chg { font-size: var(--fs-micro); }
-    .score { font-size: 32px; }
-    .beta { font-size: 10px; letter-spacing: .1em; }
+    .beta { letter-spacing: .1em; }
     #ladder-table th, #ladder-table td,
     #track-table th, #track-table td { padding: 9px 10px; }
   }
@@ -479,7 +508,6 @@
   <main id="main">
 
   <!-- 0. What is this? -->
-  <!-- DRAFT: JF to revise -->
   <section class="card" id="what-is-this">
     <h2>What is this?</h2>
     <p style="margin:0">This project tests whether the tone of the Bank of England's MPC minutes
@@ -501,14 +529,13 @@
        figures still match the JSON - regenerate them, never retype them. -->
   <!-- fallback:call -->
   <section class="card call-card locked" id="call-card" aria-labelledby="call-badge">
-    <div class="call-badge locked" id="call-badge">LOCKED CALL</div>
-    <p class="call-heading" id="call-heading">Next announcement: <strong>30 July 2026</strong></p>
+    <div class="call-badge locked" id="call-badge">LOCKED CALL &middot; SCORED</div>
+    <p class="call-heading" id="call-heading">Call for <strong>30 July 2026</strong></p>
     <p class="call-stamp" id="call-stamp"><span class="stamp-label">Locked</span><time
-      datetime="2026-07-28T19:08:36+00:00">Tue, 28 Jul 2026 19:08:36 GMT</time> <span
+      datetime="2026-07-28T19:08:36+00:00">28 July 2026, 19:08:36 UTC</time> <span
       aria-hidden="true">&middot;</span> <a
       href="https://github.com/jakefoulkes1/mpc-index/releases/tag/lock-2026-07" rel="noopener">tag lock-2026-07</a></p>
 
-    <!-- DRAFT: JF to revise -->
     <p class="call-verify" id="call-verify">
       <span class="vh">How to check this timestamp yourself</span>
       The call above was tagged and pushed to GitHub before the announcement it is about:
@@ -521,16 +548,27 @@
 
     <div class="call-probs" id="call-probs"><div class="call-prob"><span class="n">0%</span><span class="l">cut</span></div><div class="call-prob is-lead"><span class="n">96%</span><span class="l">hold</span></div><div class="call-prob"><span class="n">4%</span><span class="l">hike</span></div></div>
     <div class="call-probbar" id="call-probbar" aria-hidden="true"><span class="seg-cut" style="width:0.0%"></span><span class="seg-hold" style="width:96.1%"></span><span class="seg-hike" style="width:3.9%"></span></div>
-    <!-- DRAFT: JF to revise -->
     <p class="call-probsrc" id="call-probsrc">m0 market-only reference &mdash; OIS forward curve vs SONIA, 25.0bp two-state assumption. Not the point call.</p>
     <p class="fine call-index-line" id="call-index-line">A&amp;BG index (minutes-2026-06): <strong>1.714</strong> vs trailing 4-document mean <strong>1.054</strong> (0.661 above)</p>
     <div class="call-rationale" id="call-rationale">
       <p class="call-rationale-h" id="call-rationale-h">Point call <span class="pt-call">hold</span></p>
       <p class="call-rationale-body" id="call-rationale-body">Hold at 3.75%. The communication index is recorded as context and does not enter the call: L3 scores &minus;0.6729 against the market-only benchmark and Spec 2 returns p = 0.4918, so there is no warrant on this project's own evidence for letting tone override L1. p(hike) is shaded modestly below m0's 3.86% for two regime-specific reasons. First, with the short curve steeply upward-sloping (near 4.25% priced within six months) a forward read, at meeting plus three days, interpolated across whole-month buckets, absorbs September's expectations along with July's and overstates the probability attaching to this meeting. Second, the fiscal repricing of 20 July, which carried the ten-year gilt to 5.04%, is a risk premium rather than an expectation of Bank Rate &mdash; the contamination this methodology's first limitation anticipates. Both claims are testable against the September lock, when the near-month slope will differ. The macro flow since 18 June runs against the two dissenters on nearly every measure they invoked. Headline CPI fell to 2.6% against a 2.7% consensus, its lowest in fifteen months; services eased to 3.6%; regular pay growth slowed to 3.4%, joint-slowest since October 2020; input producer prices decelerated to 7.3% from 9.3% as Brent retraced. Greene and Pill dissented on an energy shock now unwinding. The counter-observation, recorded rather than passed over, is services producer price inflation at 4.3% in Q2, up from 3.2%.</p>
-      <!-- DRAFT: JF to revise -->
       <p class="call-rationale-attrib" id="call-rationale-attrib">Written by hand before the announcement, and never edited afterwards.</p>
     </div>
     <p class="fine" id="call-fine" style="display:none"></p>
+
+    <!-- Once the announcement has happened and score_outcomes has run, the
+         card stops being a forward-looking notice and becomes a result. Both
+         figures come from the locked file's own outcome/scores fields. -->
+    <div class="call-outcome" id="call-outcome">
+      <div class="call-outcome-row"><span class="oc-item"><span class="oc-l">Outcome</span><span class="oc-v">hold</span></span><span class="oc-item"><span class="oc-l">Brier (m0)</span><span class="oc-v">0.0030</span></span><span class="oc-item"><span class="oc-l">Point call</span><span class="oc-v oc-hit">matched</span></span></div>
+      <p class="oc-note" id="call-outcome-note">Scored after the announcement by
+      <code>pipeline/predict/score_outcomes.py</code>, which fills the outcome and scores fields
+      and nothing else.</p>
+    </div>
+
+    <p class="call-next" id="call-next">Next announcement:
+      <strong>17 September 2026</strong> &mdash; the next call locks before it.</p>
   </section>
   <!-- /fallback:call -->
   <div id="call-status" style="display:none"></div>
@@ -571,7 +609,6 @@
     <div id="context-status" class="fine">Loading&hellip;</div>
     <div id="context-content" style="display:none">
 
-      <!-- DRAFT: JF to revise -->
       <p class="plain-summary">What the rate market and the gilt curve looked like around the
       latest reading &mdash; shown as background, and deliberately not used as model inputs.</p>
 
@@ -623,7 +660,6 @@
     <h3 class="subhead">Benchmark ladder <span class="count" id="ladder-schema">(ladder-v1)</span></h3>
     <div id="ladder-status" style="display:none"></div>
     <div id="ladder-content">
-      <!-- DRAFT: JF to revise -->
       <p class="plain-summary" id="ladder-caption"><em>In plain English: the market's own pricing (L1)
       called these decisions best &mdash; every model that adds the tone index scored worse,
       not better.</em></p>
@@ -642,7 +678,6 @@
       </p>
       <div class="table-scroll" tabindex="0" role="region" aria-label="Benchmark ladder scores, L0 to L4">
         <table id="ladder-table">
-          <!-- DRAFT: JF to revise -->
           <caption class="visually-hidden">Mean Brier score, mean log score, skill versus the
           L1 market benchmark, and number of meetings, for models L0 to L4</caption>
           <thead>
@@ -664,7 +699,6 @@
       <!-- Why the n's differ. This is where a reader meets the first sample
            size on the page, so the explanation sits here rather than in a
            footnote. Canonical version: methodology.html#sample-sizes. -->
-      <!-- DRAFT: JF to revise -->
       <p class="fine" id="sample-sizes-note"><strong>Why the sample sizes differ.</strong>
       The corpus is <strong>94</strong> documents (August 2015 &ndash; June 2026, including the
       two emergency meetings of March 2020). The ladder evaluates from 1 January 2019 onwards,
@@ -697,16 +731,18 @@
     <!-- The plain-English summary is static and always visible: it is a
          sentence, not a figure, so it should survive a failed fetch. Only
          the numeric line below it waits on data/inference_v1.json. -->
-    <!-- DRAFT: JF to revise -->
     <p class="plain-summary" id="spec3-caption"><em>In plain English: one test
     finds a weak link between the previous minutes' tone and how the decision surprised the
     market, but it fades after 2023 and a stricter test finds nothing.</em></p>
-    <div id="inference-status" class="fine">Loading&hellip;</div>
-    <div id="inference-content" style="display:none">
+    <div id="inference-status" style="display:none"></div>
+    <div id="inference-content">
       <details class="disclosure">
         <summary><span class="caret" aria-hidden="true"></span>More detail</summary>
         <div class="disclosure-body">
-          <p id="spec3-line" class="prose" style="margin:0"></p>
+        <!-- fallback:spec3 - generated from data/inference_v1.json, replaced by
+             renderInference() on success, asserted by test_static_fallback.py. -->
+          <p id="spec3-line" class="prose" style="margin:0">Regressing each meeting's market surprise on the <em>previous</em> meeting's index (OLS, Newey&ndash;West standard errors, 4 lags, n=91 scheduled meetings): coefficient <strong>-2.163349</strong>, t = -2.1499, <strong>p = 0.0316</strong>. On the post-hiking-cycle subsample (from 1 September 2023, n=23) the result does not replicate: coefficient -3.441919, p = 0.1422. Spec 2, an ordered-logit likelihood-ratio test on the discrete decision, finds nothing: LR = 0.4726, p = 0.4918. Full output: <code>data/inference_v1.json</code>.</p>
+        <!-- /fallback:spec3 -->
         </div>
       </details>
     </div>
@@ -715,26 +751,31 @@
   <!-- 3b. Track record -->
   <section class="card">
     <h2>Track record</h2>
-    <!-- DRAFT: JF to revise -->
     <p class="fine" style="margin-top:-6px">Every locked call &mdash; marked as such, and never
     editable after the fact. Dry runs and rehearsals are hidden by default and can be shown
     below. Brier is for the m0 market-only reference (a locked point call has no probability
     distribution of its own to score against).</p>
-    <div id="track-status" class="fine">Loading&hellip;</div>
-    <div id="track-content" style="display:none">
+    <div id="track-status" style="display:none"></div>
+    <div id="track-content">
       <label class="row-toggle" id="track-toggle-wrap" style="display:none">
         <input type="checkbox" id="toggle-rehearsals">
         <span id="track-toggle-label">Show rehearsals and dry runs</span>
       </label>
       <div class="table-scroll" tabindex="0" role="region" aria-label="Track record of every locked call">
         <table id="track-table">
-          <!-- DRAFT: JF to revise -->
           <caption class="visually-hidden">Every locked call: meeting date, kind,
           point call, market-implied probabilities, outcome and Brier score</caption>
           <thead>
             <tr><th scope="col">Meeting</th><th scope="col">Locked</th><th scope="col">Call</th><th scope="col">Cut</th><th scope="col">Hold</th><th scope="col">Hike</th><th scope="col">Outcome</th><th scope="col">Brier (m0)</th></tr>
           </thead>
-          <tbody id="track-tbody"></tbody>
+          <!-- fallback:track - locked rows generated from data/track_record.json,
+               replaced by renderTrackRecord() on success. Locked calls only: the
+               show-rehearsals toggle is JavaScript, so with no JS the honest
+               static state is the record itself, not a control that does nothing. -->
+          <tbody id="track-tbody">
+            <tr class="kind-locked"><td>30 July 2026</td><td><span class="track-badge locked">Locked</span></td><td>hold</td><td>0%</td><td>96%</td><td>4%</td><td>hold</td><td>0.0030</td></tr>
+          </tbody>
+        <!-- /fallback:track -->
         </table>
       </div>
       <p class="fine" id="track-empty-note" style="display:none"></p>
@@ -833,6 +874,16 @@ function fmtDate(iso, opts) {
   return new Date(iso).toLocaleDateString('en-GB',
     opts || { day: 'numeric', month: 'long', year: 'numeric' });
 }
+// The lock timestamp is an instant, not a date, but it should still read in
+// the site's date format: "28 July 2026, 19:08:36 UTC".
+function fmtUTCStamp(iso) {
+  const d = new Date(iso);
+  const date = d.toLocaleDateString('en-GB',
+    { day: 'numeric', month: 'long', year: 'numeric', timeZone: 'UTC' });
+  const time = d.toLocaleTimeString('en-GB',
+    { hour12: false, timeZone: 'UTC' });
+  return `${date}, ${time} UTC`;
+}
 // One decision classifier, matching pipeline/decision_label.py: the verb
 // adjacent to "Bank Rate", not the first word of a (possibly compound) string.
 function classifyDecision(decision) {
@@ -904,8 +955,16 @@ function renderInference(d) {
   document.getElementById('inference-content').style.display = 'block';
 }
 
+// Shared between the context panel and the call card: the card needs the
+// Bank's meeting calendar to name the next announcement, and either file may
+// land first.
+let siteContext = null;
+let lastPrediction = null;
+
 const indexPromise = fetchJSON('data/index.json');
 const contextPromise = fetchJSON('data/site_context.json');
+
+contextPromise.then(c => { siteContext = c; updateNextMeeting(); }).catch(() => {});
 
 // The context panel resolves on its own. It used to be handled inside the
 // Promise.all below, which meant a failed data/index.json left this section
@@ -1035,6 +1094,13 @@ const TAG_URL = REPO_URL + '/releases/tag/' + PREDICTION_NAME;
 
 function renderCallCard(p) {
   const locked = p.point_call !== null && p.point_call !== undefined;
+  // A call is scored once score_outcomes.py has filled the outcome and the
+  // scores - the only two fields it is allowed to write to a locked file.
+  const scored = locked && p.outcome != null &&
+    p.scores && p.scores.m0_market_only &&
+    p.scores.m0_market_only.brier_score != null;
+  lastPrediction = p;
+
   const card = document.getElementById('call-card');
   const badge = document.getElementById('call-badge');
   // Set both classes explicitly rather than only adding one: the card ships
@@ -1044,11 +1110,16 @@ function renderCallCard(p) {
   card.classList.toggle('dry-run', !locked);
   badge.classList.toggle('locked', locked);
   badge.classList.toggle('dry-run', !locked);
-  badge.textContent = locked ? 'LOCKED CALL' : 'DRY RUN · NOT A CALL';
+  badge.textContent = locked
+    ? (scored ? 'LOCKED CALL · SCORED' : 'LOCKED CALL')
+    : 'DRY RUN · NOT A CALL';
 
   const announceDate = fmtDate(p.meeting_announcement);
-  document.getElementById('call-heading').innerHTML =
-    `Next announcement: <strong>${announceDate}</strong>`;
+  // Once locked, the card is about one specific meeting, past or future -
+  // "next announcement" was wrong the morning after the announcement it named.
+  document.getElementById('call-heading').innerHTML = locked
+    ? `Call for <strong>${announceDate}</strong>`
+    : `Next announcement: <strong>${announceDate}</strong>`;
 
   // Lock timestamp as the card's evidence line, linked to the git tag that
   // pins the pre-announcement state of the repository.
@@ -1057,7 +1128,9 @@ function renderCallCard(p) {
   const tagged = locked && PREDICTION_NAME.startsWith('lock-');
   if (locked) {
     const iso = p.lock_timestamp;
-    const shown = new Date(iso).toUTCString();
+    // Site date format, to the second, explicitly UTC - toUTCString()'s
+    // "Tue, 28 Jul 2026" was the only date on the page in a different style.
+    const shown = fmtUTCStamp(iso);
     stamp.innerHTML =
       `<span class="stamp-label">Locked</span>` +
       `<time datetime="${iso}">${shown}</time>` +
@@ -1125,8 +1198,56 @@ function renderCallCard(p) {
     document.getElementById('call-fine').style.display = 'block';
   }
 
+  // Outcome block: only once the call has actually been scored.
+  const outcome = document.getElementById('call-outcome');
+  if (outcome) {
+    if (scored) {
+      const brier = p.scores.m0_market_only.brier_score;
+      const hit = p.point_call === p.outcome;
+      outcome.querySelector('.call-outcome-row').innerHTML =
+        `<span class="oc-item"><span class="oc-l">Outcome</span>` +
+        `<span class="oc-v">${p.outcome}</span></span>` +
+        `<span class="oc-item"><span class="oc-l">Brier (m0)</span>` +
+        `<span class="oc-v">${brier.toFixed(4)}</span></span>` +
+        `<span class="oc-item"><span class="oc-l">Point call</span>` +
+        `<span class="oc-v${hit ? ' oc-hit' : ''}">${hit ? 'matched' : 'missed'}</span></span>`;
+      outcome.style.display = 'block';
+    } else {
+      outcome.style.display = 'none';
+    }
+  }
+  updateNextMeeting();
+
   document.getElementById('call-status').style.display = 'none';
   card.style.display = 'block';
+}
+
+// The next announcement is read from the Bank's published calendar as carried
+// in data/site_context.json, never hardcoded here. If that file is missing the
+// static line already in the HTML is left alone rather than blanked.
+function updateNextMeeting() {
+  const el = document.getElementById('call-next');
+  if (!el || !lastPrediction) return;
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+
+  // While this call's own meeting is still ahead, the heading already names
+  // it and a second "next announcement" line would only repeat it.
+  if (new Date(lastPrediction.meeting_announcement) >= today) {
+    el.style.display = 'none';
+    return;
+  }
+  const meetings = siteContext && siteContext.ois_path && siteContext.ois_path.meetings;
+  if (!meetings) return;
+
+  const next = meetings
+    .map(m => m.meeting_date)
+    .filter(d => new Date(d) >= today)
+    .sort()[0];
+  el.innerHTML = next
+    ? `Next announcement: <strong>${fmtDate(next)}</strong> &mdash; the next call locks before it.`
+    : 'The next announcement is not yet listed in <code>data/site_context.json</code>.';
+  el.style.display = 'block';
 }
 
 function renderLatest(data) {

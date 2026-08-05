@@ -45,6 +45,9 @@
   }
   * { box-sizing: border-box; }
   html { -webkit-text-size-adjust: 100%; }
+  /* Parity with index.html: figures in tables line up in columns. Running
+     prose keeps proportional figures, which is correct for prose. */
+  table { font-variant-numeric: tabular-nums; }
   body {
     margin: 0; background: var(--bg); color: var(--text);
     font: var(--fs-body)/var(--lh-body) var(--serif);
@@ -60,7 +63,7 @@
     font: 600 var(--fs-ui) var(--sans); border-radius: 0 0 6px 0; z-index: 20;
   }
   .skip-link:focus { left: 0; }
-  .backlink { font: 13px var(--sans); color: var(--muted); text-decoration: none; }
+  .backlink { font: var(--fs-sm) var(--sans); color: var(--muted); text-decoration: none; }
   .backlink:hover { color: var(--text); }
   h1 { font: normal var(--fs-2xl)/var(--lh-tight) var(--serif); margin: var(--sp-4) 0 var(--sp-3); letter-spacing: -.01em; }
   .lede { color: var(--muted); font-style: italic; font-size: var(--fs-md); line-height: var(--lh-snug); margin: 0 0 var(--sp-3); max-width: 62ch; }
@@ -120,7 +123,7 @@
     border-radius: 0 6px 6px 0; margin: 0 0 var(--sp-3); overflow-x: auto;
   }
   .draft-note {
-    font: 700 10px/1 var(--sans); letter-spacing: .1em; text-transform: uppercase;
+    font: 700 var(--fs-micro)/1 var(--sans); letter-spacing: .1em; text-transform: uppercase;
     color: #ffe9b3; background: var(--accent-dim); display: inline-block;
     padding: 4px 8px; border-radius: 4px; margin: 0 0 14px;
   }
@@ -129,7 +132,6 @@
   @media (max-width: 640px) {
     .wrap { padding: var(--sp-6) 16px var(--sp-7); }
     :root { --fs-2xl: 27px; --fs-md: 17px; --fs-body: 16px; }
-    .lede { font-size: 16px; }
     .card { padding: 20px 18px; }
   }
   @media (max-width: 430px) {
@@ -161,11 +163,7 @@
   </nav>
 
   <section class="card" id="data">
-    <!-- DRAFT: JF to revise -->
     <h2>Data</h2>
-    <span class="draft-note">Draft &mdash; JF to revise</span>
-
-    <!-- DRAFT: JF to revise -->
     <p class="plain-summary">Every MPC minutes publication since August 2015 &mdash; 94 documents
     &mdash; together with the Bank's own voting record, reconciled against the Bank's sitemap
     rather than assumed complete.</p>
@@ -180,7 +178,6 @@
     &mdash; 92 from the regular meeting cycle plus 2 special (emergency) meetings, the
     10&nbsp;March and 19&nbsp;March 2020 Covid-19 decisions.
     <span class="ref">(DECISIONS.md 2026-07-11 &mdash; corpus audit: full-text repair + special meetings; 2026-07-11 &mdash; 19 March 2020 special meeting added.)</span></p>
-    <!-- DRAFT: JF to revise - the 2016/2017 correction, sourced to the Bank -->
     <p>The window starts at the August 2015 regime change: from that meeting the Bank
     began publishing the policy summary and minutes on the day of the decision
     (&ldquo;Super Thursday&rdquo;). Meetings were monthly from 2015 until the autumn of
@@ -258,11 +255,7 @@
   </section>
 
   <section class="card" id="index-construction">
-    <!-- DRAFT: JF to revise -->
     <h2>Index construction</h2>
-    <span class="draft-note">Draft &mdash; JF to revise</span>
-
-    <!-- DRAFT: JF to revise -->
     <p class="plain-summary">Each document is scored with a published 2012 dictionary of hawkish
     and dovish word pairs, producing one number on a 0&ndash;2 scale where 1.0 is neutral.</p>
 
@@ -304,11 +297,7 @@
   </section>
 
   <section class="card" id="market-benchmark">
-    <!-- DRAFT: JF to revise -->
     <h2>Market benchmark</h2>
-    <span class="draft-note">Draft &mdash; JF to revise</span>
-
-    <!-- DRAFT: JF to revise -->
     <p class="plain-summary">The bar to clear is what the market already prices: the Bank's own
     OIS forward curve, read three days after each meeting and mapped to cut, hold and hike
     probabilities.</p>
@@ -354,11 +343,7 @@
   </section>
 
   <section class="card" id="evaluation">
-    <!-- DRAFT: JF to revise -->
     <h2>Evaluation</h2>
-    <span class="draft-note">Draft &mdash; JF to revise</span>
-
-    <!-- DRAFT: JF to revise -->
     <p class="plain-summary">Five forecasters are scored against each other on scheduled meetings
     only, each fitted on strictly earlier data, with the market-only model as the bar to beat.</p>
 
@@ -427,11 +412,7 @@
   </section>
 
   <section class="card" id="limitations">
-    <!-- DRAFT: JF to revise -->
     <h2>Limitations</h2>
-    <span class="draft-note">Draft &mdash; JF to revise</span>
-
-    <!-- DRAFT: JF to revise -->
     <p class="plain-summary">What could undermine the result: very few dictionary hits per
     document, a 2012 word list, risk premia inside the forward curve, and a small sample.</p>
 
