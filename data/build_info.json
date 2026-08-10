@@ -1,9 +1,9 @@
 {
   "schema": "build-info-v1",
-  "last_commit_sha": "fdf3117ef819fd94963864166003adaa35e71d51",
-  "last_commit_short_sha": "fdf3117",
-  "last_commit_iso": "2026-08-05T18:39:10+01:00",
-  "last_commit_subject": "Site polish: fallbacks, drafts cleared, typography",
-  "generated_utc": "2026-08-10T09:51:52+00:00",
+  "last_commit_sha": "ee7c0819311e9c007a00b7ed94815f1eddd35414",
+  "last_commit_short_sha": "ee7c081",
+  "last_commit_iso": "2026-08-10T11:07:06+01:00",
+  "last_commit_subject": "Guard: build_info stamp cannot go stale silently",
+  "generated_utc": "2026-08-10T10:07:15+00:00",
   "note": "Written by pipeline/build_build_info.py from git log -1 at the time it ran. Not a claim about the data's vintage - data/index.json carries its own generated_utc."
 }
