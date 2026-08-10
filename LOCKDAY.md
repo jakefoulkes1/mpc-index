@@ -19,7 +19,7 @@ Rules that apply to both days:
 
 ---
 
-## Read this before you start — three things this runbook corrects
+## Read this before you start — four things this runbook corrects
 
 1. **There is no `--name` flag.** `lock.py` takes two positional arguments:
    the meeting date, then the output name. The correct command is
@@ -40,6 +40,16 @@ Rules that apply to both days:
    `lock-2026-07` git tag pushed on Tuesday is what proves the call as it stood
    before the announcement, which is why the tag goes up on Tuesday and not
    after.
+
+4. **Never push a content commit on its own — it will fail CI.**
+   `data/build_info.json` says which commit the site was built from, and
+   `pipeline/tests/test_build_info_fresh.py` fails if it names anything but
+   HEAD (or the commit right before a stamp-only commit). Every commit that
+   changes content needs a stamp commit behind it:
+   `python -m pipeline.build_build_info`, commit `data/build_info.json` plus
+   the two rewritten HTML footers, then push both together. On Tuesday this
+   goes **after** the tag (step 11b) so the tag stays on the lock commit; on
+   Thursday it is part of step 6.
 
 ---
 
@@ -170,7 +180,25 @@ An annotated tag, so the tag itself carries its own timestamp:
 git tag -a lock-2026-07 -m "Beta lock: 30 July 2026 MPC"
 ```
 
+### 11b. Stamp the build — do this now, before you push
+
+**A content commit pushed on its own will fail CI.** `data/build_info.json`
+records which commit the site was built from, and
+`pipeline/tests/test_build_info_fresh.py` fails when it names anything other
+than HEAD (or the commit immediately before a stamp-only commit). Every content
+commit needs a stamp commit behind it, and the two get pushed together.
+
+**Do this after the tag, never before it.** The tag must point at the lock
+commit. If you stamp first, `git tag` lands on the stamp commit and the
+timestamp evidence points at the wrong thing.
+
+```bash
+.venv/bin/python -m pipeline.build_build_info && git add data/build_info.json index.html methodology.html && git commit -m "Last-updated stamp for the 30 July lock"
+```
+
 ### 12. Push the commit and the tag together
+
+This pushes both commits — the lock and its stamp — plus the tag:
 
 ```bash
 git push origin main --follow-tags
@@ -255,10 +283,26 @@ Picks up the outcome and Brier score for the site's Track record row:
 .venv/bin/python -m json.tool data/predictions/lock-2026-07.json > /dev/null && .venv/bin/python -m pytest -q
 ```
 
-### 6. Commit and push
+### 6. Commit, stamp, then push
+
+**A content commit pushed on its own will fail CI.** `data/build_info.json`
+records which commit the site was built from, and
+`pipeline/tests/test_build_info_fresh.py` fails when it names anything other
+than HEAD (or the commit immediately before a stamp-only commit). So: commit
+the outcome, run the stamp, commit that, and push both together. Skipping the
+stamp is also what made the site look stale for five days in early August —
+the footer kept naming an old commit while Pages was serving the tip correctly.
 
 ```bash
-git add -A && git commit -m "Outcome: 30 July 2026 MPC" && git push origin main
+git add -A && git commit -m "Outcome: 30 July 2026 MPC"
+```
+
+```bash
+.venv/bin/python -m pipeline.build_build_info && git add data/build_info.json index.html methodology.html && git commit -m "Last-updated stamp for the 30 July outcome"
+```
+
+```bash
+git push origin main
 ```
 
 No new tag on Thursday. `lock-2026-07` must keep pointing at Tuesday's commit —

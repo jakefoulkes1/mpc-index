@@ -34,15 +34,37 @@ OUT = ROOT / "data" / "votes.csv"
 
 HEADER_ROW = 4
 LABEL_COLUMNS = {"Current members", "Past members"}
-# Matches this repo's scraped era (see DECISIONS.md). A few pre-2015 rows
-# record a dissent as qualitative "Increase"/"Decrease" text with no rate
-# (e.g. 1998), which the era filter also sidesteps.
-ERA_START = dt.date(2015, 8, 1)
-# Exclusive upper bound, bumped one month per ingest as each new meeting is
-# added to the corpus (2026-07-01 -> 2026-08-01 admits the 30 July 2026
-# meeting). See DECISIONS.md 2026-08-05 - this is a window extension, not a
-# change to any parsing or scoring rule.
-ERA_END = dt.date(2026, 8, 1)
+
+
+def corpus_window() -> tuple[dt.date, dt.date]:
+    """The era the voting sheet is filtered to, derived from the text corpus.
+
+    Returns (start, end_exclusive) spanning exactly the corpus's published
+    dates. This used to be two hardcoded constants that had to be bumped by
+    hand every ingest; on 2026-08-10 the July meeting was silently dropped
+    from votes.csv because the bound still said 2026-07-01, and the script
+    reported 94 meetings with no error. Deriving it makes that failure mode
+    impossible: the voting sheet is filtered to the corpus, so a meeting in
+    the corpus can never fall outside the window.
+
+    Also still sidesteps the pre-2015 rows that record a dissent as
+    qualitative "Increase"/"Decrease" text with no rate (e.g. 1998), since
+    the corpus starts in August 2015.
+
+    See DECISIONS.md 2026-08-10.
+    """
+    if not INDEX_PATH.exists():
+        raise SystemExit(
+            f"{INDEX_PATH} not found - the voting window is derived from the corpus, "
+            f"so build the index first: python -m pipeline.build_index"
+        )
+    corpus = json.loads(INDEX_PATH.read_text())
+    published = sorted(d["published"] for d in corpus["documents"] if d["published"])
+    if not published:
+        raise SystemExit(f"{INDEX_PATH} has no published documents - cannot derive a window")
+    start = dt.date.fromisoformat(published[0])
+    end = dt.date.fromisoformat(published[-1]) + dt.timedelta(days=1)
+    return start, end
 
 
 def load_member_columns(ws) -> dict[int, str]:
@@ -54,13 +76,14 @@ def load_member_columns(ws) -> dict[int, str]:
     return columns
 
 
-def parse_meetings(ws, member_columns: dict[int, str]) -> list[dict]:
+def parse_meetings(ws, member_columns: dict[int, str],
+                   era_start: dt.date, era_end: dt.date) -> list[dict]:
     meetings = []
     for row in ws.iter_rows(min_row=HEADER_ROW + 1, values_only=True):
         date, decided = row[1], row[2]
         if not isinstance(date, dt.datetime) or not isinstance(decided, (int, float)):
             continue
-        if not (ERA_START <= date.date() < ERA_END):
+        if not (era_start <= date.date() < era_end):
             continue
         votes = {}
         for i, name in member_columns.items():
@@ -88,7 +111,7 @@ def parse_meetings(ws, member_columns: dict[int, str]) -> list[dict]:
     return meetings
 
 
-def reconcile_against_corpus(meetings: list[dict]) -> None:
+def reconcile_against_corpus(meetings: list[dict], era_start: dt.date, era_end: dt.date) -> None:
     if not INDEX_PATH.exists():
         print("no index.json to reconcile against - skipping reconciliation")
         return
@@ -96,13 +119,11 @@ def reconcile_against_corpus(meetings: list[dict]) -> None:
     corpus_published = {d["published"] for d in corpus["documents"] if d["published"]}
     sheet_dates = {m["meeting_date"] for m in meetings}
 
-    # Derived from the module constants rather than repeated as literals:
-    # the same window was previously written out twice and could drift.
-    era_start, era_end = ERA_START.isoformat(), ERA_END.isoformat()
-    corpus_only = sorted(d for d in corpus_published if era_start <= d < era_end and d not in sheet_dates)
-    sheet_only = sorted(d for d in sheet_dates if era_start <= d < era_end and d not in corpus_published)
+    start, end = era_start.isoformat(), era_end.isoformat()
+    corpus_only = sorted(d for d in corpus_published if start <= d < end and d not in sheet_dates)
+    sheet_only = sorted(d for d in sheet_dates if start <= d < end and d not in corpus_published)
 
-    print(f"reconciliation (published date == voting-sheet meeting date, {era_start} to {era_end}):")
+    print(f"reconciliation (published date == voting-sheet meeting date, {start} to {end}):")
     print(f"  in corpus, no matching voting-sheet row ({len(corpus_only)}): {corpus_only}")
     print(f"  in voting sheet, no matching corpus document ({len(sheet_only)}): {sheet_only}")
 
@@ -111,7 +132,8 @@ def main() -> None:
     wb = openpyxl.load_workbook(XLSX_PATH, data_only=True)
     ws = wb["Bank Rate Decisions"]
     member_columns = load_member_columns(ws)
-    meetings = parse_meetings(ws, member_columns)
+    era_start, era_end = corpus_window()
+    meetings = parse_meetings(ws, member_columns, era_start, era_end)
 
     with open(OUT, "w", newline="") as fh:
         writer = csv.writer(fh)
@@ -123,7 +145,7 @@ def main() -> None:
                                   m["skew"], m["hawkish_dissents"], m["dovish_dissents"]])
 
     print(f"wrote {OUT} ({len(meetings)} meetings, {sum(len(m['votes']) for m in meetings)} member-votes)")
-    reconcile_against_corpus(meetings)
+    reconcile_against_corpus(meetings, era_start, era_end)
 
 
 if __name__ == "__main__":

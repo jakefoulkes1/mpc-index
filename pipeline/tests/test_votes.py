@@ -29,7 +29,10 @@ def test_load_member_columns_skips_labels():
 def test_parse_meetings_skew_and_dissents():
     ws = _sample_ws()
     columns = load_member_columns(ws)
-    meetings = parse_meetings(ws, columns)
+    # The window is now passed in rather than read from a module constant -
+    # it is derived from the corpus in main(). Here it spans the two in-era
+    # sample rows, so the 1998 row is still filtered out.
+    meetings = parse_meetings(ws, columns, dt.date(2026, 4, 30), dt.date(2026, 6, 19))
     assert len(meetings) == 2  # the 1998 row is outside the era filter
 
     m = next(m for m in meetings if m["meeting_date"] == "2026-06-18")

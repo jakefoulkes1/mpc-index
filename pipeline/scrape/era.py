@@ -11,14 +11,28 @@ trying, two URL slug patterns, suspect-parse threshold).
 Run on your own machine:
     python -m pipeline.scrape.era
 """
+import datetime as dt
+
 import requests
 
 from pipeline.scrape.minutes import scrape_month
 
 START = (2015, 8)
-# Inclusive last month of the corpus, bumped one month per ingest. Kept in
-# step with build_votes.ERA_END. See DECISIONS.md 2026-08-05.
-END = (2026, 7)
+
+
+def current_month() -> tuple[int, int]:
+    """Inclusive last month to probe: whichever month it is now.
+
+    This was a hardcoded constant that had to be bumped by hand every ingest,
+    and its counterpart in build_votes.py silently dropped a meeting when it
+    was not. The scraper's end cannot be derived from the corpus - extending
+    the corpus is its whole job - so it derives from the clock instead, and
+    the existing 404 tolerance handles months with no meeting.
+
+    See DECISIONS.md 2026-08-10.
+    """
+    today = dt.date.today()
+    return (today.year, today.month)
 MONTHS = ["january", "february", "march", "april", "may", "june",
           "july", "august", "september", "october", "november", "december"]
 MIN_WORDS = 1000
@@ -36,7 +50,9 @@ def month_range(start: tuple[int, int], end: tuple[int, int]):
 
 def main() -> None:
     scraped, missing, suspect = [], [], []
-    for year, month in month_range(START, END):
+    end = current_month()
+    print(f"probing {START[0]}-{START[1]:02d} to {end[0]}-{end[1]:02d}")
+    for year, month in month_range(START, end):
         try:
             path = scrape_month(year, month)
         except requests.exceptions.HTTPError as exc:
