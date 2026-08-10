@@ -50,6 +50,7 @@ Changes apply forward only; nothing is retrofitted. Locked calls are never touch
 - 2026-08-10 — [guard: the build_info stamp can no longer go stale silently](#2026-08-10--guard-the-build_info-stamp-can-no-longer-go-stale-silently)
 - 2026-08-10 — [context layer rebuilt on the 95-document corpus](#2026-08-10--context-layer-rebuilt-on-the-95-document-corpus)
 - 2026-08-10 — [era windows derived, not declared; LOCKDAY stamp warning](#2026-08-10--era-windows-derived-not-declared-lockday-stamp-warning)
+- 2026-08-10 — [MPC calendar transcribed from the Bank; last draft badge cleared](#2026-08-10--mpc-calendar-transcribed-from-the-bank-last-draft-badge-cleared)
 
 ## 2026-07-05 — repo created
 - **Thesis:** does the tone of MPC communication carry information about the next
@@ -1986,3 +1987,45 @@ file, no schema and nothing under `data/predictions/` was touched.
   is now "commit, stamp, then push" with the commands split out. Written for
   someone reading under time pressure, and it names the consequence - CI fails -
   rather than just the rule.
+
+## 2026-08-10 — MPC calendar transcribed from the Bank; last draft badge cleared
+
+- **`UPCOMING_MEETINGS` replaced with the Bank's full published calendar**,
+  read from
+  <https://www.bankofengland.co.uk/monetary-policy/upcoming-mpc-dates>
+  (that page's own "last updated" line read **26 May 2026**). It had held three
+  dates, one of which had already happened; the panel had been down to two
+  meetings since the 2026-08-10 context rebuild, with the December slot empty
+  because the date was not in this repository and was not going to be guessed.
+- **Transcribed, then checked three ways rather than trusted.** (a) Every date
+  falls on the Thursday the Bank prints beside it - verified in code, all 16.
+  (b) The five 2026 dates already in the past match `data/index.json`'s own
+  `published` dates exactly, which is an independent check, since those came
+  from scraping the minutes pages months apart from this transcription. (c) The
+  page's own "Next due: 17 September 2026" agrees with the first future date.
+- **The Bank's confirmed/provisional split is preserved, not flattened.** 2026
+  is published as CONFIRMED and 2027 as PROVISIONAL; the constants are
+  `MEETINGS_2026_CONFIRMED` and `MEETINGS_2027_PROVISIONAL`, concatenated into
+  `UPCOMING_MEETINGS`. Collapsing them would launder a provisional date into a
+  firm one, which is the kind of quiet upgrade this log exists to prevent.
+- **The implied-path panel still prices only the next 3 meetings**, via a new
+  `OIS_PATH_MEETINGS = 3`. `forward_rate_for_date` clips to the longest maturity
+  the curve carries, so pricing all sixteen published dates out to December 2027
+  would fill the panel with rows that look like data but are the curve's
+  endpoint repeated. The calendar is now long enough that the list cannot run
+  out again; the panel's scope is unchanged.
+- **Rebuild is purely additive**: the panel returns to three rows - 17 Sep, 5 Nov,
+  17 Dec 2026 - with the September and November figures byte-identical to the
+  previous build (same 7 August curve), and `bank_rate_history` and `gilt_2y`
+  untouched. December prices +19.80bp, p_hike 0.7919, on that same curve.
+- **The last reader-visible draft badge is gone.** The "Why the sample sizes
+  differ" card on methodology.html was written on 2026-07-30 and sat outside the
+  five-section sign-off of 2026-08-05; Jake has now signed it off. The badge and
+  its governing comment were removed and the change verified mechanically -
+  comparing the multiset of text segments before and after, the only segment
+  removed is the badge's own text and nothing was added. **No draft marker of
+  any kind now remains in either page.**
+- **The `.draft-note` CSS rule is deliberately left in place** although nothing
+  uses it. It is the project's established device for marking a section draft,
+  and keeping the rule means a future one costs a single `<span>` rather than
+  re-deriving the styling.

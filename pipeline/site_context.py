@@ -63,11 +63,36 @@ SPOT_SHORT_SHEET = "3. spot, short end"
 GILT_MATURITY_MONTHS = 24  # 2-year point
 GILT_WINDOW_MONTHS = 12
 
-# The next three scheduled MPC announcement dates, from the Bank's published
-# calendar (see DECISIONS.md, 2026-07-11, which lists 30 Jul / 17 Sep / 5 Nov
-# 2026 as the three upcoming meetings). These are CONTEXT LABELS for the
-# implied-path panel, NOT a model input and NOT a claim about those dates.
-UPCOMING_MEETINGS = ["2026-07-30", "2026-09-17", "2026-11-05"]
+# The Bank's published MPC announcement calendar, taken from
+# bankofengland.co.uk/monetary-policy/upcoming-mpc-dates (that page's own
+# "last updated" line read 26 May 2026 when this was transcribed). Every date
+# was checked to fall on the Thursday the Bank prints beside it, and the five
+# 2026 dates already in the past match the corpus's own published dates
+# exactly. See DECISIONS.md, 2026-08-10.
+#
+# These are CONTEXT LABELS for the implied-path panel, NOT a model input and
+# NOT a claim about what happens at those meetings.
+#
+# The Bank labels 2026 CONFIRMED and 2027 PROVISIONAL. That distinction is
+# kept here rather than flattened, because a provisional date is a weaker
+# claim and this file should not launder it into a firm one.
+MEETINGS_2026_CONFIRMED = [
+    "2026-02-05", "2026-03-19", "2026-04-30", "2026-06-18",
+    "2026-07-30", "2026-09-17", "2026-11-05", "2026-12-17",
+]
+MEETINGS_2027_PROVISIONAL = [
+    "2027-02-04", "2027-03-18", "2027-04-29", "2027-06-17",
+    "2027-07-29", "2027-09-16", "2027-11-04", "2027-12-16",
+]
+UPCOMING_MEETINGS = MEETINGS_2026_CONFIRMED + MEETINGS_2027_PROVISIONAL
+
+# How many still-to-come meetings the implied-path panel actually prices.
+# forward_rate_for_date clips to the longest maturity the curve carries, so
+# pricing every published date out to December 2027 would fill the panel with
+# rows that look like data but are really the curve's endpoint repeated. Three
+# is the panel's original scope and stays its scope; the calendar above is now
+# the full published one so the list never runs out again.
+OIS_PATH_MEETINGS = 3
 
 DISCLAIMER = (
     "Context - not model inputs. These series are shown for orientation only; "
@@ -125,7 +150,7 @@ def ois_path_context(curve: dict, sonia: dict,
             f"({as_of}). Update UPCOMING_MEETINGS in pipeline/site_context.py from "
             f"the Bank's published calendar before rebuilding."
         )
-    meeting_dates = upcoming
+    meeting_dates = upcoming[:OIS_PATH_MEETINGS]
     meetings = []
     assumed_move_bp = lock_offset_days = None
     for iso in meeting_dates:

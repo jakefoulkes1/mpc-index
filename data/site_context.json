@@ -1,6 +1,6 @@
 {
   "schema": "site-context-v1",
-  "generated_utc": "2026-08-10T10:20:46+00:00",
+  "generated_utc": "2026-08-10T11:35:27+00:00",
   "context_not_model_inputs": true,
   "disclaimer": "Context - not model inputs. These series are shown for orientation only; none of them feed the A&BG communication index, the market benchmark, or any locked call.",
   "ois_path": {
@@ -25,6 +25,14 @@
         "p_cut": 0.0,
         "p_hold": 0.5589,
         "p_hike": 0.4411
+      },
+      {
+        "meeting_date": "2026-12-17",
+        "forward_rate_pct": 3.9303,
+        "implied_change_bp": 19.8,
+        "p_cut": 0.0,
+        "p_hold": 0.2081,
+        "p_hike": 0.7919
       }
     ]
   },
