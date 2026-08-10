@@ -1,9 +1,9 @@
 {
   "schema": "build-info-v1",
-  "last_commit_sha": "a75006218942f25fe020cbc0c5fd38202e73a434",
-  "last_commit_short_sha": "a750062",
-  "last_commit_iso": "2026-07-30T21:58:28+01:00",
-  "last_commit_subject": "Audit fixes: failure states, verification path, metadata",
-  "generated_utc": "2026-07-30T20:58:33+00:00",
+  "last_commit_sha": "fdf3117ef819fd94963864166003adaa35e71d51",
+  "last_commit_short_sha": "fdf3117",
+  "last_commit_iso": "2026-08-05T18:39:10+01:00",
+  "last_commit_subject": "Site polish: fallbacks, drafts cleared, typography",
+  "generated_utc": "2026-08-10T09:51:52+00:00",
   "note": "Written by pipeline/build_build_info.py from git log -1 at the time it ran. Not a claim about the data's vintage - data/index.json carries its own generated_utc."
 }
