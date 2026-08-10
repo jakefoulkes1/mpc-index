@@ -1,9 +1,9 @@
 {
   "schema": "build-info-v1",
-  "last_commit_sha": "9924389902ce00cab28dbfba3f02bdf2d1f76e11",
-  "last_commit_short_sha": "9924389",
-  "last_commit_iso": "2026-08-10T11:24:14+01:00",
-  "last_commit_subject": "Derive era windows from the corpus; LOCKDAY stamp warning",
-  "generated_utc": "2026-08-10T10:24:14+00:00",
+  "last_commit_sha": "f1df776f9de9c93b5f200a696fe8dba7820d4e93",
+  "last_commit_short_sha": "f1df776",
+  "last_commit_iso": "2026-08-10T12:37:34+01:00",
+  "last_commit_subject": "MPC calendar from the Bank; clear the last draft badge",
+  "generated_utc": "2026-08-10T11:37:34+00:00",
   "note": "Written by pipeline/build_build_info.py from git log -1 at the time it ran. Not a claim about the data's vintage - data/index.json carries its own generated_utc."
 }
