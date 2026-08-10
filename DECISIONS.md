@@ -48,6 +48,8 @@ Changes apply forward only; nothing is retrofitted. Locked calls are never touch
 - 2026-08-05 — [site polish: fallbacks, drafts cleared, typography](#2026-08-05--site-polish-fallbacks-drafts-cleared-typography)
 - 2026-08-10 — [July 2026 ingest: corpus to 95, results republished](#2026-08-10--july-2026-ingest-corpus-to-95-results-republished)
 - 2026-08-10 — [guard: the build_info stamp can no longer go stale silently](#2026-08-10--guard-the-build_info-stamp-can-no-longer-go-stale-silently)
+- 2026-08-10 — [context layer rebuilt on the 95-document corpus](#2026-08-10--context-layer-rebuilt-on-the-95-document-corpus)
+- 2026-08-10 — [era windows derived, not declared; LOCKDAY stamp warning](#2026-08-10--era-windows-derived-not-declared-lockday-stamp-warning)
 
 ## 2026-07-05 — repo created
 - **Thesis:** does the tone of MPC communication carry information about the next
@@ -1890,3 +1892,97 @@ methods run over. 121/121 tests green.
   that write to the working tree hide the problem instead of reporting it, and
   this repository's CI is explicitly read-only ("never rebuilds data, never
   touches data/predictions/"). The guard reports; the human runs one command.
+
+## 2026-08-10 — context layer rebuilt on the 95-document corpus
+
+All three derived context files rebuilt against the July ingest. No science-layer
+file, no schema and nothing under `data/predictions/` was touched.
+
+- **`validation_v1.json`**: n 94 -> 95, still a clean 1:1 join, no unmatched
+  documents. **Every index-vs-vote correlation weakened slightly.** Pearson:
+  level_vs_skew 0.1816 -> 0.1693; level_vs_net_dissents 0.2014 -> 0.1882;
+  delta_vs_skew 0.0747 -> 0.0543; delta_vs_net_dissents 0.0618 -> 0.0408.
+  Spearman moves the same way throughout. This is the expected direction: July
+  is a document whose tone reads dovish while its vote reads hawkish, so it sits
+  against the (already weak) positive association and pulls it down. Mean index
+  by decision: `hold` 1.0053 -> 1.0005 on n 69 -> 70; `hike` and `cut`
+  unchanged. **These are contemporaneous correlations, not predictive ones**, and
+  none of them is a published headline figure - the headline null result is the
+  ladder and Spec 3, both republished separately.
+- **`member_behaviour_v1.json`**: dissent stickiness moved.
+  `p_dissent_again_given_dissented` **0.4746 -> 0.4833** (n 118 -> 120);
+  `p_dissent_given_with_majority` **0.0942 -> 0.0946** (n 701 -> 708). The
+  hawkish-dissent row of the transition matrix firmed: P(hawkish again | hawkish)
+  0.4462 -> 0.4627, P(with majority | hawkish) 0.5538 -> 0.5373. The
+  dovish-dissent row is **unchanged**, which follows - all three July dissents
+  were hawkish. Per-member: Greene 0.2917 -> 0.32 and Pill 0.1538 -> 0.175 rise
+  on a repeated hawkish dissent, Mann 0.4103 -> 0.425, and every non-dissenter's
+  frequency dilutes by one meeting. **Seeds Stage 4; not a predictor and not
+  published as a result.**
+- **`site_context.json` would not rebuild at all, and the reason was a stale
+  hardcoded date.** `UPCOMING_MEETINGS` still led with 2026-07-30, now past, and
+  the frozen `forward_rate_for_date` correctly refuses to read a forward for a
+  date behind the curve's own as-of: *"meeting_date 2026-07-30 (+3d) is not after
+  curve as_of date 2026-08-07"*. It raised before writing, so the existing file
+  was never corrupted. **Fixed by filtering past meetings out of the path at
+  runtime** rather than by inventing a replacement date: "upcoming" already meant
+  forward-looking, and a forward rate for a past meeting is not a thing that
+  exists. The list now shrinks rather than lying, and hard-stops with an
+  instruction if it ever empties.
+- **Consequence, stated because it is reader-visible: the implied-path panel now
+  shows 2 meetings, not 3.** The heading was hardcoded "next 3 meetings" and now
+  derives its count from the data. **The third slot is not filled**: the meeting
+  after 5 November 2026 is not in this repository and was not guessed. Adding it
+  means updating `UPCOMING_MEETINGS` from the Bank's published calendar - Jake's
+  call, and a one-line change.
+- **The curve has repriced sharply dovish since the 9 July snapshot** the old
+  file carried. On the 7 August curve, 17 September prices +2.01bp (p_hike
+  0.0805, was 0.3386) and 5 November +11.03bp (p_hike 0.4411, was 0.7255).
+  Recorded as an observation only - this file is context, feeds no model, and
+  this project has nothing that could adjudicate why.
+- **Bank Rate history 94 -> 95 points**, now ending 30 July 2026 at 3.75%.
+  2-year gilt 4.1373% (9 July) -> 4.1858% (7 August).
+- **A typo in the new heading code was caught by the failure state, not by
+  review**: the first version referenced an undefined `c` instead of the
+  function's `ctx`, and the panel rendered "Could not load
+  data/site_context.json - c is not defined" with a link to the raw JSON,
+  instead of silently blanking. That is the 2026-07-30 failure-state work
+  earning itself back.
+
+## 2026-08-10 — era windows derived, not declared; LOCKDAY stamp warning
+
+- **`build_votes.py`'s hardcoded era constants are gone.** `corpus_window()`
+  derives the filter from `data/index.json` - start = earliest published date,
+  end = latest + 1 day, exclusive. The voting sheet is now filtered *to the
+  corpus*, which makes the 2026-08-10 failure impossible by construction: a
+  meeting in the corpus cannot fall outside a window defined by the corpus.
+  **`votes.csv` is byte-identical after the change** (checked, not assumed), so
+  no existing result moved.
+- **A missing `index.json` is now a hard stop**, not a fallback to some default
+  window. Falling back is exactly how the original bug shipped: a plausible
+  meeting count and a zero exit code.
+- **`scrape/era.py`'s `END` derives from the clock, not the corpus.** The
+  scraper's job is to *extend* the corpus, so deriving its end from the corpus
+  would be circular; it now probes through the current month and leans on the
+  404 tolerance it already had for months with no meeting.
+- **New `pipeline/tests/test_votes_window.py` (4 tests, 123 -> 127.)** Three run
+  anywhere: the derived window covers every published corpus document; it is
+  tight to the corpus on a synthetic index; a missing index hard-stops. The
+  fourth is the alarm Jake asked for - **it fails if the Bank's sheet carries a
+  meeting at or after the corpus end**, meaning minutes are waiting to be
+  scraped. It **skips when `mpcvoting.xlsx` is absent**, since `data/raw/` is
+  gitignored and CI has no copy - same convention as `test_inspect.py`. Stated
+  plainly because a skipped guard is not a guard on CI; it is a local one.
+- **Expect that fourth test to fire in September** the moment the Bank publishes
+  the 17 September votes and before the minutes are scraped. That is the intended
+  signal, not a defect.
+- **`test_votes.py` updated for the new `parse_meetings` signature** - the window
+  is passed in rather than read from a module constant. The synthetic sample
+  keeps its 1998 row and still filters it out.
+- **LOCKDAY.md now warns about the stamp commit in three places**: a fourth item
+  in the "read this before you start" list, Tuesday step **11b** (placed *after*
+  the tag, with an explicit warning that stamping first would move the tag onto
+  the stamp commit and break the timestamp evidence), and Thursday step 6, which
+  is now "commit, stamp, then push" with the commands split out. Written for
+  someone reading under time pressure, and it names the consequence - CI fails -
+  rather than just the rule.

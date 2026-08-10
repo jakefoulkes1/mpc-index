@@ -104,6 +104,28 @@ def ois_path_context(curve: dict, sonia: dict,
     """Implied {cut, hold, hike} for each upcoming meeting, via the same
     two-state rule used for m0 and the historical benchmark."""
     meeting_dates = meeting_dates or UPCOMING_MEETINGS
+    # Drop meetings that have already happened. A forward rate cannot be read
+    # for a date behind the curve's own as-of date, and market_probs correctly
+    # raises rather than extrapolating - which meant this whole file stopped
+    # rebuilding the moment the first date in UPCOMING_MEETINGS went past
+    # (2026-08-10: "meeting_date 2026-07-30 (+3d) is not after curve as_of
+    # date 2026-08-07"). Filtering here keeps the panel forward-looking, which
+    # is what "upcoming" already meant. It does NOT invent a replacement date:
+    # the list shrinks until a real one is added from the Bank's calendar.
+    # See DECISIONS.md 2026-08-10.
+    as_of = dt.date.fromisoformat(curve["as_of_date"])
+    upcoming = [iso for iso in meeting_dates if dt.date.fromisoformat(iso) > as_of]
+    dropped = [iso for iso in meeting_dates if iso not in upcoming]
+    if dropped:
+        print(f"log: dropping past meeting(s) from the implied path: {dropped} "
+              f"(curve as of {as_of})")
+    if not upcoming:
+        raise SystemExit(
+            f"every date in UPCOMING_MEETINGS is on or before the curve as-of date "
+            f"({as_of}). Update UPCOMING_MEETINGS in pipeline/site_context.py from "
+            f"the Bank's published calendar before rebuilding."
+        )
+    meeting_dates = upcoming
     meetings = []
     assumed_move_bp = lock_offset_days = None
     for iso in meeting_dates:

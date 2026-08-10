@@ -617,7 +617,7 @@
         <div class="disclosure-body">
 
       <div class="ctx-block">
-        <h3 class="ctx-h">OIS-implied path &middot; next 3 meetings</h3>
+        <h3 class="ctx-h" id="ois-h">OIS-implied path &middot; next scheduled meetings</h3>
         <p class="ctx-sub" id="ois-sub"></p>
         <div class="ois-legend">
           <span class="key"><span class="box cut"></span> cut</span>
@@ -1590,8 +1590,15 @@ window.addEventListener('resize', () => {
 });
 
 function renderContext(ctx) {
-  // (a) OIS-implied path for the next 3 meetings
+  // (a) OIS-implied path for the next scheduled meetings
   const op = ctx.ois_path;
+  // The count comes from the data: past meetings drop out of the path as
+  // they happen, so a hardcoded "next 3" goes wrong on its own.
+  const oisH = document.getElementById('ois-h');
+  if (oisH) {
+    const n = (op.meetings || []).length;
+    oisH.innerHTML = `OIS-implied path &middot; next ${n} scheduled meeting${n === 1 ? '' : 's'}`;
+  }
   document.getElementById('ois-sub').innerHTML =
     `Curve as of <b style="color:var(--text)">${fmtDate(op.curve_as_of)}</b> vs SONIA ${op.sonia_pct.toFixed(3)}% ` +
     `(${fmtDate(op.sonia_as_of)}) &middot; two-state &plusmn;${op.assumed_move_bp}bp assumption.`;
