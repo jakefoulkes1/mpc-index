@@ -46,6 +46,7 @@ Changes apply forward only; nothing is retrofitted. Locked calls are never touch
 - 2026-07-29 — [design pass: typography, progressive disclosure, call card](#2026-07-29--design-pass-typography-progressive-disclosure-call-card)
 - 2026-07-30 — [audit fixes: failure states, verification path, metadata](#2026-07-30--audit-fixes-failure-states-verification-path-metadata)
 - 2026-08-05 — [site polish: fallbacks, drafts cleared, typography](#2026-08-05--site-polish-fallbacks-drafts-cleared-typography)
+- 2026-08-10 — [July 2026 ingest: corpus to 95, results republished](#2026-08-10--july-2026-ingest-corpus-to-95-results-republished)
 
 ## 2026-07-05 — repo created
 - **Thesis:** does the tone of MPC communication carry information about the next
@@ -1785,3 +1786,74 @@ byte-identical. 115 -> 121 tests, all green.
   is either technically required (the ladder's five forecasters; "pure
   forecasts" in Limitations; "could not have pre-registered a forecast") or
   sits inside Jake's authored Results paragraph, which was not touched.
+
+## 2026-08-10 — July 2026 ingest: corpus to 95, results republished
+
+Routine ingest. **No methodology changed**: the lexicon, the scoring rules, the
+ladder specifications and the inference specifications are untouched, and
+`lock-2026-07.json` is byte-identical. What changed is the sample the frozen
+methods run over. 121/121 tests green.
+
+- **Scraped `2026-07-minutes.txt`** (meeting ending 29 July, announced 30 July)
+  via the existing scraper: 4,039 words, `source_kind: html`, decision "maintain
+  Bank Rate at 3.75%", vote 6-3.
+- **The word count was below the corpus Q1 (4,811), so the parse was checked
+  rather than waved through.** It is complete: minute paragraphs run 1-20 with
+  no gaps and end at the standard membership list (nine members, Treasury
+  representative, Court observer). The short length is the current house style,
+  not truncation - 2025-11 has 21 paragraphs, 2026-04 has 21, 2026-02 has 22,
+  against a corpus median of 46. No HARD STOP.
+- **A hardcoded era window blocked the ingest and had to be bumped.**
+  `build_votes.ERA_END` was `2026-07-01` (exclusive), which silently dropped the
+  30 July meeting from `votes.csv` even though the Bank's spreadsheet contained
+  it - the first rebuild produced 94 meetings and no error. `scrape/era.py` had
+  the matching `END = (2026, 6)`. Both bumped one month. The same window was
+  also written out a second time as string literals inside
+  `reconcile_against_corpus`; that now derives from the module constants, since
+  two copies of one window is exactly how this drifts. **This is a window
+  extension, not a change to any parsing or scoring rule** - but it is a code
+  change on an ingest, recorded here because it will need doing every month
+  until the window is derived rather than declared.
+- **Every rebuild was diffed before being accepted, and all four were purely
+  additive**: `index.json` 94 -> 95 documents with **0 existing documents
+  changed**; `votes.csv` 94 -> 95 meetings, 842 -> 851 rows, **0 existing rows
+  changed**; `market_history.csv` 94 -> 95, **0 existing rows changed**;
+  `surprises.csv` 91 -> 92, **0 existing rows changed**.
+- **July's A&BG reading is 0.6667** - on the dovish side of the 1.0 neutral,
+  down 1.0476 from June's 1.7143 and 0.3869 below the trailing 4-document mean
+  of 1.0536. It reads dovish in the same month the hawkish minority grew to
+  three, which is the divergence the 30 July episode predicted. **Recorded with
+  its own caveat: the reading rests on three lexicon hits in total** (1 hawkish,
+  2 dovish). That is ordinary for this corpus - the median document has 2 hits -
+  and it is exactly the sparsity the Limitations section already flags. A single
+  hit either way would move the number substantially. The episode's prediction
+  held; the evidence for it is thin, and saying so is not a hedge.
+- **Results republished on 95 documents. The finding is unchanged.** Ladder
+  n_scheduled 60 -> 61; every Brier improves slightly (July was a well-predicted
+  hold); skill against L1 essentially static - L2 -0.1171 -> -0.1167, L3
+  -0.6729 -> -0.6712, L4 -0.8166 -> -0.8148. **No text-augmented model beats
+  market pricing.** Spec 3 n 91 -> 92, p **0.0316 -> 0.0310** - it does not
+  cross 0.05, and moves marginally more significant, not less. Spec 2 stays null
+  (p 0.4918 -> 0.4894). The fragility subsample n 23 -> 24 still fails to
+  replicate (p 0.1422 -> 0.1221).
+- **Lexicon sparsity recomputed rather than re-denominated**: across 95
+  documents the median is still 2 hits, Q1 1, Q3 3, min 0, max 12. July's 3 hits
+  sit at Q3, so no quartile moved; only the n in the sentence changed.
+- **`pipeline/build_fallbacks.py` promoted from a scratch script into the
+  repository.** The static fallbacks have to be regenerated after every rebuild
+  or `test_static_fallback.py` fails, and a throwaway script is not a workflow.
+  While wiring it up, the test caught `#ladder-meta` still reading `n=60`: that
+  line sits outside the `fallback:ladder` region and had been missed. It now has
+  its own `fallback:laddermeta` region and is generated too.
+- **Every reader-facing figure was updated from the data, not by hand**: 6 in
+  index.html and 19 in methodology.html (94 -> 95 documents, 62 -> 63 evaluated,
+  60 -> 61 scheduled, 91 -> 92 Spec 3, 23 -> 24 fragility, and the corpus end
+  June -> July 2026). The "52 of the N documents reconstructed from PDF" claim
+  was checked before touching it: 52 is the count of non-special PDF-sourced
+  documents and is unchanged, so only its denominator moved. `og-image.png`
+  rebuilt from the 95-document series.
+- **Not rebuilt, deliberately**: `site_context.json` (context only, and its
+  meeting calendar still lists 17 September 2026 correctly),
+  `member_behaviour_v1.json`, `validation_v1.json`. Nothing asked for them and
+  no published figure depends on them. Flagged so the omission is on the record
+  rather than discovered later.

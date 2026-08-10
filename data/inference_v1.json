@@ -2,105 +2,105 @@
   "schema": "inference-v1",
   "newey_west_maxlags": 4,
   "full_sample": {
-    "n": 91,
+    "n": 92,
     "spec3_surprise_on_lagged_index": {
-      "n": 91,
+      "n": 92,
       "newey_west_maxlags": 4,
-      "r_squared": 0.05,
+      "r_squared": 0.0498,
       "coefficients": {
         "const": {
-          "coef": 1.760526,
-          "t": 1.4109,
-          "p": 0.1583
+          "coef": 1.75589,
+          "t": 1.4075,
+          "p": 0.1593
         },
         "lagged_index": {
-          "coef": -2.163349,
-          "t": -2.1499,
-          "p": 0.0316
+          "coef": -2.148858,
+          "t": -2.1576,
+          "p": 0.031
         }
       }
     },
     "spec3_surprise_on_lagged_index_and_skew": {
-      "n": 91,
+      "n": 92,
       "newey_west_maxlags": 4,
-      "r_squared": 0.0521,
+      "r_squared": 0.0517,
       "coefficients": {
         "const": {
-          "coef": 1.695304,
-          "t": 1.3651,
-          "p": 0.1722
+          "coef": 1.692044,
+          "t": 1.3623,
+          "p": 0.1731
         },
         "lagged_index": {
-          "coef": -2.086313,
-          "t": -2.0817,
-          "p": 0.0374
+          "coef": -2.07115,
+          "t": -2.0829,
+          "p": 0.0373
         },
         "lagged_skew": {
-          "coef": -601.161619,
-          "t": -0.7236,
-          "p": 0.4693
+          "coef": -577.591375,
+          "t": -0.7005,
+          "p": 0.4836
         }
       }
     },
     "spec2_ordered_logit_lr_test": {
-      "n": 91,
+      "n": 92,
       "converged": true,
-      "log_likelihood_restricted_implied_change_only": -12.5852,
-      "log_likelihood_full_plus_lagged_index": -12.3489,
-      "lr_statistic": 0.4726,
+      "log_likelihood_restricted_implied_change_only": -12.5995,
+      "log_likelihood_full_plus_lagged_index": -12.3606,
+      "lr_statistic": 0.4778,
       "degrees_of_freedom": 1,
-      "p_value": 0.4918
+      "p_value": 0.4894
     }
   },
   "fragility_check_subsample": {
     "start_date": "2023-09-01",
     "results": {
-      "n": 23,
+      "n": 24,
       "spec3_surprise_on_lagged_index": {
-        "n": 23,
+        "n": 24,
         "newey_west_maxlags": 4,
-        "r_squared": 0.1162,
+        "r_squared": 0.1153,
         "coefficients": {
           "const": {
-            "coef": 3.650899,
-            "t": 2.3061,
-            "p": 0.0211
+            "coef": 3.602865,
+            "t": 2.3779,
+            "p": 0.0174
           },
           "lagged_index": {
-            "coef": -3.441919,
-            "t": -1.4678,
-            "p": 0.1422
+            "coef": -3.346283,
+            "t": -1.5461,
+            "p": 0.1221
           }
         }
       },
       "spec3_surprise_on_lagged_index_and_skew": {
-        "n": 23,
+        "n": 24,
         "newey_west_maxlags": 4,
-        "r_squared": 0.1163,
+        "r_squared": 0.1153,
         "coefficients": {
           "const": {
-            "coef": 3.646766,
-            "t": 2.3401,
-            "p": 0.0193
+            "coef": 3.601298,
+            "t": 2.4201,
+            "p": 0.0155
           },
           "lagged_index": {
-            "coef": -3.437151,
-            "t": -1.491,
-            "p": 0.136
+            "coef": -3.344162,
+            "t": -1.5812,
+            "p": 0.1138
           },
           "lagged_skew": {
-            "coef": -70.791398,
-            "t": -0.0519,
-            "p": 0.9586
+            "coef": -20.431772,
+            "t": -0.0157,
+            "p": 0.9875
           }
         }
       },
       "spec2_ordered_logit_lr_test": {
-        "n": 23,
+        "n": 24,
         "converged": false,
         "note": "one or both ordered-logit fits did not converge - LR test not computed"
       }
     }
   },
-  "notes": "Small and careful, per instruction: this is a handful of specifications on 91 scheduled meetings (full sample) / 23 (post-hiking-cycle subsample), not a search over many. Lagged features (index_level, skew) use the PREVIOUS meeting's value, same convention as the benchmark ladder's L3 - see DECISIONS.md, 2026-08-01 and 2026-08-08. The fragility-check subsample is small (n=23) and its ordered-logit fit did not converge - reported anyway, clearly caveated, not hidden. NOT published to the site - for review first."
+  "notes": "Small and careful, per instruction: this is a handful of specifications on 91 scheduled meetings (full sample) / 23 (post-hiking-cycle subsample), not a search over many. Lagged features (index_level, skew) use the PREVIOUS meeting's value, same convention as the benchmark ladder's L3 - see DECISIONS.md, 2026-07-11 (ladder and headline-inference entries). The fragility-check subsample is small (n=23) and its ordered-logit fit did not converge - reported anyway, clearly caveated, not hidden. NOT published to the site - for review first."
 }

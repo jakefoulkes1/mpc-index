@@ -18,7 +18,7 @@
 <meta property="og:image:type" content="image/png">
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="630">
-<meta property="og:image:alt" content="The A&BG communication index for Bank of England MPC minutes, August 2015 to June 2026, plotted against its neutral value.">
+<meta property="og:image:alt" content="The A&BG communication index for Bank of England MPC minutes, August 2015 to July 2026, plotted against its neutral value.">
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:title" content="MPC Communication Index">
 <meta name="twitter:description" content="A pre-registered call for each Bank of England rate decision — locked and timestamped before the announcement, scored after, misses included.">
@@ -686,13 +686,13 @@
           <!-- fallback:ladder - generated from data/ladder_v1.json, replaced by
                renderLadder() on success, asserted by test_static_fallback.py. -->
           <tbody id="ladder-tbody">
-            <tr><td>L0</td><td>0.6667</td><td>6.9078</td><td>&mdash;</td><td>60</td></tr>
-            <tr class="model-l1"><td>L1</td><td>0.0905</td><td>0.1454</td><td>&mdash;</td><td>60</td></tr>
-            <tr><td>L2</td><td>0.1011</td><td>0.1701</td><td>-0.1171</td><td>60</td></tr>
-            <tr><td>L3</td><td>0.1514</td><td>0.2664</td><td>-0.6729</td><td>60</td></tr>
-            <tr><td>L4</td><td>0.1644</td><td>0.263</td><td>-0.8166</td><td>60</td></tr>
+            <tr><td>L0</td><td>0.6557</td><td>6.7945</td><td>&mdash;</td><td>61</td></tr>
+            <tr class="model-l1"><td>L1</td><td>0.0891</td><td>0.1437</td><td>&mdash;</td><td>61</td></tr>
+            <tr><td>L2</td><td>0.0995</td><td>0.1676</td><td>-0.1167</td><td>61</td></tr>
+            <tr><td>L3</td><td>0.1489</td><td>0.2623</td><td>-0.6712</td><td>61</td></tr>
+            <tr><td>L4</td><td>0.1617</td><td>0.2587</td><td>-0.8148</td><td>61</td></tr>
           </tbody>
-          <!-- /fallback:ladder -->
+        <!-- /fallback:ladder -->
         </table>
       </div>
 
@@ -700,21 +700,24 @@
            size on the page, so the explanation sits here rather than in a
            footnote. Canonical version: methodology.html#sample-sizes. -->
       <p class="fine" id="sample-sizes-note"><strong>Why the sample sizes differ.</strong>
-      The corpus is <strong>94</strong> documents (August 2015 &ndash; June 2026, including the
+      The corpus is <strong>95</strong> documents (August 2015 &ndash; July 2026, including the
       two emergency meetings of March 2020). The ladder evaluates from 1 January 2019 onwards,
-      leaving everything earlier as training data only &mdash; <strong>62</strong> meetings, of
-      which the <strong>60</strong> scheduled ones carry the headline scores above and the 2
+      leaving everything earlier as training data only &mdash; <strong>63</strong> meetings, of
+      which the <strong>61</strong> scheduled ones carry the headline scores above and the 2
       specials are scored separately. The Spec&nbsp;3 test below runs on the whole corpus rather
       than the 2019 window, and on rate <em>surprises</em>, so it drops the 2 specials and
-      August 2015 (no preceding decision to measure a change from): <strong>91</strong>. The
-      fragility subsample is the <strong>23</strong> of those 91 falling on or after
+      August 2015 (no preceding decision to measure a change from): <strong>92</strong>. The
+      fragility subsample is the <strong>24</strong> of those 92 falling on or after
       1&nbsp;September 2023. <a href="methodology.html#sample-sizes">Full note in the
       methodology</a>.</p>
 
       <details class="disclosure">
         <summary><span class="caret" aria-hidden="true"></span>More detail</summary>
         <div class="disclosure-body">
-          <p class="fine" id="ladder-meta" style="margin-top:0">Scheduled meetings only, evaluated 1 January 2019 &rarr; present (<strong>n=60</strong>) &middot; 2 special meeting(s) reported separately, not blended in &middot; log-score probability floor 1e-09.</p>
+          <!-- fallback:laddermeta - generated from data/ladder_v1.json by
+               pipeline/build_fallbacks.py, replaced by renderLadder() on success. -->
+          <p class="fine" id="ladder-meta" style="margin-top:0">Scheduled meetings only, evaluated 1 January 2019 &rarr; present (<strong>n=61</strong>) &middot; 2 special meeting(s) reported separately, not blended in &middot; log-score probability floor 1e-09.</p>
+          <!-- /fallback:laddermeta -->
           <p class="fine">
             <strong>Standing caveat: the market benchmark (L1) is the bar.</strong> L2&ndash;L4
             must show genuine skill above L1 to be worth anything &mdash; matching or beating
@@ -741,7 +744,7 @@
         <div class="disclosure-body">
         <!-- fallback:spec3 - generated from data/inference_v1.json, replaced by
              renderInference() on success, asserted by test_static_fallback.py. -->
-          <p id="spec3-line" class="prose" style="margin:0">Regressing each meeting's market surprise on the <em>previous</em> meeting's index (OLS, Newey&ndash;West standard errors, 4 lags, n=91 scheduled meetings): coefficient <strong>-2.163349</strong>, t = -2.1499, <strong>p = 0.0316</strong>. On the post-hiking-cycle subsample (from 1 September 2023, n=23) the result does not replicate: coefficient -3.441919, p = 0.1422. Spec 2, an ordered-logit likelihood-ratio test on the discrete decision, finds nothing: LR = 0.4726, p = 0.4918. Full output: <code>data/inference_v1.json</code>.</p>
+          <p id="spec3-line" class="prose" style="margin:0">Regressing each meeting's market surprise on the <em>previous</em> meeting's index (OLS, Newey&ndash;West standard errors, 4 lags, n=92 scheduled meetings): coefficient <strong>-2.148858</strong>, t = -2.1576, <strong>p = 0.031</strong>. On the post-hiking-cycle subsample (from 1 September 2023, n=24) the result does not replicate: coefficient -3.346283, p = 0.1221. Spec 2, an ordered-logit likelihood-ratio test on the discrete decision, finds nothing: LR = 0.4778, p = 0.4894. Full output: <code>data/inference_v1.json</code>.</p>
         <!-- /fallback:spec3 -->
         </div>
       </details>

@@ -16,7 +16,9 @@ import requests
 from pipeline.scrape.minutes import scrape_month
 
 START = (2015, 8)
-END = (2026, 6)
+# Inclusive last month of the corpus, bumped one month per ingest. Kept in
+# step with build_votes.ERA_END. See DECISIONS.md 2026-08-05.
+END = (2026, 7)
 MONTHS = ["january", "february", "march", "april", "may", "june",
           "july", "august", "september", "october", "november", "december"]
 MIN_WORDS = 1000

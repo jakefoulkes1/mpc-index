@@ -38,7 +38,11 @@ LABEL_COLUMNS = {"Current members", "Past members"}
 # record a dissent as qualitative "Increase"/"Decrease" text with no rate
 # (e.g. 1998), which the era filter also sidesteps.
 ERA_START = dt.date(2015, 8, 1)
-ERA_END = dt.date(2026, 7, 1)
+# Exclusive upper bound, bumped one month per ingest as each new meeting is
+# added to the corpus (2026-07-01 -> 2026-08-01 admits the 30 July 2026
+# meeting). See DECISIONS.md 2026-08-05 - this is a window extension, not a
+# change to any parsing or scoring rule.
+ERA_END = dt.date(2026, 8, 1)
 
 
 def load_member_columns(ws) -> dict[int, str]:
@@ -92,7 +96,9 @@ def reconcile_against_corpus(meetings: list[dict]) -> None:
     corpus_published = {d["published"] for d in corpus["documents"] if d["published"]}
     sheet_dates = {m["meeting_date"] for m in meetings}
 
-    era_start, era_end = "2015-08-01", "2026-07-01"
+    # Derived from the module constants rather than repeated as literals:
+    # the same window was previously written out twice and could drift.
+    era_start, era_end = ERA_START.isoformat(), ERA_END.isoformat()
     corpus_only = sorted(d for d in corpus_published if era_start <= d < era_end and d not in sheet_dates)
     sheet_only = sorted(d for d in sheet_dates if era_start <= d < era_end and d not in corpus_published)
 

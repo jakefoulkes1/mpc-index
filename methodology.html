@@ -17,7 +17,7 @@
 <meta property="og:image:type" content="image/png">
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="630">
-<meta property="og:image:alt" content="The A&BG communication index for Bank of England MPC minutes, August 2015 to June 2026, plotted against its neutral value.">
+<meta property="og:image:alt" content="The A&BG communication index for Bank of England MPC minutes, August 2015 to July 2026, plotted against its neutral value.">
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:title" content="Methodology — MPC Communication Index">
 <meta name="twitter:description" content="Data, index construction, market benchmark, evaluation and limitations — every choice traceable to code or a dated entry in the decisions log.">
@@ -164,7 +164,7 @@
 
   <section class="card" id="data">
     <h2>Data</h2>
-    <p class="plain-summary">Every MPC minutes publication since August 2015 &mdash; 94 documents
+    <p class="plain-summary">Every MPC minutes publication since August 2015 &mdash; 95 documents
     &mdash; together with the Bank's own voting record, reconciled against the Bank's sitemap
     rather than assumed complete.</p>
 
@@ -174,7 +174,7 @@
 
     <h3>Text corpus</h3>
     <p>Every Monetary Policy Summary and minutes publication of the Bank of England's
-    Monetary Policy Committee from August 2015 to June 2026: <strong>94 documents</strong>
+    Monetary Policy Committee from August 2015 to July 2026: <strong>95 documents</strong>
     &mdash; 92 from the regular meeting cycle plus 2 special (emergency) meetings, the
     10&nbsp;March and 19&nbsp;March 2020 Covid-19 decisions.
     <span class="ref">(DECISIONS.md 2026-07-11 &mdash; corpus audit: full-text repair + special meetings; 2026-07-11 &mdash; 19 March 2020 special meeting added.)</span></p>
@@ -196,7 +196,7 @@
     pipeline/scrape/era.py; DECISIONS.md 2026-07-11 &mdash; era corpus; 2026-07-30 &mdash;
     audit fixes.)</span></p>
     <p>Until August 2021 the Bank published the full minutes as a separate PDF, with only
-    the summary on the HTML page; 52 of the 94 documents were therefore reconstructed
+    the summary on the HTML page; 52 of the 95 documents were therefore reconstructed
     from the Bank's own PDF minutes, and every document records whether its text came
     from HTML or PDF. <span class="ref">(pipeline/scrape/backfill_pdf.py; DECISIONS.md
     2026-07-11 &mdash; corpus audit: full-text repair + special meetings.)</span></p>
@@ -228,23 +228,23 @@
     <span class="draft-note">Draft &mdash; JF to revise</span>
 
     <p>Five different n's appear across this site, and they are not
-    inconsistencies. The <strong>94</strong> above is the whole corpus: every MPC
-    minutes publication from August 2015 to June 2026, including the two emergency
+    inconsistencies. The <strong>95</strong> above is the whole corpus: every MPC
+    minutes publication from August 2015 to July 2026, including the two emergency
     meetings of March 2020.</p>
     <ul>
-    <li><strong>62 evaluated.</strong> The benchmark ladder scores only meetings from
+    <li><strong>63 evaluated.</strong> The benchmark ladder scores only meetings from
     1&nbsp;January 2019 onwards; everything earlier is training data for the expanding
-    window and is never scored. That leaves 62 meetings inside the evaluation window.</li>
-    <li><strong>60 scheduled.</strong> Of those 62, the 2 March 2020 emergency meetings
+    window and is never scored. That leaves 63 meetings inside the evaluation window.</li>
+    <li><strong>61 scheduled.</strong> Of those 63, the 2 March 2020 emergency meetings
     are scored separately rather than blended in, because no call could have been locked
     for a meeting that had not yet been announced. The headline ladder figures are the
-    remaining 60.</li>
-    <li><strong>91 in Spec&nbsp;3.</strong> The regression uses the whole corpus rather
+    remaining 61.</li>
+    <li><strong>92 in Spec&nbsp;3.</strong> The regression uses the whole corpus rather
     than the 2019 window, and its dependent variable is the rate <em>surprise</em>. That
     drops the 2 specials, and August 2015 as well &mdash; the first document in the corpus
-    has no preceding decision to measure a change from. 94 &minus; 2 &minus; 1 = 91.</li>
-    <li><strong>23 in the fragility check.</strong> The post-hiking-cycle subsample is
-    those of the 91 falling on or after 1&nbsp;September 2023.</li>
+    has no preceding decision to measure a change from. 95 &minus; 2 &minus; 1 = 92.</li>
+    <li><strong>24 in the fragility check.</strong> The post-hiking-cycle subsample is
+    those of the 92 falling on or after 1&nbsp;September 2023.</li>
     </ul>
     <p>So the ladder and Spec&nbsp;3 answer different questions over deliberately different
     windows, and neither is a subset of the other by accident.
@@ -328,7 +328,7 @@
     direction of the implied change, remainder p<sub>hold</sub>. A documented
     simplification &mdash; real market pricing can imply multi-directional or
     non-25bp moves. <span class="ref">(DECISIONS.md 2026-07-11 &mdash; market_probs: two-state &plusmn;25bp assumption.)</span></p>
-    <p><strong>Historical benchmark.</strong> For each of the 94 meetings, the lock
+    <p><strong>Historical benchmark.</strong> For each of the 95 meetings, the lock
     date is announcement &minus; 2 calendar days, walked back day-by-day to the nearest
     available trading day (capped at 10 days, else a hard stop; in practice zero
     walk-backs occurred). Output: <code>data/market_history.csv</code>.
@@ -361,11 +361,11 @@
     </ul>
     <p>Expanding window: for each evaluated meeting, models are fit on strictly prior
     meetings only, training from August 2015; evaluation runs from 1 January 2019
-    (62 meetings). Outcomes are coded by sign only &mdash; {cut, hold, hike} &mdash;
+    (63 meetings). Outcomes are coded by sign only &mdash; {cut, hold, hike} &mdash;
     with one shared classifier (the verb adjacent to &ldquo;Bank Rate&rdquo; in the
     decision text). <span class="ref">(pipeline/ladder.py;
     pipeline/decision_label.py; DECISIONS.md 2026-07-11 &mdash; the benchmark ladder, L0&ndash;L4.)</span></p>
-    <p><strong>Scheduled-only rule.</strong> Headline scores use the 60 scheduled
+    <p><strong>Scheduled-only rule.</strong> Headline scores use the 61 scheduled
     meetings only: at lock time (2 business days before an announcement) nobody could
     have pre-registered a forecast for an emergency meeting not yet known to exist.
     The 2 specials are scored separately as a robustness line, never blended in.
@@ -423,7 +423,7 @@
       <li><strong>Risk premia in forwards.</strong> OIS forward rates embed risk/term
       premia as well as rate expectations, so the market-implied probabilities are not
       pure forecasts. <span class="ref">(DECISIONS.md 2026-07-11 &mdash; market benchmark: OIS forward curve + SONIA.)</span></li>
-      <li><strong>Sparse lexicon hits.</strong> Across the 94 documents, the median
+      <li><strong>Sparse lexicon hits.</strong> Across the 95 documents, the median
       number of A&amp;BG bigram hits per document (hawkish + dovish) is
       <strong>2</strong>, with an interquartile range of <strong>2</strong>
       (Q1&nbsp;=&nbsp;1, Q3&nbsp;=&nbsp;3; min 0, max 12) &mdash; each document's index
@@ -443,7 +443,7 @@
       part of the understated move (quantified at up to a few tenths of a basis point
       on the 2026 curve, expected larger on steep historical curves).
       <span class="ref">(DECISIONS.md 2026-07-11 &mdash; smoothed-curve bias: quantified, offset convention chosen.)</span></li>
-      <li><strong>Small n.</strong> 94 documents in total; 60 scheduled meetings in the
+      <li><strong>Small n.</strong> 95 documents in total; 61 scheduled meetings in the
       ladder's evaluation window; 23 in the fragility subsample.
       <span class="ref">(data/ladder_v1.json; data/inference_v1.json.)</span></li>
       <li><strong>The two specifications disagree.</strong> Spec 3 (OLS on the
