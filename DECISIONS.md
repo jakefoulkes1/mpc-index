@@ -47,6 +47,7 @@ Changes apply forward only; nothing is retrofitted. Locked calls are never touch
 - 2026-07-30 — [audit fixes: failure states, verification path, metadata](#2026-07-30--audit-fixes-failure-states-verification-path-metadata)
 - 2026-08-05 — [site polish: fallbacks, drafts cleared, typography](#2026-08-05--site-polish-fallbacks-drafts-cleared-typography)
 - 2026-08-10 — [July 2026 ingest: corpus to 95, results republished](#2026-08-10--july-2026-ingest-corpus-to-95-results-republished)
+- 2026-08-10 — [guard: the build_info stamp can no longer go stale silently](#2026-08-10--guard-the-build_info-stamp-can-no-longer-go-stale-silently)
 
 ## 2026-07-05 — repo created
 - **Thesis:** does the tone of MPC communication carry information about the next
@@ -1857,3 +1858,35 @@ methods run over. 121/121 tests green.
   `member_behaviour_v1.json`, `validation_v1.json`. Nothing asked for them and
   no published figure depends on them. Flagged so the omission is on the record
   rather than discovered later.
+
+## 2026-08-10 — guard: the build_info stamp can no longer go stale silently
+
+- **`pipeline/tests/test_build_info_fresh.py` added (2 tests, 121 -> 123).**
+  The footer's "Site last updated" line is generated data committed to the
+  repository, so it degrades silently: on 2026-08-05 it had named `a750062` for
+  five days across two content commits, and the site read as a broken deploy
+  when Pages was in fact serving the tip of `main` correctly. Diagnosing that
+  cost a session. The guard makes the failure loud and local instead.
+- **The invariant is `build_info.json names HEAD`, with exactly one
+  allowance**: HEAD may be the *stamp commit* for the commit it names - that is,
+  HEAD's diff against its parent touches nothing but `data/build_info.json`,
+  `index.html` and `methodology.html`. This is the two-step already documented
+  in `build_build_info.py` (commit content, run script, commit stamp alone), and
+  the allowance is what keeps the stamp pointing at the content commit a reader
+  is actually looking at rather than at the commit that only carries the stamp.
+- **The deliberate consequence: a content commit is not publishable on its own.**
+  Push a content commit without its stamp and CI goes red. That is the intended
+  forcing function, and it is why the two commits should always be pushed
+  together - Actions runs on the pushed tip, so the intermediate content commit
+  is never independently tested.
+- **The second test checks the stamp's parts agree with each other**: short sha
+  a prefix of the full sha, and the recorded date and subject actually belonging
+  to that commit. A stamp assembled from mismatched parts would satisfy the
+  first test and still lie to a reader.
+- **CI checkout deepened to `fetch-depth: 0`.** The default shallow clone cannot
+  resolve `HEAD~1`, so the allowance branch was unverifiable on CI; the test
+  skips rather than passes when history is missing, and now history is present.
+- **Considered and rejected: regenerating the stamp inside the test run.** Tests
+  that write to the working tree hide the problem instead of reporting it, and
+  this repository's CI is explicitly read-only ("never rebuilds data, never
+  touches data/predictions/"). The guard reports; the human runs one command.

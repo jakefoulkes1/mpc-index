@@ -12,7 +12,12 @@ jobs:
   pytest:
     runs-on: ubuntu-latest
     steps:
+      # Full history: pipeline/tests/test_build_info_fresh.py compares
+      # data/build_info.json against HEAD and HEAD~1, which a shallow
+      # clone cannot resolve.
       - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
       - uses: actions/setup-python@v5
         with:
           python-version: "3.12"
