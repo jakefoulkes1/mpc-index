@@ -51,6 +51,7 @@ Changes apply forward only; nothing is retrofitted. Locked calls are never touch
 - 2026-08-10 — [context layer rebuilt on the 95-document corpus](#2026-08-10--context-layer-rebuilt-on-the-95-document-corpus)
 - 2026-08-10 — [era windows derived, not declared; LOCKDAY stamp warning](#2026-08-10--era-windows-derived-not-declared-lockday-stamp-warning)
 - 2026-08-10 — [MPC calendar transcribed from the Bank; last draft badge cleared](#2026-08-10--mpc-calendar-transcribed-from-the-bank-last-draft-badge-cleared)
+- 2026-08-30 — [presentation and consistency pass: every figure generated](#2026-08-30--presentation-and-consistency-pass-every-figure-generated)
 
 ## 2026-07-05 — repo created
 - **Thesis:** does the tone of MPC communication carry information about the next
@@ -2029,3 +2030,122 @@ file, no schema and nothing under `data/predictions/` was touched.
   uses it. It is the project's established device for marking a section draft,
   and keeping the rule means a future one costs a single `<span>` rather than
   re-deriving the styling.
+
+## 2026-08-30 — presentation and consistency pass: every figure generated
+
+Presentation only. **No model, no specification and no recomputation**: the
+lexicon, the scoring rules, the ladder and inference specifications and every
+file under `data/` are untouched, `lock-2026-07.json` is byte-identical, and no
+number on either page changed except where it had drifted from the file it
+came from. 127 -> 135 tests, all green.
+
+- **methodology.html was a meeting behind index.html, and nothing could have
+  caught it.** The July ingest (2026-08-10) updated 19 figures on that page by
+  hand and missed six: 94 documents, 62 evaluated, 60 scheduled, Spec 3 n=91,
+  fragility n=23, and the fragility p at 0.1422. All six are now correct - 95,
+  63, 61, 92, 24, 0.1221 - **and none of them was retyped**. The fix is the
+  mechanism, not the values.
+- **Two more stale figures turned up that the brief did not name**, both on
+  methodology.html and both plausible enough to have survived three readings:
+  the corpus was described as "**92** from the regular meeting cycle plus 2
+  special", which was the pre-July count (it is 93), and the ordered-logit
+  fallbacks as "11 of **62** L3 windows", which was the pre-July window count
+  (it is 63). Recorded because they are the argument for the guard: a stale
+  number that reads plausibly is invisible to review.
+- **New `pipeline/site_figures.py` is the single source of truth for every
+  reader-facing number on both pages.** It computes 45 named figures from
+  `data/index.json`, `data/ladder_v1.json`, `data/inference_v1.json` and
+  `data/validation_v1.json`, plus the frozen specification constants, imported
+  read-only from `pipeline/predict`, `pipeline/market`, `pipeline/ladder` and
+  `pipeline/inference` (`ASSUMED_MOVE_BP`, `LOCK_OFFSET_DAYS`,
+  `SIMULATION_TRIALS`, `SIMULATION_SEED`, `MIN_TRAINING_EXAMPLES`, and the
+  rest). Constants that were previously prose are now quoted from the code that
+  defines them, so a change to the specification cannot leave the page behind.
+- **`pipeline/build_fallbacks.py` now writes both pages**, and writes two kinds
+  of region: the existing whole-block `<!-- fallback:NAME -->` fallbacks, and a
+  new inline `<!-- fig:NAME -->` for a figure sitting inside a sentence. The
+  sentence stays the author's; the number in it is the data's. methodology.html
+  runs no JavaScript at all, so on that page every number is now a `fig` region
+  or it is not a figure.
+- **The guard is a census, not a spot check** (`pipeline/tests/test_site_figures.py`,
+  8 tests). Beyond asserting every `fig` region against its source, it strips
+  the generated regions out of both pages and requires that **every remaining
+  digit in reader-visible text** is accounted for by name: either an identifier
+  that merely contains one (`L3`, `Spec 2`, `SHA-256`, a dated log reference)
+  or an entry on an allowlist of literals that are not figures - a citation
+  year, a scale endpoint, the Bank's own meeting-schedule history - each with a
+  written reason. Adding a hardcoded number to either page fails the suite
+  until it is either generated or justified. A further test fails on a **stale
+  allowlist entry**, because an allowlist that stops matching stops guarding.
+  Both directions were checked by breaking the pages on purpose before they
+  were trusted.
+- **Rounding: coefficients and t-statistics to 2 decimal places, p-values to
+  4.** `-2.148858` asserts a precision an estimate with p = 0.03 does not have.
+  Full precision stays in `data/inference_v1.json`, unchanged, and the sentence
+  now names that file rather than implying the page is the record. The same
+  rounding is implemented once in `site_figures.py` and mirrored in
+  `renderInference()`, so the fetched and built-in versions of the line agree.
+- **The front page no longer contradicts itself.** Its Results prose said L3
+  scored -0.6729 while the table beside it said -0.6712 (the pre-July value);
+  the prose is now generated from the same file as the table. The Spec 2
+  p-value differs between the Results section (0.4894) and the call card
+  (0.4918) **and that difference is correct and has been left alone**: the card
+  reproduces a locked file, which is never edited. What the card now carries is
+  a line saying so - *"Figures as at the lock date (28 July 2026)."* - generated
+  from the locked file's own timestamp. **The rationale itself was not touched.**
+- **A static/JS disagreement was found while regenerating the call card:** the
+  built-in fallback read "25.0bp" where the JavaScript rendered "25bp", because
+  Python and JavaScript format `25.0` differently. Both now read `25bp`
+  (`:g`), and the contract test asserts the same form.
+- **Content added, all of it presentation of existing material:** a three-bullet
+  summary at the head of the page (what was tested / found / uncertain); a
+  consolidated **How to check this** box carrying the tag, the `git show`
+  command and the repository link, generated from the prediction file on
+  display; one-line model glosses in the ladder's Model column (L0 always-hold
+  through L4 member simulation) and on the card's m0; a collapsed seven-term
+  glossary; the "In plain English" device extended to the call card and the
+  market panel; an affiliation line in both footers; and the July miss stated
+  next to the track record with a link to the episode.
+- **The verification note moved rather than being duplicated.** It used to sit
+  inside the call card; it is now the "How to check this" box, and the card
+  keeps only the tag as a citation. The dead `.call-verify` CSS was removed
+  with the element - unlike `.draft-note`, it was not a reusable device.
+- **Four new static fallbacks - latest reading, chart, market panel, episodes -
+  bring the whole page up to the ladder's standard.** The chart is the
+  interesting case: an SVG line chart cannot be drawn without JavaScript, so
+  its honest static state is not an empty box but the same series in words
+  (n, span, latest, low and high, each generated). The episodes fallback
+  re-implements `renderMarkdown()`'s small Markdown subset in Python; the two
+  are kept deliberately literal so they agree.
+- **The Limitations list was reordered and gained an entry.** Sparse lexicon
+  hits is now first, because it constrains everything below it. A new
+  **"Forward interpolation across whole-month buckets"** entry records, as a
+  standing property of the method, the effect the 30 July rationale raised
+  about one meeting: a forward read at meeting + 3 days, interpolated across
+  whole-month buckets on a steeply sloped short curve, absorbs the following
+  meeting's expectations. **This is an addition, not a move** - the instruction
+  was to move it out of the July rationale, and the July rationale is a locked
+  file. The text stays where it is; the limitation is now also stated where it
+  belongs.
+- **Three items in the brief were not done, and one of them cannot be:**
+  - **Standard errors are not published anywhere in this repository.**
+    `data/inference_v1.json` carries `coef`, `t` and `p` and no `se`, so
+    "reported with standard error" cannot be met without either re-running the
+    inference (a recomputation, and the science layer is frozen) or deriving
+    `se = coef / t` from two already-rounded numbers (an approximation of a
+    value no source states). Neither is allowed; a **t-statistic is reported
+    alongside every coefficient instead**, and this is flagged rather than
+    quietly filled in. Adding `se` to the inference output is a one-line
+    science-layer change, for a session that is allowed to make one.
+  - **The July rationale is not split into three labelled parts.** The
+    instruction's own escape clause applies. The stored string's only
+    "what would change my mind" sentence - *"Both claims are testable against
+    the September lock, when the near-month slope will differ."* - is the sixth
+    of ten sentences, with four further "why" sentences after it. Any
+    contiguous three-way split therefore either files four sentences of
+    reasoning under "what would change my mind" or reorders the argument. Not
+    done, deliberately.
+  - **Draft wording is placeholder throughout.** The summary bullets, the two
+    "In plain English" lines and the July miss note carry both a visible
+    `Draft - JF to revise` badge and a `<!-- DRAFT: JF to revise -->` comment,
+    as asked. They are written to be replaced.

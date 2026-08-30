@@ -129,6 +129,7 @@
   }
   footer { font: var(--fs-sm)/var(--lh-body) var(--sans); color: var(--faint); margin-top: var(--sp-6); padding-top: var(--sp-5); border-top: 1px solid var(--line); }
   footer a { color: var(--muted); }
+  footer .affiliation { color: var(--muted); }
   @media (max-width: 640px) {
     .wrap { padding: var(--sp-6) 16px var(--sp-7); }
     :root { --fs-2xl: 27px; --fs-md: 17px; --fs-body: 16px; }
@@ -164,7 +165,8 @@
 
   <section class="card" id="data">
     <h2>Data</h2>
-    <p class="plain-summary">Every MPC minutes publication since August 2015 &mdash; 95 documents
+    <p class="plain-summary">Every MPC minutes publication since
+    <!-- fig:corpus_start_month -->August 2015<!-- /fig:corpus_start_month --> &mdash; <!-- fig:corpus_n -->95<!-- /fig:corpus_n --> documents
     &mdash; together with the Bank's own voting record, reconciled against the Bank's sitemap
     rather than assumed complete.</p>
 
@@ -174,8 +176,10 @@
 
     <h3>Text corpus</h3>
     <p>Every Monetary Policy Summary and minutes publication of the Bank of England's
-    Monetary Policy Committee from August 2015 to July 2026: <strong>95 documents</strong>
-    &mdash; 92 from the regular meeting cycle plus 2 special (emergency) meetings, the
+    Monetary Policy Committee from <!-- fig:corpus_start_month -->August 2015<!-- /fig:corpus_start_month --> to
+    <!-- fig:corpus_end_month -->July 2026<!-- /fig:corpus_end_month -->: <strong><!-- fig:corpus_n -->95<!-- /fig:corpus_n --> documents</strong>
+    &mdash; <!-- fig:corpus_regular -->93<!-- /fig:corpus_regular --> from the regular meeting cycle plus
+    <!-- fig:corpus_specials -->2<!-- /fig:corpus_specials --> special (emergency) meetings, the
     10&nbsp;March and 19&nbsp;March 2020 Covid-19 decisions.
     <span class="ref">(DECISIONS.md 2026-07-11 &mdash; corpus audit: full-text repair + special meetings; 2026-07-11 &mdash; 19 March 2020 special meeting added.)</span></p>
     <p>The window starts at the August 2015 regime change: from that meeting the Bank
@@ -185,7 +189,8 @@
     a year on 9&nbsp;May 2016, once the Bank of England and Financial Services Act 2016 had
     received Royal Assent, and the meeting scheduled for 13&nbsp;October 2016 was
     &ldquo;the first to be dropped under the new arrangements&rdquo;. 2017 is therefore the
-    first full calendar year with eight, and this corpus holds 11 documents for 2016 and 8
+    first full calendar year with eight, and this corpus holds
+    <!-- fig:corpus_2016_docs -->11<!-- /fig:corpus_2016_docs --> documents for 2016 and <!-- fig:corpus_2017_docs -->8<!-- /fig:corpus_2017_docs -->
     for 2017. The scraper probes every month and tolerates the months with no meeting rather
     than hardcoding the schedule.
     <span class="ref">(Bank of England,
@@ -196,7 +201,8 @@
     pipeline/scrape/era.py; DECISIONS.md 2026-07-11 &mdash; era corpus; 2026-07-30 &mdash;
     audit fixes.)</span></p>
     <p>Until August 2021 the Bank published the full minutes as a separate PDF, with only
-    the summary on the HTML page; 52 of the 95 documents were therefore reconstructed
+    the summary on the HTML page; <!-- fig:corpus_pdf_reconstructed -->52<!-- /fig:corpus_pdf_reconstructed --> of the
+    <!-- fig:corpus_n -->95<!-- /fig:corpus_n --> documents were therefore reconstructed
     from the Bank's own PDF minutes, and every document records whether its text came
     from HTML or PDF. <span class="ref">(pipeline/scrape/backfill_pdf.py; DECISIONS.md
     2026-07-11 &mdash; corpus audit: full-text repair + special meetings.)</span></p>
@@ -204,7 +210,7 @@
     extra within the window) and against the voting record. A document's
     <code>published</code> date is <code>meeting_end + 1 day</code>, applied uniformly;
     the five known one-day gaps against the Bank's voting sheet are individually logged,
-    and joins between the two sources use a &plusmn;3-day tolerance.
+    and joins between the two sources use a &plusmn;<!-- fig:join_tolerance_days -->3<!-- /fig:join_tolerance_days -->-day tolerance.
     <span class="ref">(DECISIONS.md 2026-07-11 &mdash; corpus audit: full-text repair + special meetings; 2026-07-11 &mdash; validation join fixed: voting-sheet date is canonical.)</span></p>
     <p>Raw source texts are &copy; Bank of England and stay in a local, gitignored
     cache; the repository publishes derived scores and SHA-256 hashes only, with links
@@ -225,23 +231,26 @@
   <section class="card" id="sample-sizes">
     <h2>Why the sample sizes differ</h2>
     <p>Five different n's appear across this site, and they are not
-    inconsistencies. The <strong>95</strong> above is the whole corpus: every MPC
-    minutes publication from August 2015 to July 2026, including the two emergency
+    inconsistencies. The <strong><!-- fig:corpus_n -->95<!-- /fig:corpus_n --></strong> above is the whole corpus: every MPC
+    minutes publication from <!-- fig:corpus_start_month -->August 2015<!-- /fig:corpus_start_month --> to
+    <!-- fig:corpus_end_month -->July 2026<!-- /fig:corpus_end_month -->, including the two emergency
     meetings of March 2020.</p>
     <ul>
-    <li><strong>63 evaluated.</strong> The benchmark ladder scores only meetings from
-    1&nbsp;January 2019 onwards; everything earlier is training data for the expanding
-    window and is never scored. That leaves 63 meetings inside the evaluation window.</li>
-    <li><strong>61 scheduled.</strong> Of those 63, the 2 March 2020 emergency meetings
+    <li><strong><!-- fig:n_evaluated -->63<!-- /fig:n_evaluated --> evaluated.</strong> The benchmark ladder scores only meetings from
+    <!-- fig:eval_start -->1 January 2019<!-- /fig:eval_start --> onwards; everything earlier is training data for the expanding
+    window and is never scored. That leaves <!-- fig:n_evaluated -->63<!-- /fig:n_evaluated --> meetings inside the evaluation window.</li>
+    <li><strong><!-- fig:n_scheduled -->61<!-- /fig:n_scheduled --> scheduled.</strong> Of those <!-- fig:n_evaluated -->63<!-- /fig:n_evaluated -->, the
+    <!-- fig:n_specials -->2<!-- /fig:n_specials --> March 2020 emergency meetings
     are scored separately rather than blended in, because no call could have been locked
     for a meeting that had not yet been announced. The headline ladder figures are the
-    remaining 61.</li>
-    <li><strong>92 in Spec&nbsp;3.</strong> The regression uses the whole corpus rather
+    remaining <!-- fig:n_scheduled -->61<!-- /fig:n_scheduled -->.</li>
+    <li><strong><!-- fig:spec3_n -->92<!-- /fig:spec3_n --> in Spec&nbsp;3.</strong> The regression uses the whole corpus rather
     than the 2019 window, and its dependent variable is the rate <em>surprise</em>. That
-    drops the 2 specials, and August 2015 as well &mdash; the first document in the corpus
-    has no preceding decision to measure a change from. 95 &minus; 2 &minus; 1 = 92.</li>
-    <li><strong>24 in the fragility check.</strong> The post-hiking-cycle subsample is
-    those of the 92 falling on or after 1&nbsp;September 2023.</li>
+    drops the <!-- fig:n_specials -->2<!-- /fig:n_specials --> specials, and
+    <!-- fig:corpus_start_month -->August 2015<!-- /fig:corpus_start_month --> as well &mdash; the first document in the corpus
+    has no preceding decision to measure a change from. <!-- fig:spec3_arithmetic -->95 &minus; 2 &minus; 1 = 92<!-- /fig:spec3_arithmetic -->.</li>
+    <li><strong><!-- fig:frag_n -->24<!-- /fig:frag_n --> in the fragility check.</strong> The post-hiking-cycle subsample is
+    those of the <!-- fig:spec3_n -->92<!-- /fig:spec3_n --> falling on or after <!-- fig:frag_start -->1 September 2023<!-- /fig:frag_start -->.</li>
     </ul>
     <p>So the ladder and Spec&nbsp;3 answer different questions over deliberately different
     windows, and neither is a subset of the other by accident.
@@ -311,27 +320,27 @@
     IUDSOIA). <span class="ref">(pipeline/market/ois.py; DECISIONS.md 2026-07-11 &mdash; market
     benchmark: OIS forward curve + SONIA; 2026-07-11 &mdash; curve freshness fix.)</span></p>
     <p><strong>Implied change.</strong> The forward rate is read from the curve at
-    <em>meeting date + 3 days</em>, linearly interpolated between the curve's
-    whole-month maturity buckets, minus SONIA. The +3-day convention compensates for
+    <em>meeting date + <!-- fig:lock_offset_days -->3<!-- /fig:lock_offset_days --> days</em>, linearly interpolated between the curve's
+    whole-month maturity buckets, minus SONIA. The +<!-- fig:lock_offset_days -->3<!-- /fig:lock_offset_days -->-day convention compensates for
     the fitted curve smoothing over the discrete jump that happens at a meeting; the
     bias was quantified before the convention was chosen, and a 2-week-average
     alternative was rejected because it would overlap the next meeting in the
     monthly-meeting era. One implementation serves the live call card and the
     historical backtest. <span class="ref">(pipeline/predict/market_probs.py,
     LOCK_OFFSET_DAYS=3; DECISIONS.md 2026-07-11 &mdash; smoothed-curve bias: quantified, offset convention chosen.)</span></p>
-    <p><strong>Two-state &plusmn;25bp mapping.</strong> The market is assumed to price a
-    single possible move in one direction, of fixed 25bp size:
-    p<sub>hike</sub> or p<sub>cut</sub> = clip(|implied change| / 25, 0, 1) in the
+    <p><strong>Two-state &plusmn;<!-- fig:move_bp -->25<!-- /fig:move_bp -->bp mapping.</strong> The market is assumed to price a
+    single possible move in one direction, of fixed <!-- fig:move_bp -->25<!-- /fig:move_bp -->bp size:
+    p<sub>hike</sub> or p<sub>cut</sub> = clip(|implied change| / <!-- fig:move_bp -->25<!-- /fig:move_bp -->, 0, 1) in the
     direction of the implied change, remainder p<sub>hold</sub>. A documented
     simplification &mdash; real market pricing can imply multi-directional or
-    non-25bp moves. <span class="ref">(DECISIONS.md 2026-07-11 &mdash; market_probs: two-state &plusmn;25bp assumption.)</span></p>
-    <p><strong>Historical benchmark.</strong> For each of the 95 meetings, the lock
-    date is announcement &minus; 2 calendar days, walked back day-by-day to the nearest
-    available trading day (capped at 10 days, else a hard stop; in practice zero
+    non-<!-- fig:move_bp -->25<!-- /fig:move_bp -->bp moves. <span class="ref">(DECISIONS.md 2026-07-11 &mdash; market_probs: two-state &plusmn;25bp assumption.)</span></p>
+    <p><strong>Historical benchmark.</strong> For each of the <!-- fig:corpus_n -->95<!-- /fig:corpus_n --> meetings, the lock
+    date is announcement &minus; <!-- fig:lock_date_offset_days -->2<!-- /fig:lock_date_offset_days --> calendar days, walked back day-by-day to the nearest
+    available trading day (capped at <!-- fig:walk_back_cap_days -->10<!-- /fig:walk_back_cap_days --> days, else a hard stop; in practice zero
     walk-backs occurred). Output: <code>data/market_history.csv</code>.
     <span class="ref">(pipeline/market/ois_history.py; DECISIONS.md 2026-07-11 &mdash; historical market benchmark.)</span></p>
     <p><strong>Freshness guard.</strong> A live lock refuses to write if the curve
-    snapshot is more than 2 business days old.
+    snapshot is more than <!-- fig:curve_staleness_days -->2<!-- /fig:curve_staleness_days --> business days old.
     <span class="ref">(pipeline/predict/lock.py assert_curve_is_fresh; DECISIONS.md
     2026-07-11 &mdash; curve freshness fix.)</span></p>
 
@@ -352,46 +361,49 @@
     <ul>
       <li><strong>L0</strong> &mdash; always hold (p<sub>hold</sub> = 1), the naive baseline.</li>
       <li><strong>L1</strong> &mdash; market-only: the two-state &plusmn;25bp mapping above, exactly as in <code>data/market_history.csv</code>. This is the bar every other model must beat.</li>
-      <li><strong>L2</strong> &mdash; ordered logit (proportional odds, 3 classes) on the market-implied change alone.</li>
+      <li><strong>L2</strong> &mdash; ordered logit (proportional odds, <!-- fig:n_outcome_classes -->3<!-- /fig:n_outcome_classes --> classes) on the market-implied change alone.</li>
       <li><strong>L3</strong> &mdash; ordered logit on the market-implied change plus the <em>previous</em> meeting's tone index and vote skew (both lagged; see the lag convention above).</li>
-      <li><strong>L4</strong> &mdash; member-level simulation: a pooled dissent-state transition matrix (fit on strictly prior votes) blended 0.5/0.5 with the market-implied distribution per member, aggregated over 5,000 Monte Carlo committee draws (fixed seed 42).</li>
+      <li><strong>L4</strong> &mdash; member-level simulation: a pooled dissent-state transition matrix (fit on strictly prior votes) blended 0.5/0.5 with the market-implied distribution per member, aggregated over <!-- fig:sim_trials -->5,000<!-- /fig:sim_trials --> Monte Carlo committee draws (fixed seed <!-- fig:sim_seed -->42<!-- /fig:sim_seed -->).</li>
     </ul>
     <p>Expanding window: for each evaluated meeting, models are fit on strictly prior
-    meetings only, training from August 2015; evaluation runs from 1 January 2019
-    (63 meetings). Outcomes are coded by sign only &mdash; {cut, hold, hike} &mdash;
+    meetings only, training from <!-- fig:corpus_start_month -->August 2015<!-- /fig:corpus_start_month -->; evaluation runs from
+    <!-- fig:eval_start -->1 January 2019<!-- /fig:eval_start --> (<!-- fig:n_evaluated -->63<!-- /fig:n_evaluated --> meetings). Outcomes are coded by sign only &mdash; {cut, hold, hike} &mdash;
     with one shared classifier (the verb adjacent to &ldquo;Bank Rate&rdquo; in the
     decision text). <span class="ref">(pipeline/ladder.py;
     pipeline/decision_label.py; DECISIONS.md 2026-07-11 &mdash; the benchmark ladder, L0&ndash;L4.)</span></p>
-    <p><strong>Scheduled-only rule.</strong> Headline scores use the 61 scheduled
+    <p><strong>Scheduled-only rule.</strong> Headline scores use the <!-- fig:n_scheduled -->61<!-- /fig:n_scheduled --> scheduled
     meetings only: at lock time (2 business days before an announcement) nobody could
     have pre-registered a forecast for an emergency meeting not yet known to exist.
-    The 2 specials are scored separately as a robustness line, never blended in.
+    The <!-- fig:n_specials -->2<!-- /fig:n_specials --> specials are scored separately as a robustness line, never blended in.
     <span class="ref">(DECISIONS.md 2026-07-11 &mdash; scheduled vs special meetings split; probability-clip logged.)</span></p>
     <p><strong>Scoring rules.</strong> Three-class Brier score (sum of squared
     probability errors across {cut, hold, hike}; range [0,&nbsp;2]) and log score
     &minus;log&nbsp;p(actual outcome), with p floored at the clip constant
-    <strong>1e&#8209;9</strong> to avoid &minus;log(0) for a confidently wrong call; the
+    <strong><!-- fig:log_clip -->1e-09<!-- /fig:log_clip --></strong> to avoid &minus;log(0) for a confidently wrong call; the
     clip is published in <code>data/ladder_v1.json</code> as
     <code>log_score_probability_clip</code>.
     <span class="ref">(pipeline/predict/score_outcomes.py; DECISIONS.md 2026-07-11 &mdash; lock and scoring
     machinery; 2026-07-11 &mdash; scheduled vs special meetings split; probability-clip logged.)</span></p>
-    <p><strong>Fallbacks.</strong> An ordered-logit window with under 10 training
+    <p><strong>Fallbacks.</strong> An ordered-logit window with under <!-- fig:min_training_examples -->10<!-- /fig:min_training_examples --> training
     examples, fewer than 2 outcome classes, or a non-converged fit (two-part check,
     including a degenerate-parameter guard) falls back to L1's probabilities and is
-    logged in <code>data/ladder_v1.json</code>'s <code>fallback_log</code> &mdash; 11 of
-    62 L3 windows, all before the sample's first cut in March 2020.
+    logged in <code>data/ladder_v1.json</code>'s <code>fallback_log</code> &mdash;
+    <!-- fig:l3_fallback_windows -->11<!-- /fig:l3_fallback_windows --> of <!-- fig:l3_windows -->63<!-- /fig:l3_windows --> L3 windows, all before the
+    sample's first cut in March 2020.
     <span class="ref">(pipeline/predict/ordered_logit.py; DECISIONS.md 2026-07-11
     &mdash; scipy added, for the ordered logit models only.)</span></p>
 
     <h3>Statistical tests (Spec 2 and Spec 3)</h3>
     <p><strong>Spec 3</strong>: OLS of the market surprise (actual minus market-implied
     rate change, basis points; <code>data/surprises.csv</code>) on the lagged tone
-    index, Newey&ndash;West HAC standard errors with 4 lags, on the 91 scheduled
+    index, Newey&ndash;West HAC standard errors with <!-- fig:nw_lags -->4<!-- /fig:nw_lags --> lags, on the
+    <!-- fig:spec3_n -->92<!-- /fig:spec3_n --> scheduled
     meetings; also run with lagged skew added, and on a post-hiking-cycle fragility
-    subsample (from 1 September 2023, n=23). <strong>Spec 2</strong>: a
+    subsample (from <!-- fig:frag_start -->1 September 2023<!-- /fig:frag_start -->, n=<!-- fig:frag_n -->24<!-- /fig:frag_n -->).
+    <strong>Spec 2</strong>: a
     likelihood-ratio test of whether adding the lagged index improves an ordered logit
     of the three-class decision over the market-implied change alone, with a
-    minimum-sample guard of 10 observations.
+    minimum-sample guard of <!-- fig:min_obs_lr_test -->10<!-- /fig:min_obs_lr_test --> observations.
     <span class="ref">(pipeline/inference.py &rarr; data/inference_v1.json;
     DECISIONS.md 2026-07-11 &mdash; the headline inference (Spec 3 OLS + Spec 2 ordered-logit LR test).)</span></p>
 
@@ -417,16 +429,31 @@
       <summary><span class="caret" aria-hidden="true"></span>More detail</summary>
       <div class="disclosure-body">
     <ul>
+      <li><strong>Sparse lexicon hits.</strong> Across the <!-- fig:corpus_n -->95<!-- /fig:corpus_n --> documents, the median
+      number of A&amp;BG bigram hits per document (hawkish + dovish) is
+      <strong><!-- fig:hits_median -->2<!-- /fig:hits_median --></strong>, with an interquartile range of <strong><!-- fig:hits_iqr -->2<!-- /fig:hits_iqr --></strong>
+      (Q1&nbsp;=&nbsp;<!-- fig:hits_q1 -->1<!-- /fig:hits_q1 -->, Q3&nbsp;=&nbsp;<!-- fig:hits_q3 -->3<!-- /fig:hits_q3 -->; min <!-- fig:hits_min -->0<!-- /fig:hits_min -->,
+      max <!-- fig:hits_max -->12<!-- /fig:hits_max -->) &mdash; each document's index
+      value rests on very few matches, and a single hit either way moves the number
+      substantially. This is the first limitation because it constrains every result
+      below it. <span class="ref">(Computed read-only by
+      pipeline/lexicon_sparsity.py from data/index.json; quartiles use the
+      median-inclusive convention; DECISIONS.md 2026-08-30 &mdash; presentation and
+      consistency pass.)</span></li>
       <li><strong>Risk premia in forwards.</strong> OIS forward rates embed risk/term
       premia as well as rate expectations, so the market-implied probabilities are not
       pure forecasts. <span class="ref">(DECISIONS.md 2026-07-11 &mdash; market benchmark: OIS forward curve + SONIA.)</span></li>
-      <li><strong>Sparse lexicon hits.</strong> Across the 95 documents, the median
-      number of A&amp;BG bigram hits per document (hawkish + dovish) is
-      <strong>2</strong>, with an interquartile range of <strong>2</strong>
-      (Q1&nbsp;=&nbsp;1, Q3&nbsp;=&nbsp;3; min 0, max 12) &mdash; each document's index
-      value rests on very few matches. <span class="ref">(Computed read-only by
-      pipeline/lexicon_sparsity.py from data/index.json; quartiles use the
-      median-inclusive convention.)</span></li>
+      <li><strong>Forward interpolation across whole-month buckets.</strong> A meeting's
+      market-implied probability is read from the fitted curve at meeting
+      +&nbsp;<!-- fig:lock_offset_days -->3<!-- /fig:lock_offset_days -->&nbsp;days and interpolated between the curve's
+      whole-month maturity points. When the short curve is steeply sloped, that read absorbs
+      the <em>following</em> meeting's expectations along with the target meeting's, and
+      overstates the probability attaching to a move at the meeting actually being scored.
+      Raised in the 30&nbsp;July 2026 lock rationale as a reason to shade p(hike) below the
+      market-only reference; recorded here as a standing property of the method rather than a
+      one-off observation about one meeting. <span class="ref">(pipeline/predict/market_probs.py;
+      DECISIONS.md 2026-07-11 &mdash; market_probs: two-state &plusmn;25bp assumption;
+      2026-08-30 &mdash; presentation and consistency pass.)</span></li>
       <li><strong>Lexicon vintage and topic-vs-stance.</strong> The term lists are the
       paper's 2012 vintage, used unmodified; a match such as &ldquo;higher
       inflation&rdquo; reflects what the Committee discussed, which need not be the
@@ -436,17 +463,20 @@
       method has no negation rule and none was added.
       <span class="ref">(pipeline/score/abg.py docstring.)</span></li>
       <li><strong>Smoothed-curve bias.</strong> The Bank's fitted OIS curve smooths
-      over the discrete jump at a meeting date; the +3-day convention recovers only
+      over the discrete jump at a meeting date; the
+      +<!-- fig:lock_offset_days -->3<!-- /fig:lock_offset_days -->-day convention recovers only
       part of the understated move (quantified at up to a few tenths of a basis point
       on the 2026 curve, expected larger on steep historical curves).
       <span class="ref">(DECISIONS.md 2026-07-11 &mdash; smoothed-curve bias: quantified, offset convention chosen.)</span></li>
-      <li><strong>Small n.</strong> 95 documents in total; 61 scheduled meetings in the
-      ladder's evaluation window; 23 in the fragility subsample.
+      <li><strong>Small n.</strong> <!-- fig:corpus_n -->95<!-- /fig:corpus_n --> documents in total;
+      <!-- fig:n_scheduled -->61<!-- /fig:n_scheduled --> scheduled meetings in the
+      ladder's evaluation window; <!-- fig:frag_n -->24<!-- /fig:frag_n --> in the fragility subsample.
       <span class="ref">(data/ladder_v1.json; data/inference_v1.json.)</span></li>
       <li><strong>The two specifications disagree.</strong> Spec 3 (OLS on the
-      continuous surprise) is nominally significant on the full sample (p&nbsp;=&nbsp;0.0316)
-      but does not replicate post-September-2023 (p&nbsp;=&nbsp;0.1422); Spec 2 (ordered
-      logit on the discrete decision) finds nothing (p&nbsp;=&nbsp;0.4918). Both are
+      continuous surprise) is nominally significant on the full sample
+      (p&nbsp;=&nbsp;<!-- fig:spec3_p -->0.0310<!-- /fig:spec3_p -->)
+      but does not replicate post-September-2023 (p&nbsp;=&nbsp;<!-- fig:frag_p -->0.1221<!-- /fig:frag_p -->); Spec 2 (ordered
+      logit on the discrete decision) finds nothing (p&nbsp;=&nbsp;<!-- fig:spec2_p -->0.4894<!-- /fig:spec2_p -->). Both are
       reported. <span class="ref">(data/inference_v1.json; DECISIONS.md 2026-07-11 &mdash; the headline inference.)</span></li>
     </ul>
       </div>
@@ -457,7 +487,8 @@
     <p><a href="index.html">&larr; Back to the index</a> &middot; Not investment advice &middot;
     Source documents &copy; Bank of England, linked not republished.</p>
     <p><strong>Built and maintained by Jake Foulkes</strong> &middot;
-    <a href="mailto:jakefoulkes@aol.com">jakefoulkes@aol.com</a></p>
+    <a href="mailto:jakefoulkes@aol.com">jakefoulkes@aol.com</a><br>
+    <span class="affiliation">Jake Foulkes, BSc Economics, Loughborough University</span></p>
     <!-- fallback:buildinfo - this page runs no JavaScript by design, so the
          stamp is static; pipeline/tests/test_static_fallback.py fails if it
          ever drifts from data/build_info.json. -->

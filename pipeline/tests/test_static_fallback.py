@@ -29,6 +29,14 @@ TRACK = ROOT / "data" / "track_record.json"
 CONTEXT = ROOT / "data" / "site_context.json"
 
 LADDER_MODELS = ("L0", "L1", "L2", "L3", "L4")
+# Mirrors MODEL_GLOSS in pipeline/build_fallbacks.py: labels, not data.
+MODEL_GLOSS = {
+    "L0": "always-hold",
+    "L1": "market pricing",
+    "L2": "market modelled",
+    "L3": "market + tone + skew",
+    "L4": "member simulation",
+}
 
 
 def region(html: str, name: str) -> str:
@@ -66,7 +74,9 @@ def test_ladder_fallback_rows_match_json(index_html):
         s = scores[model]
         skill = "&mdash;" if s.get("skill_vs_l1") is None else f"{s['skill_vs_l1']:.4f}"
         expected = (
-            f"<td>{model}</td><td>{s['mean_brier']}</td>"
+            f"<td><strong>{model}</strong>"
+            f'<span class="model-gloss">{MODEL_GLOSS[model]}</span></td>'
+            f"<td>{s['mean_brier']}</td>"
             f"<td>{s['mean_log_score']}</td><td>{skill}</td><td>{s['n']}</td>"
         )
         assert expected in block, (
@@ -116,7 +126,7 @@ def test_call_card_fallback_figures_match_lock_file(index_html):
         )
         assert f'<span class="seg-{label}" style="width:{value * 100:.1f}%">' in block
 
-    assert f"{m0['assumed_move_bp']}bp two-state assumption" in block
+    assert f"{m0['assumed_move_bp']:g}bp two-state assumption" in block
     assert lock["index_current_doc_id"] in block
     assert f"<strong>{lock['index_current']:.3f}</strong>" in block
     assert f"<strong>{lock['index_trailing_mean']:.3f}</strong>" in block
@@ -147,39 +157,56 @@ def test_call_card_fallback_point_call_and_rationale_match_lock_file(index_html)
     )
 
 
-def test_call_card_fallback_links_to_the_tag(index_html):
-    """The verification path points at the tag named by the prediction file."""
-    block = region(index_html, "call")
+def test_verify_box_links_to_the_tag(index_html):
+    """The verification path - now consolidated into one box near the top of
+    the page - points at the tag named by the prediction file, and offers the
+    git command that reads the call as it stood when it was locked."""
+    block = region(index_html, "verify")
     tag = LOCK.stem  # lock-2026-07
     assert f"https://github.com/jakefoulkes1/mpc-index/releases/tag/{tag}" in block
     assert f"git show {tag}:data/predictions/{LOCK.name}" in block
+    assert "https://github.com/jakefoulkes1/mpc-index<" in block or \
+        'href="https://github.com/jakefoulkes1/mpc-index"' in block, \
+        "the verification box should also link the repository itself"
+
+
+def test_call_card_still_cites_the_tag_and_says_what_its_figures_are_as_at(index_html):
+    """The card keeps the tag as a citation, and says which vintage its own
+    figures are: a locked file is never edited, so where the site has since
+    recomputed a figure on a larger corpus the two legitimately differ."""
+    lock = json.loads(LOCK.read_text())
+    block = region(index_html, "call")
+    tag = LOCK.stem
+    assert f"releases/tag/{tag}" in block
+    assert f"Figures as at the lock date ({gb_date(lock['lock_timestamp'])})." in block
 
 
 # ---------------------------------------------------------------- spec 3
 
 
 def test_spec3_fallback_matches_json(index_html):
-    """The built-in Spec 3 line carries the JSON's own figures, unrounded."""
+    """The built-in Spec 3 line carries the JSON's own figures, rounded to the
+    published precision: coefficients and t to 2 places, p to 4. The full
+    precision is one link away, and the sentence says so."""
+    from pipeline.site_figures import figures
+
     inf = json.loads(INFERENCE.read_text())
+    f = figures()
     block = region(index_html, "spec3")
 
     full = inf["full_sample"]["spec3_surprise_on_lagged_index"]
-    li = full["coefficients"]["lagged_index"]
-    frag = inf["fragility_check_subsample"]
-    frag_li = frag["results"]["spec3_surprise_on_lagged_index"]["coefficients"]["lagged_index"]
-    lr = inf["full_sample"]["spec2_ordered_logit_lr_test"]
-
     assert f"{full['newey_west_maxlags']} lags" in block
     assert f"n={full['n']}" in block
-    assert f"<strong>{li['coef']}</strong>" in block
-    assert f"t = {li['t']}" in block
-    assert f"<strong>p = {li['p']}</strong>" in block
-    assert gb_date(frag["start_date"]) in block
-    assert f"n={frag['results']['n']}" in block
-    assert f"coefficient {frag_li['coef']}" in block
-    assert f"p = {frag_li['p']}" in block
-    assert f"LR = {lr['lr_statistic']}" in block
-    assert f"p = {lr['p_value']}" in block
+    assert f"<strong>{f['spec3_coef']}</strong>" in block
+    assert f"t = {f['spec3_t']}" in block
+    assert f"<strong>p = {f['spec3_p']}</strong>" in block
+    assert gb_date(frag_start := inf["fragility_check_subsample"]["start_date"]) in block
+    assert f"n={f['frag_n']}" in block
+    assert f"coefficient {f['frag_coef']}" in block
+    assert f"p = {f['frag_p']}" in block
+    assert f"LR = {f['spec2_lr']}" in block
+    assert f"p = {f['spec2_p']}" in block
+    assert "data/inference_v1.json" in block, "the page must name the file holding full precision"
 
 
 # ----------------------------------------------------------- track record
