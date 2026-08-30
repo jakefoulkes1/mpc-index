@@ -1,9 +1,9 @@
 {
   "schema": "build-info-v1",
-  "last_commit_sha": "f1df776f9de9c93b5f200a696fe8dba7820d4e93",
-  "last_commit_short_sha": "f1df776",
-  "last_commit_iso": "2026-08-10T12:37:34+01:00",
-  "last_commit_subject": "MPC calendar from the Bank; clear the last draft badge",
-  "generated_utc": "2026-08-10T11:37:34+00:00",
+  "last_commit_sha": "597e8aab888167bbc77e8c810b347a1e751f8de3",
+  "last_commit_short_sha": "597e8aa",
+  "last_commit_iso": "2026-08-30T23:34:18+01:00",
+  "last_commit_subject": "Presentation pass: every figure on both pages generated from its source",
+  "generated_utc": "2026-08-30T22:34:20+00:00",
   "note": "Written by pipeline/build_build_info.py from git log -1 at the time it ran. Not a claim about the data's vintage - data/index.json carries its own generated_utc."
 }
