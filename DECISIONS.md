@@ -55,6 +55,7 @@ Changes apply forward only; nothing is retrofitted. Locked calls are never touch
 - 2026-09-02 — [README brought under the figure generator; lock time discrepancy corrected; rounding and sign policy enforced across surfaces](#2026-09-02--readme-brought-under-the-figure-generator-lock-time-discrepancy-corrected-rounding-and-sign-policy-enforced-across-surfaces)
 - 2026-09-02 — [presentation pass, stage two: the words](#2026-09-02--presentation-pass-stage-two-the-words)
 - 2026-09-02 — [design pass: paper theme, single-family type, call card as focal element, chart overlays, print stylesheet](#2026-09-02--design-pass-paper-theme-single-family-type-call-card-as-focal-element-chart-overlays-print-stylesheet)
+- 2026-09-02 — [presentation pass, stage four: QA, reader simulation, deploy](#2026-09-02--presentation-pass-stage-four-qa-reader-simulation-deploy)
 
 ## 2026-07-05 — repo created
 - **Thesis:** does the tone of MPC communication carry information about the next
@@ -2769,3 +2770,110 @@ No sans-serif anywhere; controls (checkboxes, the theme toggle) set in the serif
   it is a class now. `qa/` holds the stage's captures (18 files:
   380/768/1280px in both themes, the no-JS render, A4 and Letter PDFs for
   each page) and is gitignored.
+
+## 2026-09-02 — presentation pass, stage four: QA, reader simulation, deploy
+
+Stage 4 of the September presentation pass, and the close of it.
+Presentation only; nothing under `data/predictions/`, no science-layer file
+and no science output touched - checked with `git diff --stat main` over
+`pipeline/score`, `pipeline/market`, `pipeline/predict`, `ladder.py`,
+`inference.py`, `validate.py`, `member_behaviour.py` and every file under
+`data/` the science layer writes: **empty**. 169/169 tests green. Branch
+`presentation-pass-2026-09` merged to `main` by fast-forward at the end of
+this entry.
+
+- **Tooling.** `pipeline/tests/screenshots.py` (Playwright, local only)
+  serves the repository on port 8000 and writes, per page, 380/768/1280px
+  captures in both themes, a 1280px capture with JavaScript disabled, and
+  A4 and Letter PDFs - 18 files - under `qa/<label>/`, which is gitignored.
+  Every capture from `qa/stage1/` to `qa/stage4/` was opened and looked at,
+  either whole or as a crop, before the stage was committed; the three
+  defects found that way (the inverted triangles, the missing point-call
+  marker on the scripted card, the band label under the markers) are in
+  the stage-three entry.
+- **Consistency census, all green**: figure regions on three surfaces
+  against the catalogue; no two surfaces disagreeing on a shared figure;
+  no unaccounted digit in reader-visible text; true minus signs and no
+  spaced hyphens; no draft marker on any published surface; static and
+  scripted renders identical across nineteen elements in a Los Angeles
+  time zone; every internal anchor and relative link resolving; the lock
+  timestamp identical on index.html and README.md; status line and pending
+  row from the record and the calendar; thirteen contrast pairs above their
+  floors in both themes.
+- **External URLs, checked by hand on 2 September with
+  `python -m pipeline.tests.test_links --external`**: 200 for the
+  `lock-2026-07` release page, the repository, DECISIONS.md and README.md on
+  GitHub, the Actions badge and workflow, the live site, methodology page,
+  `#limitations` anchor and og-image, the Bank's July 2026 minutes page and
+  the two Bank news releases the methodology page cites. The one 404 was the
+  footer's link to the stage-three commit, which did not yet exist on
+  GitHub; it resolves with the push recorded below.
+- **No-JavaScript pass.** With scripting off, both pages show every section
+  from its static fallback - the call card, the latest reading, the chart in
+  words, the market panel, the ladder, Spec 3, the track record with its
+  pending row, the episode, related work, the status line and both stamps -
+  and no "Loading..." anywhere; the disclosures are open because they ship
+  open. The theme toggle is hidden without scripting, by design.
+- **Reader simulation.** Three first-person read-throughs, written after
+  reading the finished pages as each reader:
+  - *Loughborough lecturer, ten minutes.* First thing I saw: the question,
+    a one-word answer and the limits, before any chart. By minute two I knew
+    the benchmark was the OIS curve rather than realised decisions, that the
+    calls are git-tagged before the announcement, and that the author's own
+    model loses to the market and says so. On the methodology page the
+    lexicon is a published one, the reasons for choosing it are argued
+    rather than assumed, and the limitations list includes the test not yet
+    run. The question I was left with is power: on 61 meetings, is L3's
+    negative skill distinguishable from zero at all? The page says that is
+    the September test. What would make me close the tab: the [VERIFY]
+    markers still there in a month, or a figure that differed between the
+    two pages. I checked three. They did not.
+  - *Oxford MPhil admissions reader, four minutes, from the PDF.* Page one
+    carries the question, the answer, the limits, what is new and how to
+    check it. I read the contribution paragraph twice; the third point,
+    that the July vote turned on language the dictionary does not measure,
+    reads like a researcher rather than a coder, because it is a reason the
+    project's own instrument failed. By minute two I understood the
+    pre-registration protocol and that the null was the finding rather than
+    a disappointment. The question I was left with is what the second series
+    will measure and whether it will be pre-registered before it is fitted;
+    the page promises it will. What would make me close the tab: a chart
+    with no words behind it, or an appendix that could not be checked. The
+    PDF prints the call card and the verification steps with the tag name.
+  - *Bank or sell-side economist, two minutes, from a link.* I wanted the
+    call and the number. The status line gave me one locked call and the
+    next lock date; the card gave me hold at 96% market-implied, the
+    timestamp, the tag, a Brier of 0.0030 and the rationale in the author's
+    own words. The number I would use is the skill: −0.6712 against the
+    OIS-implied benchmark on 61 meetings. The interpolation and risk-premium
+    caveats are the two I would have raised, and they are on the page. The
+    question I was left with is the September call, which is pending; the
+    row says when. What would make me close the tab: a tone index sold as a
+    trading signal. It is not, and the page says so in the first screen and
+    the footer.
+  - **Fixed from these:** the status line's "1 locked call" now links to the
+    call card on both pages, so the third reader is one click from the call
+    wherever they land. **Logged, not fixed:** the [VERIFY] markers, which
+    only the maintainer can clear.
+- **Keyboard walk-through** (Chromium): skip link, theme toggle, the six
+  links of the summary and verification box, the two chart checkboxes, the
+  chart itself, each disclosure's summary, the scrolling table regions, the
+  rehearsals toggle, every link in the record, episode and related work,
+  the footer links - all reachable in document order with a visible 2px ink
+  focus ring; the toggle switches on Enter and its `aria-pressed` follows.
+  380px: `scrollWidth` equals the viewport on both pages. Reduced motion:
+  the stylesheet declares no transitions or animations, and the guard
+  remains.
+- **Deferred to the model batch** (to be pre-registered before the
+  15 September lock, in its own brief): a Diebold–Mariano test on the Brier
+  loss differentials (L1 against L2, L3 and L4); `se` in the inference
+  output; the second, separately pre-registered risk-management series; the
+  vote split as a scored distribution; bootstrap confidence intervals on
+  the Brier scores; negation-handling robustness; alternative-lexicon
+  robustness; and a refresh of `data/inference_v1.json`'s `notes` field,
+  which still describes the pre-July sample sizes.
+- **For the maintainer, in order:** (1) the six [VERIFY] entries in Related
+  work / References, against the sources; (2) the prose written under the
+  bypassed approval gates - the stage-two entry carries all of it verbatim;
+  (3) the design plan in the stage-three entry; (4) the acceptance checklist
+  in the brief, which is his to sign.

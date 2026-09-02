@@ -170,7 +170,10 @@ def build_status(html: str, where: str) -> str:
     Replaces the "Beta" badge (DECISIONS.md 2026-09-02, Stage 2)."""
     f = figures()
     n = int(f["lock_count"])
-    calls = f"{n} locked call{'' if n == 1 else 's'}"
+    # The count links to the call card, so a reader after "what's the call"
+    # is one click from it (stage four, reader three).
+    card = "#call-card" if where == "index.html" else "index.html#call-card"
+    calls = f'<a href="{card}">{n} locked call{"" if n == 1 else "s"}</a>'
     body = (
         f'{calls} <span class="sep" aria-hidden="true">&middot;</span> '
         f'next lock {f["next_lock_date"]} <span class="sep" aria-hidden="true">&middot;</span> '
