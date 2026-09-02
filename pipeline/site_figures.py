@@ -1,16 +1,18 @@
-"""One catalogue of every reader-facing figure on index.html and methodology.html.
+"""One catalogue of every reader-facing figure on every surface of the site.
 
 Site layer, read-only. This module is the single source of truth for every
-number a reader sees on either page. `pipeline/build_fallbacks.py` writes the
+number a reader sees on index.html, methodology.html, README.md, the share
+card and the episode annotations. `pipeline/build_fallbacks.py` writes the
 values into `<!-- fig:NAME -->...<!-- /fig:NAME -->` regions in the markup;
 `pipeline/tests/test_site_figures.py` reads the same catalogue back and fails
-if a page and its source file have drifted apart.
+if a surface and its source file have drifted apart.
 
 Nothing here is retyped. Values come from three kinds of source, and each
 figure records which:
 
   * a published data file (data/index.json, data/ladder_v1.json,
-    data/inference_v1.json, data/validation_v1.json) - a *result*;
+    data/inference_v1.json, data/validation_v1.json, data/track_record.json,
+    the newest data/predictions/lock-*.json) - a *result*;
   * a frozen specification constant, imported read-only from the science
     layer (pipeline/predict, pipeline/market, pipeline/ladder,
     pipeline/inference) - a *choice*, not a result;
@@ -20,18 +22,28 @@ figure records which:
 Importing the science layer is explicitly permitted by CLAUDE.md ("Site and
 context work may import these modules read-only"); nothing here writes.
 
-Rounding policy (DECISIONS.md 2026-08-30): regression coefficients and
-t-statistics are shown to 2 decimal places and p-values to 4, because six
-decimal places on a coefficient with a p of 0.03 implies a precision the
-estimate does not have. Full precision stays in the JSON, which the page
-links to. Scores that the ladder itself publishes rounded (Brier, log score,
-skill) are shown exactly as stored.
+ROUNDING POLICY (DECISIONS.md 2026-08-30, restated and enforced 2026-09-02)
+---------------------------------------------------------------------------
+Stated once, here, and mirrored by the JavaScript renderers in index.html:
+
+    scores (Brier, log score, skill)   4 decimal places
+    coefficients and t-statistics      2 decimal places
+    p-values                           4 decimal places
+    index values                       3 decimal places
+    probabilities                      whole percentages (call card, OIS panel,
+                                       track record)
+
+Six decimal places on a coefficient whose p-value is 0.03 asserts a precision
+the estimate does not have. Full precision stays in the JSON, which every
+page links to. Every negative figure is written with a true minus sign
+(U+2212), never a hyphen; the census test fails on a hyphen used as a minus.
 
 Run:  python -m pipeline.site_figures        # prints the catalogue
 """
+import html
 import json
 import statistics
-from datetime import datetime
+from datetime import date, datetime, timedelta, timezone
 from pathlib import Path
 
 from pipeline.build_market_history import LOCK_DATE_OFFSET_DAYS
@@ -41,10 +53,25 @@ from pipeline.market.ois_history import find_nearest_available_date
 from pipeline.predict.lock import MAX_CURVE_STALENESS_BUSINESS_DAYS
 from pipeline.predict.market_probs import ASSUMED_MOVE_BP, LOCK_OFFSET_DAYS
 from pipeline.predict.ordered_logit import N_CLASSES
+from pipeline.site_context import UPCOMING_MEETINGS
 
 ROOT = Path(__file__).resolve().parents[1]
 
-MINUS = "&minus;"
+# One source for the byline. Footer, meta author, README, share card and
+# CITATION.cff all read this; none of them carries its own copy.
+AUTHOR = {
+    "name": "Jake Foulkes",
+    "email": "jakefoulkes@aol.com",
+    "affiliation": "BSc Economics, Loughborough University",
+    "site": "https://jakefoulkes1.github.io/mpc-index/",
+    "repo": "https://github.com/jakefoulkes1/mpc-index",
+}
+
+MINUS = "&minus;"          # for HTML surfaces
+MINUS_CHAR = "−"      # the same character, for Markdown and JSON
+
+# The rounding policy as code. PLACES is the only place a precision is set.
+PLACES = {"score": 4, "coef": 2, "t": 2, "p": 4, "index": 3}
 
 
 def load(rel: str):
@@ -52,7 +79,8 @@ def load(rel: str):
 
 
 def gb_date(iso: str) -> str:
-    """The site's fmtDate: en-GB day, full month, year."""
+    """The site's fmtDate: en-GB day, full month, year, from the date part
+    of the string as written (no time-zone shift)."""
     d = datetime.fromisoformat(iso[:10])
     return f"{d.day} {d.strftime('%B')} {d.year}"
 
@@ -62,9 +90,92 @@ def gb_month(iso: str) -> str:
     return f"{d.strftime('%B')} {d.year}"
 
 
+def gb_stamp_utc(iso: str) -> str:
+    """An instant, in the site's date format, to the second, explicitly UTC.
+    Matches fmtUTCStamp() in index.html: "28 July 2026, 19:08:36 UTC"."""
+    utc = datetime.fromisoformat(iso).astimezone(timezone.utc)
+    return f"{utc.day} {utc.strftime('%B')} {utc.year}, {utc.strftime('%H:%M:%S')} UTC"
+
+
 def signed(value: float, places: int) -> str:
     """A number for prose: a real minus sign, not a hyphen."""
     return f"{value:.{places}f}".replace("-", MINUS)
+
+
+def score(value: float) -> str:
+    return signed(value, PLACES["score"])
+
+
+def coef(value: float) -> str:
+    return signed(value, PLACES["coef"])
+
+
+def tstat(value: float) -> str:
+    return signed(value, PLACES["t"])
+
+
+def pval(value: float) -> str:
+    return f"{value:.{PLACES['p']}f}"
+
+
+def index_value(value: float) -> str:
+    return f"{value:.{PLACES['index']}f}"
+
+
+def pct(value: float) -> str:
+    return f"{value * 100:.0f}%"
+
+
+def neutral(value: float) -> str:
+    """The index's neutral midpoint, one decimal place ("1.0"). Mirrors
+    fmtNeutral() in index.html."""
+    return f"{value:.1f}"
+
+
+def clip(value: float) -> str:
+    """The log-score probability floor, e.g. 1e&minus;9. Python's repr pads the
+    exponent ("1e-09") where JavaScript's does not ("1e-9"); this is the one
+    form both write, with a true minus sign. Mirrors fmtClip() in index.html."""
+    mantissa, _, exponent = f"{value:e}".partition("e")
+    mantissa = mantissa.rstrip("0").rstrip(".")
+    return f"{mantissa}e{int(exponent)}".replace("-", MINUS)
+
+
+def prediction_file() -> str:
+    """The prediction file the site displays: the newest lock-* file.
+
+    Derived from the directory rather than typed, so a new lock is picked up
+    by the next build and nothing has to be edited by hand. Hard-stops if no
+    locked call exists - the site never silently falls back to a dry run.
+    """
+    locks = sorted((ROOT / "data" / "predictions").glob("lock-*.json"))
+    if not locks:
+        raise SystemExit("no data/predictions/lock-*.json - nothing to display as the call")
+    return f"data/predictions/{locks[-1].name}"
+
+
+def next_meeting_after(iso: str) -> str:
+    """The first date in the Bank's published calendar strictly after `iso`.
+
+    The calendar is the transcription in pipeline/site_context.py
+    (DECISIONS.md 2026-08-10). Data-based rather than clock-based: the "next"
+    meeting is the one after the latest locked call, which is the same on
+    every machine and every day until the next lock file exists.
+    """
+    later = sorted(m for m in UPCOMING_MEETINGS if m > iso[:10])
+    if not later:
+        raise SystemExit(
+            f"no meeting after {iso[:10]} in pipeline/site_context.py UPCOMING_MEETINGS - "
+            f"transcribe the Bank's next calendar before building"
+        )
+    return later[0]
+
+
+def lock_date_for(meeting_iso: str) -> str:
+    """Announcement minus LOCK_DATE_OFFSET_DAYS calendar days: the convention
+    build_market_history.py uses for every historical lock date."""
+    d = date.fromisoformat(meeting_iso) - timedelta(days=LOCK_DATE_OFFSET_DAYS)
+    return d.isoformat()
 
 
 def walk_back_cap_days() -> int:
@@ -88,11 +199,18 @@ def sparsity() -> dict:
 
 
 def figures() -> dict[str, str]:
-    """Every figure on either page, as the string the page should show."""
+    """Every figure on any surface, as the string the surface should show.
+
+    Negative values carry the HTML entity for the minus sign; use plain()
+    for a Markdown or JSON surface.
+    """
     index = load("data/index.json")
     ladder = load("data/ladder_v1.json")
     inf = load("data/inference_v1.json")
     validation = load("data/validation_v1.json")
+    track = load("data/track_record.json")
+    pred_path = prediction_file()
+    lock = load(pred_path)
 
     docs = index["documents"]
     specials = [d for d in docs if d["type"] != "minutes"]
@@ -111,6 +229,9 @@ def figures() -> dict[str, str]:
     n_specials = len(specials)
     n_spec3 = full["n"]
 
+    locked = [r for r in track["records"] if r["kind"] == "locked"]
+    next_meeting = next_meeting_after(lock["meeting_announcement"])
+
     fig: dict[str, str] = {
         # ---- corpus (data/index.json) ----
         "corpus_n": str(n_corpus),
@@ -123,6 +244,7 @@ def figures() -> dict[str, str]:
         ),
         "corpus_2016_docs": str(published_years.count("2016")),
         "corpus_2017_docs": str(published_years.count("2017")),
+        "index_generated": gb_date(index["generated_utc"]),
         # ---- lexicon sparsity (data/index.json) ----
         "hits_median": f"{hits['median']:g}",
         "hits_iqr": f"{hits['iqr']:g}",
@@ -135,23 +257,23 @@ def figures() -> dict[str, str]:
         "n_evaluated": str(ladder["n_meetings"]),
         "n_scheduled": str(ladder["n_scheduled"]),
         "n_specials": str(ladder["n_specials"]),
-        "log_clip": str(ladder["log_score_probability_clip"]),
-        "l3_skill": signed(scores["L3"]["skill_vs_l1"], 4),
+        "log_clip": clip(ladder["log_score_probability_clip"]),
+        "l3_skill": score(scores["L3"]["skill_vs_l1"]),
         "l3_fallback_windows": str(sum(1 for line in ladder["fallback_log"] if "L3" in line)),
         "l3_windows": str(ladder["n_meetings"]),
         # ---- inference (data/inference_v1.json), rounded for prose ----
         "nw_lags": str(inf["newey_west_maxlags"]),
         "spec3_n": str(n_spec3),
-        "spec3_coef": signed(li["coef"], 2),
-        "spec3_t": signed(li["t"], 2),
-        "spec3_p": f"{li['p']:.4f}",
+        "spec3_coef": coef(li["coef"]),
+        "spec3_t": tstat(li["t"]),
+        "spec3_p": pval(li["p"]),
         "frag_start": gb_date(frag["start_date"]),
         "frag_n": str(frag["results"]["n"]),
-        "frag_coef": signed(frag_li["coef"], 2),
-        "frag_t": signed(frag_li["t"], 2),
-        "frag_p": f"{frag_li['p']:.4f}",
+        "frag_coef": coef(frag_li["coef"]),
+        "frag_t": tstat(frag_li["t"]),
+        "frag_p": pval(frag_li["p"]),
         "spec2_lr": f"{lr['lr_statistic']:.4f}",
-        "spec2_p": f"{lr['p_value']:.4f}",
+        "spec2_p": pval(lr["p_value"]),
         # The page states this subtraction, so the page should get it done
         # rather than asserted: corpus, less the specials, less the first
         # document (no preceding decision to measure a surprise from).
@@ -160,6 +282,14 @@ def figures() -> dict[str, str]:
         ),
         # ---- join tolerance (data/validation_v1.json) ----
         "join_tolerance_days": str(validation["max_day_tolerance"]),
+        # ---- the locked call on display (newest data/predictions/lock-*) ----
+        "lock_stamp_utc": gb_stamp_utc(lock["lock_timestamp"]),
+        "lock_meeting": gb_date(lock["meeting_announcement"]),
+        "lock_tag": Path(pred_path).stem,
+        # ---- the record and the calendar ----
+        "lock_count": str(len(locked)),
+        "next_meeting": gb_date(next_meeting),
+        "next_lock_date": gb_date(lock_date_for(next_meeting)),
         # ---- frozen specification constants, imported read-only ----
         "move_bp": f"{ASSUMED_MOVE_BP:g}",
         "lock_offset_days": str(LOCK_OFFSET_DAYS),
@@ -173,6 +303,12 @@ def figures() -> dict[str, str]:
         "min_obs_lr_test": str(MIN_OBSERVATIONS_FOR_LR_TEST),
     }
     return fig
+
+
+def plain(catalogue: dict[str, str] | None = None) -> dict[str, str]:
+    """The catalogue with entities resolved to characters, for Markdown and
+    JSON surfaces (README.md, data/annotations.json)."""
+    return {k: html.unescape(v) for k, v in (catalogue or figures()).items()}
 
 
 def main() -> None:

@@ -52,6 +52,7 @@ Changes apply forward only; nothing is retrofitted. Locked calls are never touch
 - 2026-08-10 — [era windows derived, not declared; LOCKDAY stamp warning](#2026-08-10--era-windows-derived-not-declared-lockday-stamp-warning)
 - 2026-08-10 — [MPC calendar transcribed from the Bank; last draft badge cleared](#2026-08-10--mpc-calendar-transcribed-from-the-bank-last-draft-badge-cleared)
 - 2026-08-30 — [presentation and consistency pass: every figure generated](#2026-08-30--presentation-and-consistency-pass-every-figure-generated)
+- 2026-09-02 — [README brought under the figure generator; lock time discrepancy corrected; rounding and sign policy enforced across surfaces](#2026-09-02--readme-brought-under-the-figure-generator-lock-time-discrepancy-corrected-rounding-and-sign-policy-enforced-across-surfaces)
 
 ## 2026-07-05 — repo created
 - **Thesis:** does the tone of MPC communication carry information about the next
@@ -2149,3 +2150,200 @@ came from. 127 -> 135 tests, all green.
     "In plain English" lines and the July miss note carry both a visible
     `Draft - JF to revise` badge and a `<!-- DRAFT: JF to revise -->` comment,
     as asked. They are written to be replaced.
+
+## 2026-09-02 — README brought under the figure generator; lock time discrepancy corrected; rounding and sign policy enforced across surfaces
+
+Stage 1 of the September presentation pass (brief dated 2 September 2026).
+Presentation only. **No model, no specification and no recomputation**: the
+lexicon, the scoring rules, the ladder and inference specifications, every
+file under `data/` that the science layer writes, and `lock-2026-07.json`
+are untouched; `data/annotations.json` was rebuilt (site layer) and no other
+data file changed. 135 -> 155 tests, all green. Branch
+`presentation-pass-2026-09`, to be merged to `main` at the end of the pass.
+
+- **Approval gates bypassed on the maintainer's instruction.** The brief
+  marks five points "⏸ APPROVAL" (draft prose, contribution paragraph,
+  related-work list, design plan, and the six placeholder replacements).
+  Jake's message of 2 September - *"bypass every APPROVAL and complete this
+  task as I go afk"* - lifted them for this pass. Every piece of prose
+  written under that instruction is marked in its stage's entry as **awaiting
+  the author's post-hoc review**, and the acceptance checklist in the brief
+  remains his to sign.
+- **Stage 0 found the deployment healthy and the generator clean.** On a clean
+  checkout of `main` (`4e2000c`): 135/135 green; `build_fallbacks` and
+  `build_og_image` re-run produced a zero diff; and the live Pages site was
+  **byte-identical to `main`** for all three published files (sha256 prefixes
+  `8ed4192b551f` index.html, `74f2703d10da` methodology.html, `21b5d026e64c`
+  og-image.png; Pages build for `4e2000c` succeeded at 22:34Z on 30 August,
+  `last-modified` 30 Aug 22:35 GMT). The brief's observation of a live
+  methodology page reading "94 documents", p = 0.0316 and five draft badges
+  described a fetch older than that deploy - the 30 August pass had already
+  regenerated it - so there was no branch, folder, workflow or CDN problem
+  to diagnose. Recorded so the next "the live site is stale" report starts
+  from the hash comparison, which took one command.
+- **Surface inventory before this stage.** index.html: 14 generated
+  `fig` regions + 9 generated blocks; hand-typed numbers confined to the
+  census allowlist, plus two in JavaScript strings the census does not see
+  (the chart `<title>`'s "August 2015", and the dry-run branch's "28 July
+  2026, 12:00"). methodology.html: 40 generated regions, nothing hand-typed
+  outside the allowlist. **README.md: every number hand-typed** (headline
+  table, Spec 3 paragraph, corpus count, lock time, test count). og-image:
+  generated from `data/index.json`; its `alt` text on both pages hand-typed
+  ("August 2015 to July 2026"). `site/annotations/2026-07-the-minority-grew.md`:
+  hand-written, two superseded figures. `<title>`s and meta descriptions:
+  no figures. `CITATION.cff`: hand-typed abstract ("Aug 2015-present").
+- **README.md's stale values, verbatim as found.** "August 2015 to the present
+  (94 documents)"; "expanding-window evaluation from 1 January 2019 (60
+  meetings...)"; the table: L0 0.6667 / 6.9078 / — / 60; L1 0.0905 / 0.1454 /
+  reference / 60; L2 0.1011 / 0.1701 / −0.1171 / 60; L3 0.1514 / 0.2664 /
+  −0.6729 / 60; L4 0.1644 / 0.263 / −0.8166 / 60; "full sample of 91
+  scheduled meetings: coefficient −2.163349, t = −2.1499, p = 0.0316";
+  "(from 1 September 2023, n = 23) ... coefficient −3.441919, t = −1.4678,
+  p = 0.1422"; "LR = 0.4726, p = 0.4918"; and `tests/ 105 tests`. Every one
+  of them was true on 13 July and had been overtaken by the 10 August ingest
+  (and, for the test count, by five later sessions). **None was retyped**:
+  the headline table is now a `fallback:readme_ladder` block, the Spec 3
+  paragraph a `fallback:readme_spec3` block built from the same
+  `spec3_sentence()` index.html uses, the corpus and sample sizes inline `fig`
+  regions, and the test count dropped from the repository map (a count is a
+  figure, and there is no data file it comes from). README.md is a third
+  surface in the census; `test_no_two_surfaces_disagree_about_a_shared_figure`
+  now covers it.
+- **The lock time was wrong on the README and in one JavaScript branch, and
+  is now read from the lock file everywhere.** README said *"First
+  pre-registered lock: 28 July 2026, 12:00"*. `lock-2026-07.json` records
+  `lock_timestamp: 2026-07-28T19:08:36+00:00`, the `lock-2026-07` tag is
+  dated `2026-07-28T20:19:45+01:00`, and the site already displayed
+  19:08:36 UTC. The 12:00 was the *planned* time from LOCKDAY.md; the lock
+  itself happened that evening. Repo-wide grep for "12:00": README.md (fixed,
+  generated as `fig:lock_stamp_utc`); index.html's dry-run branch *"beta lock
+  scheduled 28 July 2026, 12:00"* (fixed - it now says "not yet locked",
+  with no time); LOCKDAY.md (nine occurrences, all the plan or the Bank's
+  own 12:00 announcement time - **left as written**, with a dated note at
+  the top of the runbook recording the actual lock time and the steps that
+  no longer apply). `.github/` and SETUP.md carried none. A test now asserts
+  the lock file's own timestamp appears on index.html and README.md and that
+  "12:00" appears on neither.
+- **Rounding policy stated once and enforced.** `pipeline/site_figures.py`
+  carries the policy as a table in its docstring and as `PLACES` in code:
+  scores 4 d.p., coefficients and t 2 d.p., p-values 4 d.p., index values
+  3 d.p., probabilities as whole percentages. index.html mirrors it with
+  `fmtScore`/`fmtIndex`/`fmtPct`/`fmtSigned`. One visible consequence: the
+  ladder table's Brier and log-score cells were previously the JSON's repr
+  (which would have printed `0.263` had a value carried three decimals) and
+  are now formatted to four.
+- **True minus sign, enforced.** The ladder table's skill column read
+  `-0.1167` with a hyphen in **both** the static rows (`f"{v:.4f}"`) and the
+  JavaScript (`toFixed(4)`), while the prose beside it used U+2212. Both now
+  go through the signed formatters. `test_every_negative_figure_uses_a_true_minus_sign`
+  scans the reader-visible text of all three surfaces, generated regions
+  included, for a hyphen directly before a digit that is not preceded by a
+  word character (so `2026-07-11` and `0-2` pass and ` -0.67` fails).
+- **Dash policy: spaced em dash for breaks, en dash for ranges, never a
+  hyphen.** Three strings used ` - `, and all three were data printed
+  verbatim rather than prose: the lexicon provenance sentence from
+  `data/index.json`'s `lexicon` field ("abg_2012 (Apel & Blix Grimaldi 2012,
+  verbatim - see pipeline/... starter_v0 remains in the repo as plumbing...")
+  - the page now shows the identifier, `abg_2012`, and nothing else from
+  that field; the context panel's disclaimer from `site_context.json`
+  ("Context - not model inputs") - the template now writes its own sentence
+  with a comma, and `site_context.py`'s `DISCLAIMER` constant was changed to
+  match for the next rebuild (the JSON was **not** rebuilt: that needs a live
+  curve download, and nothing in this pass asked for new market context);
+  and the footer's "linked not republished". README's "L0-L4" became
+  "L0 to L4" (in the diagram as well as the prose - the same line appears in
+  both). `test_no_spaced_hyphen_stands_in_for_a_dash` guards all three
+  surfaces.
+- **The July episode's superseded figures carry a dated editorial bracket,
+  and the bracket's numbers are generated.** After *"...L3 scores −0.6729
+  against the market-only benchmark and Spec 2 returns p = 0.4918."* the
+  source markdown now reads *"[Figures as at the 28 July lock. The ladder was
+  re-run on 10 August after the July minutes were ingested and now reads
+  {fig:l3_skill} / {fig:spec2_p} — Ed., September 2026.]"* - the wording the
+  brief supplied. `build_annotations.py` resolves `{fig:NAME}` tokens from
+  the catalogue when it writes `data/annotations.json` (hard stop on an
+  unknown name), so the source keeps the token and the published JSON, the
+  static fallback and the scripted render all carry `−0.6712 / 0.4894`. The
+  −0.6729 and 0.4918 in the episode's own sentence, and in the locked
+  rationale on the call card, are **untouched**: they were true at the lock.
+- **Footer trailing separator fixed in the template.** The footer ended
+  "...(see the decisions log) ·" followed by an empty `<span id="gen-note">`
+  that only JavaScript filled. The note is now a generated `fallback:gennote`
+  ("Index data generated 5 August 2026.", from `data/index.json`'s
+  `generated_utc`), shipped filled in; the sentence before it ends with a
+  full stop.
+- **Meta tags with figures are generated as whole-tag blocks** -
+  `fallback:ogalt` (the share card's alt text, "August 2015 to July 2026",
+  previously hand-typed on both pages) and `fallback:metaauthor` - because a
+  `fig` region cannot sit inside an attribute. The byline on both footers is
+  a `fallback:byline` block from one `AUTHOR` record in `site_figures.py`
+  (name, email, affiliation, site, repo); README carries the same record.
+  `<title>` and the description metas state no figure and were left.
+- **A static/JavaScript parity test, and what it found on its first run.**
+  `pipeline/tests/test_static_js_parity.py` serves the repository on an
+  ephemeral localhost port, renders index.html in Chromium with scripting
+  off and then on, and diffs the `innerText` of nineteen figure-bearing
+  elements. It skips when Playwright or the browser is absent (CI installs
+  neither), so it is a local guard, run before every publish. First run:
+  **two disagreements**. The latest reading said "1.0 = neutral" statically
+  and "1 = neutral" scripted (Python prints the float `1.0`, JavaScript
+  prints `1`); the ladder meta line said "1e-09" statically and "1e-9"
+  scripted (same float, opposite exponent padding). Each now has one
+  formatter on each side (`neutral()`/`fmtNeutral`, `clip()`/`fmtClip`); the
+  floor renders as `1e−9` with a true minus. **A third defect was found by
+  reading, not by the test, and the test was then set up to catch it**:
+  `fmtDate()` parsed bare dates with `new Date('2026-07-30')`, which is UTC
+  midnight and therefore 29 July for a reader west of Greenwich. It now
+  formats the date part of the string as written, mirroring Python's
+  `gb_date()`, and the parity test runs its browser in `America/Los_Angeles`.
+- **The prediction file on display is derived, not edited in.** `index.html`
+  hardcoded `PREDICTION_FILE = 'data/predictions/lock-2026-07.json'`, the
+  "edit line 465" step in LOCKDAY.md. `site_figures.prediction_file()` now
+  picks the newest `lock-*.json`; `build_fallbacks` writes it into the call
+  card as `data-prediction-file`; the JavaScript reads that attribute. Lock
+  day loses one hand edit and gains one build command, and the September
+  pending row (Stage 2) can disappear by the same rule once
+  `lock-2026-09.json` exists.
+- **"Next announcement" is now data-based on both sides, and the
+  clock-based version is gone.** The static line was already generated from
+  the calendar; the JavaScript recomputed it from *today's date* and
+  `site_context.json`, which would have diverged from the static text the
+  day after any meeting that passed without a new lock. Both now name the
+  first date in the Bank's calendar (`site_context.py`, transcribed
+  2026-08-10) after the displayed call's own meeting. Stated consequence: if
+  a meeting passes without a lock file being written, the line stays on the
+  passed date until the next build - the workflow guards that, not the page.
+- **Link check.** `pipeline/tests/test_links.py`: every internal anchor and
+  relative file link on the three surfaces resolves (pytest, offline);
+  `python -m pipeline.tests.test_links --external` fetches the external URLs.
+  Run 2026-09-02: **all 14 returned 200** - the `lock-2026-07` release/tag
+  page, the repository, DECISIONS.md and README.md on GitHub, the 30 August
+  commit, the live site and og-image, the Bank's July 2026 minutes page, the
+  two Bank news releases cited on the methodology page, the Actions badge
+  and workflow, and the live `#limitations` anchor. (The first attempt
+  failed on every URL with an SSL error: the macOS system Python has no CA
+  bundle; the checker uses `requests`, already a dependency, which ships
+  one.)
+- **Fonts added, not yet used.** Source Serif 4 v4.005R (Adobe, SIL OFL 1.1)
+  from the tagged GitHub release, subset with `pyftsubset` to Latin plus the
+  typographic and arrow ranges the site uses: Regular 56 KB, Italic 44 KB,
+  Semibold 58 KB, Display Regular 56 KB, Display Italic 43 KB, under
+  `site/fonts/` with `LICENSE.md` from the same tag. Stage 3 wires them in.
+- **Tooling, local only.** Playwright, Chromium and fonttools installed in
+  `.venv`; `pipeline/tests/screenshots.py` serves the repo on port 8000 and
+  writes both pages at 380/768/1280px in light and dark, with JavaScript off,
+  and as A4 and Letter PDFs, under `qa/` (now gitignored). Not added to
+  `requirements.txt`: CI runs the suite without a browser and the two
+  browser tests skip by design there.
+- **Found, not fixed (outside this stage or this pass):**
+  - `data/inference_v1.json`'s `notes` field still describes "91 scheduled
+    meetings (full sample) / 23" - a science-layer output, not a published
+    surface; **deferred to the model batch** with the `se` field.
+  - The chart's SVG `<title>` and legend are hand-typed JavaScript strings
+    ("August 2015 to present"); the census strips scripts. Stage 3 redraws
+    the chart and will derive them from the series.
+  - `CITATION.cff`'s abstract says "Aug 2015-present" and dates the release
+    2026-07-12. Metadata for citation managers, not a reader surface; left.
+  - `LOCKDAY.md` still quotes "107 tests" and "line 465". Historical runbook,
+    kept as written under the note at its head.
+  - og-image.png is still the dark theme (Stage 3 regenerates it).

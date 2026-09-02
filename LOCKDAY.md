@@ -1,5 +1,22 @@
 # LOCKDAY — the beta lock for the 30 July 2026 MPC announcement
 
+> **Read after the fact (2 September 2026).** This runbook was written before
+> the July lock and is kept as written. Three things changed on the day and
+> since:
+>
+> - The lock did **not** happen at 12:00. `lock-2026-07.json` carries
+>   `lock_timestamp: 2026-07-28T19:08:36+00:00`, and the `lock-2026-07` tag is
+>   dated 20:19:45 BST the same evening. Every surface now reads the timestamp
+>   from the lock file; the 12:00 below was the plan, not the record.
+> - Step 6 (editing `PREDICTION_FILE` in `index.html`) no longer exists. The
+>   site displays the newest `data/predictions/lock-*.json` automatically:
+>   after writing a lock file, run `.venv/bin/python -m pipeline.build_fallbacks`
+>   (then `build_track_record` and `build_build_info` as before). The line
+>   numbers quoted below are stale.
+> - The September runbook is a separate document, to be written with the
+>   pre-registration before the 15 September lock.
+
+
 Two dated sections. **Tuesday 28 July, 12:00** is the lock. **Thursday 30 July,
 just after 12:00** is the outcome. Everything below is typed by Jake, by hand,
 from the repo root:

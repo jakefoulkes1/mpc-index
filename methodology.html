@@ -5,7 +5,9 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Methodology — MPC Communication Index</title>
 <meta name="description" content="How the MPC Communication Index is built and evaluated: data, index construction, market benchmark, evaluation, and limitations.">
+<!-- fallback:metaauthor -->
 <meta name="author" content="Jake Foulkes">
+<!-- /fallback:metaauthor -->
 <meta name="theme-color" content="#0f1115">
 <meta property="og:type" content="article">
 <meta property="og:site_name" content="MPC Communication Index">
@@ -17,7 +19,9 @@
 <meta property="og:image:type" content="image/png">
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="630">
-<meta property="og:image:alt" content="The A&BG communication index for Bank of England MPC minutes, August 2015 to July 2026, plotted against its neutral value.">
+<!-- fallback:ogalt -->
+<meta property="og:image:alt" content="The A&amp;BG communication index for Bank of England MPC minutes, August 2015 to July 2026, plotted against its neutral value.">
+<!-- /fallback:ogalt -->
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:title" content="Methodology — MPC Communication Index">
 <meta name="twitter:description" content="Data, index construction, market benchmark, evaluation and limitations — every choice traceable to code or a dated entry in the decisions log.">
@@ -379,7 +383,7 @@
     <p><strong>Scoring rules.</strong> Three-class Brier score (sum of squared
     probability errors across {cut, hold, hike}; range [0,&nbsp;2]) and log score
     &minus;log&nbsp;p(actual outcome), with p floored at the clip constant
-    <strong><!-- fig:log_clip -->1e-09<!-- /fig:log_clip --></strong> to avoid &minus;log(0) for a confidently wrong call; the
+    <strong><!-- fig:log_clip -->1e&minus;9<!-- /fig:log_clip --></strong> to avoid &minus;log(0) for a confidently wrong call; the
     clip is published in <code>data/ladder_v1.json</code> as
     <code>log_score_probability_clip</code>.
     <span class="ref">(pipeline/predict/score_outcomes.py; DECISIONS.md 2026-07-11 &mdash; lock and scoring
@@ -486,9 +490,9 @@
   <footer>
     <p><a href="index.html">&larr; Back to the index</a> &middot; Not investment advice &middot;
     Source documents &copy; Bank of England, linked not republished.</p>
-    <p><strong>Built and maintained by Jake Foulkes</strong> &middot;
-    <a href="mailto:jakefoulkes@aol.com">jakefoulkes@aol.com</a><br>
-    <span class="affiliation">Jake Foulkes, BSc Economics, Loughborough University</span></p>
+    <!-- fallback:byline - from AUTHOR in pipeline/site_figures.py -->
+    <p class="byline"><strong>Jake Foulkes</strong>, BSc Economics, Loughborough University<br><a href="mailto:jakefoulkes@aol.com">jakefoulkes@aol.com</a></p>
+    <!-- /fallback:byline -->
     <!-- fallback:buildinfo - this page runs no JavaScript by design, so the
          stamp is static; pipeline/tests/test_static_fallback.py fails if it
          ever drifts from data/build_info.json. -->

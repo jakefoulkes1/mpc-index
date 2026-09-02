@@ -9,3 +9,5 @@ data/raw/*
 !data/raw/.gitkeep
 
 notes/
+
+qa/

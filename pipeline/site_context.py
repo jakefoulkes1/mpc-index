@@ -95,7 +95,7 @@ UPCOMING_MEETINGS = MEETINGS_2026_CONFIRMED + MEETINGS_2027_PROVISIONAL
 OIS_PATH_MEETINGS = 3
 
 DISCLAIMER = (
-    "Context - not model inputs. These series are shown for orientation only; "
+    "Context, not model inputs. These series are shown for orientation only; "
     "none of them feed the A&BG communication index, the market benchmark, or "
     "any locked call."
 )

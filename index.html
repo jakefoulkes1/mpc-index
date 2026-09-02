@@ -5,7 +5,9 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>MPC Communication Index — does BoE tone predict the next rate move?</title>
 <meta name="description" content="A pre-registered probabilistic call for each Bank of England MPC rate decision, locked and timestamped before the announcement and scored after — testing whether the tone of MPC communication carries information beyond what markets already price.">
+<!-- fallback:metaauthor -->
 <meta name="author" content="Jake Foulkes">
+<!-- /fallback:metaauthor -->
 <meta name="theme-color" content="#0f1115">
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="MPC Communication Index">
@@ -18,7 +20,9 @@
 <meta property="og:image:type" content="image/png">
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="630">
-<meta property="og:image:alt" content="The A&BG communication index for Bank of England MPC minutes, August 2015 to July 2026, plotted against its neutral value.">
+<!-- fallback:ogalt -->
+<meta property="og:image:alt" content="The A&amp;BG communication index for Bank of England MPC minutes, August 2015 to July 2026, plotted against its neutral value.">
+<!-- /fallback:ogalt -->
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:title" content="MPC Communication Index">
 <meta name="twitter:description" content="A pre-registered call for each Bank of England rate decision — locked and timestamped before the announcement, scored after, misses included.">
@@ -600,7 +604,8 @@
        on success. pipeline/tests/test_static_fallback.py asserts these
        figures still match the JSON - regenerate them, never retype them. -->
   <!-- fallback:call -->
-  <section class="card call-card locked" id="call-card" aria-labelledby="call-badge">
+  <section class="card call-card locked" id="call-card" aria-labelledby="call-badge"
+           data-prediction-file="data/predictions/lock-2026-07.json">
     <div class="call-badge locked" id="call-badge">LOCKED CALL &middot; SCORED</div>
     <p class="call-heading" id="call-heading">Call for <strong>30 July 2026</strong></p>
     <p class="call-stamp" id="call-stamp"><span class="stamp-label">Locked</span><time
@@ -661,7 +666,7 @@
       <p class="score" id="score"><span class="sign-dove">0.667</span> <span class="score-word">net dovish (A&amp;BG Net Index, 0&ndash;2 scale, 1.0 = neutral)</span></p>
       <div class="scale"><div class="marker" id="marker" style="left:33.3350%"></div></div>
       <div class="scale-labels"><span>&larr; dovish</span><span>neutral</span><span>hawkish &rarr;</span></div>
-      <p class="fine" id="detail">1 hawkish vs 2 dovish noun+adjective hits &middot; lexicon: abg_2012 (Apel & Blix Grimaldi 2012, verbatim - see pipeline/score/lexicon/abg_2012.json and DECISIONS.md). starter_v0 remains in the repo as plumbing only and is no longer used in any output. &middot; sha256 <code>30d23354736d7d77&hellip;</code> &middot; <a href="https://www.bankofengland.co.uk/monetary-policy-summary-and-minutes/2026/july-2026">source document</a></p>
+      <p class="fine" id="detail">1 hawkish vs 2 dovish noun+adjective hits &middot; lexicon <code>abg_2012</code> &middot; sha256 <code>30d23354736d7d77&hellip;</code> &middot; <a href="https://www.bankofengland.co.uk/monetary-policy-summary-and-minutes/2026/july-2026">source document</a></p>
     </div>
     <!-- /fallback:latest -->
 
@@ -744,7 +749,7 @@
         </div>
       </div>
 
-      <p class="ctx-note" id="context-note">Context - not model inputs. These series are shown for orientation only; none of them feed the A&BG communication index, the market benchmark, or any locked call. Sources: Bank of England OIS forward curve &amp; SONIA; GLC nominal gilt curve; Bank Rate from the voting record.</p>
+      <p class="ctx-note" id="context-note">Context, not model inputs. These series are shown for orientation only; none of them feed the A&amp;BG communication index, the market benchmark, or any locked call. Sources: Bank of England OIS forward curve &amp; SONIA; GLC nominal gilt curve; Bank Rate from the voting record.</p>
 <!-- /fallback:context -->
 
         </div>
@@ -787,9 +792,9 @@
           <tbody id="ladder-tbody">
             <tr><td><strong>L0</strong><span class="model-gloss">always-hold</span></td><td>0.6557</td><td>6.7945</td><td>&mdash;</td><td>61</td></tr>
             <tr class="model-l1"><td><strong>L1</strong><span class="model-gloss">market pricing</span></td><td>0.0891</td><td>0.1437</td><td>&mdash;</td><td>61</td></tr>
-            <tr><td><strong>L2</strong><span class="model-gloss">market modelled</span></td><td>0.0995</td><td>0.1676</td><td>-0.1167</td><td>61</td></tr>
-            <tr><td><strong>L3</strong><span class="model-gloss">market + tone + skew</span></td><td>0.1489</td><td>0.2623</td><td>-0.6712</td><td>61</td></tr>
-            <tr><td><strong>L4</strong><span class="model-gloss">member simulation</span></td><td>0.1617</td><td>0.2587</td><td>-0.8148</td><td>61</td></tr>
+            <tr><td><strong>L2</strong><span class="model-gloss">market modelled</span></td><td>0.0995</td><td>0.1676</td><td>&minus;0.1167</td><td>61</td></tr>
+            <tr><td><strong>L3</strong><span class="model-gloss">market + tone + skew</span></td><td>0.1489</td><td>0.2623</td><td>&minus;0.6712</td><td>61</td></tr>
+            <tr><td><strong>L4</strong><span class="model-gloss">member simulation</span></td><td>0.1617</td><td>0.2587</td><td>&minus;0.8148</td><td>61</td></tr>
           </tbody>
         <!-- /fallback:ladder -->
         </table>
@@ -825,7 +830,7 @@
         <div class="disclosure-body">
           <!-- fallback:laddermeta - generated from data/ladder_v1.json by
                pipeline/build_fallbacks.py, replaced by renderLadder() on success. -->
-          <p class="fine" id="ladder-meta" style="margin-top:0">Scheduled meetings only, evaluated 1 January 2019 &rarr; present (<strong>n=61</strong>) &middot; 2 special meeting(s) reported separately, not blended in &middot; log-score probability floor 1e-09.</p>
+          <p class="fine" id="ladder-meta" style="margin-top:0">Scheduled meetings only, evaluated from 1 January 2019 onwards (n&nbsp;=&nbsp;61); 2 special meetings reported separately, not blended in; log-score probability floor 1e&minus;9.</p>
           <!-- /fallback:laddermeta -->
           <p class="fine">
             <strong>Standing caveat: the market benchmark (L1) is the bar.</strong> L2&ndash;L4
@@ -949,7 +954,7 @@
          renderMarkdown() implements, and overwritten by renderEpisodes() on
          success. -->
     <div id="episodes-list">
-      <article class="episode" id="episode-2026-07-30"><h3>The minority grew</h3><p class="ep-date">30 July 2026</p><div class="ep-body"><p>The July call scored cleanly. Bank Rate held at 3.75% on 30 July; the locked probabilities returned a Brier of 0.003; nothing in the record moved between lock and score but the outcome field and the scores that follow from it. That is the mechanism working exactly as designed, and it is not what this note is about. The interesting thing about July is not the call. It is the part of the reading that failed while the call succeeded.</p><h3>1. What happened</h3><p>At the meeting ending 29 July, announced on the 30th, the MPC voted six to three to maintain Bank Rate at 3.75%. Megan Greene, Catherine Mann and Huw Pill preferred an immediate quarter-point rise to 4.00%. It was the fifth consecutive meeting at 3.75% and the third consecutive meeting at which the hawkish minority has grown: 8–1 in April, 7–2 in June, 6–3 in July. The run begins from a unanimous 9–0 in March — the Committee's first undivided decision in four and a half years — which makes the sequence cleaner still: one dissent added at each of three successive meetings from a base of none.</p><p>The accompanying Monetary Policy Report carried a central projection of CPI peaking near 3.2% in the fourth quarter. At the press conference Bailey moved directly to damp the hawkish reading, telling reporters not to leave the room thinking the Bank was edging towards a hike. On the day, then, the vote record and the Governor's communication pointed in opposite directions, and the Governor was managing that divergence deliberately.</p><h3>2. What I called</h3><p>Hold at 3.75%. Correct. The probabilities were locked on 28 July under the announcement-minus-two convention, with p(hike) shaded modestly below the market-implied 3.86% for the two documented regime-specific reasons: a forward read at meeting-plus-three, interpolated across whole-month buckets on a steeply upward-sloping short curve, absorbs September's expectations into July's; and the fiscal repricing of 20 July that carried the ten-year gilt to 5.04% is a risk premium rather than an expectation of Bank Rate. Both remain testable against the September lock, when the near-month slope will differ. The communication index was recorded as context and kept out of the call, on the standing ground that L3 scores −0.6729 against the market-only benchmark and Spec 2 returns p = 0.4918. There is no warrant on this project's own evidence for letting tone override L1, and July gave none.</p><p>The ancillary vote-split call — unscored — was that the minority would hold at two. It went to three. Mann moved. She was named in the lock-day rationale as the member most likely to reason her way towards an activist hike while continuing to vote for a hold. I had identified the right person and drawn precisely the wrong conclusion about her.</p><h3>3. Why I was wrong</h3><p>The argument was that the macro flow since 18 June ran against the two dissenters on nearly every measure they had invoked. Headline CPI fell to 2.6% against a 2.7% consensus, its lowest in fifteen months; services eased to 3.6%; regular pay growth slowed to 3.4%, joint-slowest since October 2020; input producer prices decelerated to 7.3% from 9.3% as Brent retraced. Greene and Pill, on that reading, had dissented on an energy shock that was already unwinding.</p><p>The flow did run against them. Every one of those figures held. They dissented anyway, and a third member joined them.</p><p>So the error is not in the data. It is in the assumption that connected the data to the votes. I had read the June dissents as claims about realised inflation — that prices were running hotter than the majority allowed — and inferred that a run of disinflationary prints would erode the claim and, with it, the dissent. That is not what the dissenters were saying, and July made it explicit. Their stated reasons, taken together:</p><ul><li>Greene argued that moving early reduces the probability that second-round effects take hold at all.</li><li>Mann named the decisive change as diplomatic and geopolitical — the collapse of the US–Iran memorandum, the widening of the conflict, the energy volatility that followed — and not any price series.</li><li>Pill argued for raising now precisely in order to cut through the noise in commodity and asset prices, as an unambiguous signal of willingness to act on upside risk.</li></ul><p>Not one of the three is an argument from realised inflation. Pill's is the sharpest against me: he treats the incoming data as noise to be seen through. My reasoning assigned decisive weight to a series that the decisive voters had explicitly set aside.</p><p>Bailey's own framing is the gap in a sentence. Inflation has fallen faster than expected, to 2.6%; the Bank's central projection has it peaking near 3.2% in Q4. Both are true at once. A committee looking backwards sees disinflation; a committee looking forwards sees a peak still ahead of it. The minority is not disputing the first fact. It is pricing the second. They are not reasoning from realised disinflation. They are reasoning from forward risk.</p><h3>4. What it changes</h3><p>Two things, of different orders.</p><p>The smaller is a correction to how I read the Committee. It is not divided about the object of concern. Bailey, Breeden, Lombardelli, Ramsden, Taylor and Dhingra all framed the hold in terms of second-round effects, insurance, or the conditions under which they would tighten; Ramsden said outright that crystallised upside risk could warrant a hike and that subsiding risk would have him considering a resumption of cuts. Everyone is watching the same thing. What separates the six from the three is the evidentiary threshold for acting on it before it appears. Greene would move pre-emptively; Ramsden would move on confirmation. On a hawk–dove scale those two positions read as near-neighbours. In vote space they are opposite.</p><p>The larger is that this may be a problem with what the index measures rather than with how I read its output. A lexicon keyed to realised-inflation language is not mis-calibrated here; it is oriented along the wrong axis. It cannot see the dimension the July vote actually turned on, and its failure mode is worse than silence: it will score July's disinflationary language as dovish at exactly the meeting where the hawkish minority grew. The index and the vote record will diverge systematically, and the divergence will present as noise rather than as the finding it is.</p><p>That points to a second series rather than a rescaling of the first — a risk-management measure counting conditionality, pre-emption, insurance, second-round effects, signalling and tail risk, scored separately from realised-inflation tone. The testable proposition is that the gap between the two carries the vote information: that in July the realised-inflation series fell while the risk-management series rose, and that the divergence, not the level of either, is what tracks dissent counts.</p><p>One discipline note, because it is the whole point of the exercise. None of this touches the July record, and none of it may be fitted to July. If a second series is built, it must be specified and pre-registered before the September lock and run over the full sample from January 2019 under the same expanding-window protocol as everything else. Otherwise the fix is in-sample, and the negative result it claims to overturn is merely reproduced with extra steps.</p><p>The last change I am persuaded of is procedural. The vote split should be pre-registered as a scored distribution from September rather than carried as an unscored ancillary. July's miss cost nothing in the ledger — which is precisely the problem. A reading that can be wrong without penalty is not doing the work the rest of the project does.</p></div></article>
+      <article class="episode" id="episode-2026-07-30"><h3>The minority grew</h3><p class="ep-date">30 July 2026</p><div class="ep-body"><p>The July call scored cleanly. Bank Rate held at 3.75% on 30 July; the locked probabilities returned a Brier of 0.003; nothing in the record moved between lock and score but the outcome field and the scores that follow from it. That is the mechanism working exactly as designed, and it is not what this note is about. The interesting thing about July is not the call. It is the part of the reading that failed while the call succeeded.</p><h3>1. What happened</h3><p>At the meeting ending 29 July, announced on the 30th, the MPC voted six to three to maintain Bank Rate at 3.75%. Megan Greene, Catherine Mann and Huw Pill preferred an immediate quarter-point rise to 4.00%. It was the fifth consecutive meeting at 3.75% and the third consecutive meeting at which the hawkish minority has grown: 8–1 in April, 7–2 in June, 6–3 in July. The run begins from a unanimous 9–0 in March — the Committee's first undivided decision in four and a half years — which makes the sequence cleaner still: one dissent added at each of three successive meetings from a base of none.</p><p>The accompanying Monetary Policy Report carried a central projection of CPI peaking near 3.2% in the fourth quarter. At the press conference Bailey moved directly to damp the hawkish reading, telling reporters not to leave the room thinking the Bank was edging towards a hike. On the day, then, the vote record and the Governor's communication pointed in opposite directions, and the Governor was managing that divergence deliberately.</p><h3>2. What I called</h3><p>Hold at 3.75%. Correct. The probabilities were locked on 28 July under the announcement-minus-two convention, with p(hike) shaded modestly below the market-implied 3.86% for the two documented regime-specific reasons: a forward read at meeting-plus-three, interpolated across whole-month buckets on a steeply upward-sloping short curve, absorbs September's expectations into July's; and the fiscal repricing of 20 July that carried the ten-year gilt to 5.04% is a risk premium rather than an expectation of Bank Rate. Both remain testable against the September lock, when the near-month slope will differ. The communication index was recorded as context and kept out of the call, on the standing ground that L3 scores −0.6729 against the market-only benchmark and Spec 2 returns p = 0.4918. [Figures as at the 28 July lock. The ladder was re-run on 10 August after the July minutes were ingested and now reads −0.6712 / 0.4894 — Ed., September 2026.] There is no warrant on this project's own evidence for letting tone override L1, and July gave none.</p><p>The ancillary vote-split call — unscored — was that the minority would hold at two. It went to three. Mann moved. She was named in the lock-day rationale as the member most likely to reason her way towards an activist hike while continuing to vote for a hold. I had identified the right person and drawn precisely the wrong conclusion about her.</p><h3>3. Why I was wrong</h3><p>The argument was that the macro flow since 18 June ran against the two dissenters on nearly every measure they had invoked. Headline CPI fell to 2.6% against a 2.7% consensus, its lowest in fifteen months; services eased to 3.6%; regular pay growth slowed to 3.4%, joint-slowest since October 2020; input producer prices decelerated to 7.3% from 9.3% as Brent retraced. Greene and Pill, on that reading, had dissented on an energy shock that was already unwinding.</p><p>The flow did run against them. Every one of those figures held. They dissented anyway, and a third member joined them.</p><p>So the error is not in the data. It is in the assumption that connected the data to the votes. I had read the June dissents as claims about realised inflation — that prices were running hotter than the majority allowed — and inferred that a run of disinflationary prints would erode the claim and, with it, the dissent. That is not what the dissenters were saying, and July made it explicit. Their stated reasons, taken together:</p><ul><li>Greene argued that moving early reduces the probability that second-round effects take hold at all.</li><li>Mann named the decisive change as diplomatic and geopolitical — the collapse of the US–Iran memorandum, the widening of the conflict, the energy volatility that followed — and not any price series.</li><li>Pill argued for raising now precisely in order to cut through the noise in commodity and asset prices, as an unambiguous signal of willingness to act on upside risk.</li></ul><p>Not one of the three is an argument from realised inflation. Pill's is the sharpest against me: he treats the incoming data as noise to be seen through. My reasoning assigned decisive weight to a series that the decisive voters had explicitly set aside.</p><p>Bailey's own framing is the gap in a sentence. Inflation has fallen faster than expected, to 2.6%; the Bank's central projection has it peaking near 3.2% in Q4. Both are true at once. A committee looking backwards sees disinflation; a committee looking forwards sees a peak still ahead of it. The minority is not disputing the first fact. It is pricing the second. They are not reasoning from realised disinflation. They are reasoning from forward risk.</p><h3>4. What it changes</h3><p>Two things, of different orders.</p><p>The smaller is a correction to how I read the Committee. It is not divided about the object of concern. Bailey, Breeden, Lombardelli, Ramsden, Taylor and Dhingra all framed the hold in terms of second-round effects, insurance, or the conditions under which they would tighten; Ramsden said outright that crystallised upside risk could warrant a hike and that subsiding risk would have him considering a resumption of cuts. Everyone is watching the same thing. What separates the six from the three is the evidentiary threshold for acting on it before it appears. Greene would move pre-emptively; Ramsden would move on confirmation. On a hawk–dove scale those two positions read as near-neighbours. In vote space they are opposite.</p><p>The larger is that this may be a problem with what the index measures rather than with how I read its output. A lexicon keyed to realised-inflation language is not mis-calibrated here; it is oriented along the wrong axis. It cannot see the dimension the July vote actually turned on, and its failure mode is worse than silence: it will score July's disinflationary language as dovish at exactly the meeting where the hawkish minority grew. The index and the vote record will diverge systematically, and the divergence will present as noise rather than as the finding it is.</p><p>That points to a second series rather than a rescaling of the first — a risk-management measure counting conditionality, pre-emption, insurance, second-round effects, signalling and tail risk, scored separately from realised-inflation tone. The testable proposition is that the gap between the two carries the vote information: that in July the realised-inflation series fell while the risk-management series rose, and that the divergence, not the level of either, is what tracks dissent counts.</p><p>One discipline note, because it is the whole point of the exercise. None of this touches the July record, and none of it may be fitted to July. If a second series is built, it must be specified and pre-registered before the September lock and run over the full sample from January 2019 under the same expanding-window protocol as everything else. Otherwise the fix is in-sample, and the negative result it claims to overturn is merely reproduced with extra steps.</p><p>The last change I am persuaded of is procedural. The vote split should be pre-registered as a scored distribution from September rather than carried as an unscored ancillary. July's miss cost nothing in the ledger — which is precisely the problem. A reading that can be wrong without penalty is not doing the work the rest of the project does.</p></div></article>
     </div>
     <!-- /fallback:episodes -->
   </section>
@@ -968,12 +973,12 @@
   <footer>
     <p class="nia"><strong>Not investment advice.</strong> A research project, not a
     recommendation to buy, sell, or hold anything.</p>
-    <p><strong>Built and maintained by Jake Foulkes</strong> &middot;
-    <a href="mailto:jakefoulkes@aol.com">jakefoulkes@aol.com</a><br>
-    <span class="affiliation">Jake Foulkes, BSc Economics, Loughborough University</span></p>
-    <p>Source documents &copy; Bank of England, linked not republished &middot;
-    Lexicon: Apel &amp; Blix Grimaldi (2012), implemented verbatim (see the decisions log)
-    &middot; <span id="gen-note"></span></p>
+    <!-- fallback:byline - from AUTHOR in pipeline/site_figures.py -->
+    <p class="byline"><strong>Jake Foulkes</strong>, BSc Economics, Loughborough University<br><a href="mailto:jakefoulkes@aol.com">jakefoulkes@aol.com</a></p>
+    <!-- /fallback:byline -->
+    <p>Source documents &copy; Bank of England, linked, not republished. Lexicon: Apel &amp;
+    Blix Grimaldi (2012), implemented verbatim (see the decisions log).
+    <!-- fallback:gennote --><span id="gen-note">Index data generated 5 August 2026.</span><!-- /fallback:gennote --></p>
     <!-- fallback:buildinfo - generated from data/build_info.json by
          pipeline/build_build_info.py, refreshed by JS when it loads. -->
     <p><span id="build-note">Site last updated 30 August 2026 (<a
@@ -983,7 +988,10 @@
 </div>
 
 <script>
-const PREDICTION_FILE = 'data/predictions/lock-2026-07.json';
+// The prediction file on display is the newest lock-* file, written into
+// the call card's data attribute by pipeline/build_fallbacks.py. Nothing
+// here is edited by hand on lock day.
+const PREDICTION_FILE = document.getElementById('call-card').dataset.predictionFile;
 const SVGNS = 'http://www.w3.org/2000/svg';
 
 function svgNode(tag, attrs) {
@@ -1034,10 +1042,25 @@ function failSection(statusId, path, reason, opts) {
       : (o.consequence ? o.consequence + ' ' : '')) +
     `<a href="${RAW_BASE}${path}" rel="noopener">Read ${path} on GitHub</a>.`;
 }
+// Formats the date part of an ISO string as written ("2026-07-30" is
+// 30 July everywhere), never shifted by the reader's time zone: a bare date
+// parses as UTC midnight, which is the previous evening west of Greenwich.
+// Mirrors gb_date() in pipeline/site_figures.py.
 function fmtDate(iso, opts) {
-  return new Date(iso).toLocaleDateString('en-GB',
-    opts || { day: 'numeric', month: 'long', year: 'numeric' });
+  return new Date(iso.slice(0, 10) + 'T00:00:00Z').toLocaleDateString('en-GB',
+    Object.assign({ day: 'numeric', month: 'long', year: 'numeric' }, opts || {}, { timeZone: 'UTC' }));
 }
+// Rounding policy, mirrored from pipeline/site_figures.py: scores 4 d.p.,
+// coefficients and t 2 d.p., p 4 d.p., index values 3 d.p., probabilities as
+// whole percentages; every negative figure with a true minus sign.
+const MINUS = '\u2212';
+const fmtSigned = (v, places) => v.toFixed(places).replace('-', MINUS);
+const fmtScore = v => fmtSigned(v, 4);
+const fmtIndex = v => fmtSigned(v, 3);
+const fmtPct = v => (v * 100).toFixed(0) + '%';
+const fmtNeutral = v => v.toFixed(1);
+// The log-score floor: "1e-9" in both languages, with a true minus sign.
+const fmtClip = v => String(v).replace('-', MINUS);
 // The lock timestamp is an instant, not a date, but it should still read in
 // the site's date format: "28 July 2026, 19:08:36 UTC".
 function fmtUTCStamp(iso) {
@@ -1079,9 +1102,9 @@ const MODEL_GLOSS = {
 function renderLadder(d) {
   document.getElementById('ladder-schema').textContent = `(${d.schema})`;
   document.getElementById('ladder-meta').innerHTML =
-    `Scheduled meetings only, evaluated ${fmtDate(d.eval_start)} &rarr; present ` +
-    `(<strong>n=${d.n_scheduled}</strong>) &middot; ${d.n_specials} special meeting(s) reported ` +
-    `separately, not blended in &middot; log-score probability floor ${d.log_score_probability_clip}.`;
+    `Scheduled meetings only, evaluated from ${fmtDate(d.eval_start)} onwards ` +
+    `(n&nbsp;=&nbsp;${d.n_scheduled}); ${d.n_specials} special meetings reported ` +
+    `separately, not blended in; log-score probability floor ${fmtClip(d.log_score_probability_clip)}.`;
 
   // Clear the built-in fallback rows first - this replaces them, it does
   // not add to them.
@@ -1092,9 +1115,9 @@ function renderLadder(d) {
     const s = scores[model];
     const tr = document.createElement('tr');
     if (model === 'L1') tr.className = 'model-l1';
-    const skill = (s.skill_vs_l1 === undefined || s.skill_vs_l1 === null) ? '&mdash;' : s.skill_vs_l1.toFixed(4);
+    const skill = (s.skill_vs_l1 === undefined || s.skill_vs_l1 === null) ? '&mdash;' : fmtScore(s.skill_vs_l1);
     tr.innerHTML = `<td><strong>${model}</strong><span class="model-gloss">${MODEL_GLOSS[model]}</span></td>` +
-      `<td>${s.mean_brier}</td><td>${s.mean_log_score}</td><td>${skill}</td><td>${s.n}</td>`;
+      `<td>${fmtScore(s.mean_brier)}</td><td>${fmtScore(s.mean_log_score)}</td><td>${skill}</td><td>${s.n}</td>`;
     tbody.appendChild(tr);
   });
 
@@ -1120,8 +1143,7 @@ function renderInference(d) {
   const frag = d.fragility_check_subsample;
   const fragLi = frag.results.spec3_surprise_on_lagged_index.coefficients.lagged_index;
   const lr = d.full_sample.spec2_ordered_logit_lr_test;
-  // A real minus sign in prose, not a hyphen.
-  const sig = (v, places) => v.toFixed(places).replace('-', '\u2212');
+  const sig = fmtSigned;
   document.getElementById('spec3-line').innerHTML =
     `Regressing each meeting's market surprise on the <em>previous</em> meeting's index ` +
     `(OLS, Newey&ndash;West standard errors, ${full.newey_west_maxlags} lags, n=${full.n} ` +
@@ -1137,16 +1159,8 @@ function renderInference(d) {
   document.getElementById('inference-content').style.display = 'block';
 }
 
-// Shared between the context panel and the call card: the card needs the
-// Bank's meeting calendar to name the next announcement, and either file may
-// land first.
-let siteContext = null;
-let lastPrediction = null;
-
 const indexPromise = fetchJSON('data/index.json');
 const contextPromise = fetchJSON('data/site_context.json');
-
-contextPromise.then(c => { siteContext = c; updateNextMeeting(); }).catch(() => {});
 
 // The context panel resolves on its own. It used to be handled inside the
 // Promise.all below, which meant a failed data/index.json left this section
@@ -1213,7 +1227,7 @@ function renderBuildInfo(b) {
 function renderTrackRecord(d) {
   const tbody = document.getElementById('track-tbody');
   tbody.innerHTML = '';
-  const pct = v => (v * 100).toFixed(0) + '%';
+  const pct = fmtPct;
   const badgeLabel = { locked: 'Locked', dryrun: 'Dry run', rehearsal: 'Rehearsal', other: 'Other' };
 
   d.records.forEach(r => {
@@ -1229,7 +1243,7 @@ function renderTrackRecord(d) {
       `<td>${pct(m0.p_hold)}</td>` +
       `<td>${pct(m0.p_hike)}</td>` +
       `<td>${r.outcome || '&mdash;'}</td>` +
-      `<td>${r.brier_m0 === null || r.brier_m0 === undefined ? '&mdash;' : r.brier_m0.toFixed(4)}</td>`;
+      `<td>${r.brier_m0 === null || r.brier_m0 === undefined ? '&mdash;' : fmtScore(r.brier_m0)}</td>`;
     tbody.appendChild(tr);
   });
 
@@ -1281,8 +1295,6 @@ function renderCallCard(p) {
   const scored = locked && p.outcome != null &&
     p.scores && p.scores.m0_market_only &&
     p.scores.m0_market_only.brier_score != null;
-  lastPrediction = p;
-
   const card = document.getElementById('call-card');
   const badge = document.getElementById('call-badge');
   // Set both classes explicitly rather than only adding one: the card ships
@@ -1321,7 +1333,7 @@ function renderCallCard(p) {
         : '');
   } else {
     stamp.innerHTML = `<span class="stamp-label">Status</span>` +
-      `<span>beta lock scheduled 28 July 2026, 12:00</span>`;
+      `<span>not yet locked</span>`;
   }
   // The verification path now lives in one place, the "How to check this"
   // box near the top of the page, which is generated from the same prediction
@@ -1343,7 +1355,7 @@ function renderCallCard(p) {
   const lead = probs.reduce((a, b) => (b[1] > a[1] ? b : a))[0];
   document.getElementById('call-probs').innerHTML = probs.map(([label, v]) =>
     `<div class="call-prob${label === lead ? ' is-lead' : ''}">` +
-    `<span class="n">${(v * 100).toFixed(0)}%</span>` +
+    `<span class="n">${fmtPct(v)}</span>` +
     `<span class="l">${label}</span></div>`).join('');
   document.getElementById('call-probbar').innerHTML = probs.map(([label, v]) =>
     `<span class="seg-${label}" style="width:${(v * 100).toFixed(1)}%"></span>`).join('');
@@ -1355,9 +1367,9 @@ function renderCallCard(p) {
   const vsTrailing = p.index_current - p.index_trailing_mean;
   const vsWord = vsTrailing > 0 ? 'above' : (vsTrailing < 0 ? 'below' : 'equal to');
   document.getElementById('call-index-line').innerHTML =
-    `A&amp;BG index (${p.index_current_doc_id}): <strong>${p.index_current.toFixed(3)}</strong> vs ` +
-    `trailing ${p.index_trailing_n}-document mean <strong>${p.index_trailing_mean.toFixed(3)}</strong> ` +
-    `(${Math.abs(vsTrailing).toFixed(3)} ${vsWord})`;
+    `A&amp;BG index (${p.index_current_doc_id}): <strong>${fmtIndex(p.index_current)}</strong> vs ` +
+    `trailing ${p.index_trailing_n}-document mean <strong>${fmtIndex(p.index_trailing_mean)}</strong> ` +
+    `(${fmtIndex(Math.abs(vsTrailing))} ${vsWord})`;
 
   if (locked) {
     // The rationale is Jake's own prose: set as prose, at a readable measure.
@@ -1387,7 +1399,7 @@ function renderCallCard(p) {
         `<span class="oc-item"><span class="oc-l">Outcome</span>` +
         `<span class="oc-v">${p.outcome}</span></span>` +
         `<span class="oc-item"><span class="oc-l">Brier (m0)</span>` +
-        `<span class="oc-v">${brier.toFixed(4)}</span></span>` +
+        `<span class="oc-v">${fmtScore(brier)}</span></span>` +
         `<span class="oc-item"><span class="oc-l">Point call</span>` +
         `<span class="oc-v${hit ? ' oc-hit' : ''}">${hit ? 'matched' : 'missed'}</span></span>`;
       outcome.style.display = 'block';
@@ -1395,38 +1407,10 @@ function renderCallCard(p) {
       outcome.style.display = 'none';
     }
   }
-  updateNextMeeting();
-
+  // #call-next is generated from the Bank's calendar by build_fallbacks.py
+  // and deliberately left alone here, so the static and scripted card agree.
   document.getElementById('call-status').style.display = 'none';
   card.style.display = 'block';
-}
-
-// The next announcement is read from the Bank's published calendar as carried
-// in data/site_context.json, never hardcoded here. If that file is missing the
-// static line already in the HTML is left alone rather than blanked.
-function updateNextMeeting() {
-  const el = document.getElementById('call-next');
-  if (!el || !lastPrediction) return;
-  const today = new Date();
-  today.setHours(0, 0, 0, 0);
-
-  // While this call's own meeting is still ahead, the heading already names
-  // it and a second "next announcement" line would only repeat it.
-  if (new Date(lastPrediction.meeting_announcement) >= today) {
-    el.style.display = 'none';
-    return;
-  }
-  const meetings = siteContext && siteContext.ois_path && siteContext.ois_path.meetings;
-  if (!meetings) return;
-
-  const next = meetings
-    .map(m => m.meeting_date)
-    .filter(d => new Date(d) >= today)
-    .sort()[0];
-  el.innerHTML = next
-    ? `Next announcement: <strong>${fmtDate(next)}</strong> &mdash; the next call locks before it.`
-    : 'The next announcement is not yet listed in <code>data/site_context.json</code>.';
-  el.style.display = 'block';
 }
 
 function renderLatest(data) {
@@ -1439,12 +1423,14 @@ function renderLatest(data) {
     `MPC minutes, meeting ending <strong>${fmtDate(doc.meeting_end)}</strong> &middot; published ${fmtDate(doc.published)}` +
     ` &middot; decision: ${doc.decision} &middot; vote ${doc.vote}`;
   document.getElementById('score').innerHTML =
-    `<span class="${cls}">${doc.abg_net_index.toFixed(3)}</span>` +
-    ` <span class="score-word">${word} (A&amp;BG Net Index, 0&ndash;2 scale, ${neutral} = neutral)</span>`;
+    `<span class="${cls}">${fmtIndex(doc.abg_net_index)}</span>` +
+    ` <span class="score-word">${word} (A&amp;BG Net Index, 0&ndash;2 scale, ${fmtNeutral(neutral)} = neutral)</span>`;
   document.getElementById('marker').style.left = `${50 + net * 50}%`;
   document.getElementById('detail').innerHTML =
     `${doc.abg_hawk} hawkish vs ${doc.abg_dove} dovish noun+adjective hits &middot; ` +
-    `lexicon: ${data.lexicon} &middot; sha256 <code>${doc.sha256.slice(0, 16)}&hellip;</code> &middot; ` +
+    // The lexicon field is a sentence of provenance; the page shows its
+    // identifier (mirrors lexicon_id() in pipeline/build_fallbacks.py).
+    `lexicon <code>${data.lexicon.split(' ')[0]}</code> &middot; sha256 <code>${doc.sha256.slice(0, 16)}&hellip;</code> &middot; ` +
     `<a href="${doc.source_url}">source document</a>`;
   document.getElementById('status').style.display = 'none';
   document.getElementById('content').style.display = 'block';
@@ -1565,7 +1551,7 @@ function renderChart(data, context) {
   }));
   svg.appendChild(el('text', {
     x: PAD_L + 4, y: y(neutral) - 5, fill: '#9aa0ab', 'font-size': FS, 'font-family': 'system-ui, sans-serif',
-  })).textContent = `neutral (${neutral})`;
+  })).textContent = `neutral (${fmtNeutral(neutral)})`;
 
   // left y-axis labels (index)
   [0, 1, 2].forEach(v => {
@@ -1654,7 +1640,7 @@ function renderChart(data, context) {
     tip.innerHTML =
       `<div class="tt-doc">${best.doc_id}</div>` +
       `<div class="tt-row">Published <b>${fmtDate(best.published)}</b></div>` +
-      `<div class="tt-row">Index <b>${best.abg_net_index.toFixed(3)}</b></div>` +
+      `<div class="tt-row">Index <b>${fmtIndex(best.abg_net_index)}</b></div>` +
       `<div class="tt-row" style="margin-top:4px">Decision that followed:<br>${followed}</div>`;
 
     const pxX = cx / W * rect.width;
@@ -1724,8 +1710,8 @@ function renderChart(data, context) {
   document.getElementById('chart-desc').textContent =
     `Line chart of the A&BG net index for ${docs.length} MPC documents, ` +
     `${fmtDate(first.published)} to ${fmtDate(latest.published)}, on a 0 to 2 scale where ` +
-    `${neutral} is neutral. Latest reading ${latest.abg_net_index.toFixed(3)}. ` +
-    `Highest ${hi.abg_net_index.toFixed(3)} (${hi.doc_id}), lowest ${lo.abg_net_index.toFixed(3)} ` +
+    `${fmtNeutral(neutral)} is neutral. Latest reading ${fmtIndex(latest.abg_net_index)}. ` +
+    `Highest ${fmtIndex(hi.abg_net_index)} (${hi.doc_id}), lowest ${fmtIndex(lo.abg_net_index)} ` +
     `(${lo.doc_id}). Triangles mark meetings followed by a hike or a cut` +
     (ratePoints ? '; a second line shows Bank Rate on the right-hand axis.' : '.');
 
@@ -1816,8 +1802,12 @@ function renderContext(ctx) {
     `latest, ${fmtDate(g.as_of)} · ${g.window_months}-month history`;
   drawSparkline('gilt-chart', g.sparkline.map(p => [p.date, p.yield_pct]), 'var(--gilt)');
 
+  // Mirrors CONTEXT_NOTE in pipeline/build_fallbacks.py. The JSON's own
+  // disclaimer string is the machine-readable flag; the sentence is the page's.
   document.getElementById('context-note').innerHTML =
-    `${ctx.disclaimer} Sources: Bank of England OIS forward curve &amp; SONIA; ` +
+    `Context, not model inputs. These series are shown for orientation only; ` +
+    `none of them feed the A&amp;BG communication index, the market benchmark, ` +
+    `or any locked call. Sources: Bank of England OIS forward curve &amp; SONIA; ` +
     `GLC nominal gilt curve; Bank Rate from the voting record.`;
 
   document.getElementById('context-status').style.display = 'none';

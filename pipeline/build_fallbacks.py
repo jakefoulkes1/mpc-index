@@ -1,5 +1,6 @@
-"""Regenerates every static fallback block, and every inline figure, in
-index.html and methodology.html from the JSON.
+"""Regenerates every static fallback block and every inline figure on every
+published surface - index.html, methodology.html and README.md - from the
+data files.
 
 Site layer, additive: reads the data files the front-end fetches and rewrites
 two kinds of marked region.
@@ -10,8 +11,9 @@ two kinds of marked region.
 The block regions are what a reader sees if the fetch fails or JavaScript
 never runs; the JS overwrites them on success. The figure regions are prose
 that JavaScript never touches - the sentence is the author's, the number in
-it is the data's. Both pages are covered; methodology.html runs no JavaScript
-at all, so every number on it is a figure region or nothing.
+it is the data's. methodology.html runs no JavaScript at all, and README.md
+is Markdown (which tolerates HTML comments), so on those two surfaces every
+number is a region or it is not a figure.
 
 Nothing here is retyped. Block regions are built from the data file the
 front-end would have fetched, using the same formatting rules index.html's
@@ -20,20 +22,34 @@ what the tests read. pipeline/tests/test_static_fallback.py and
 pipeline/tests/test_site_figures.py fail until this has been re-run.
 
 Run it after any rebuild of index.json, ladder_v1.json, inference_v1.json,
-site_context.json, annotations.json, track_record.json or a prediction file.
+site_context.json, annotations.json, track_record.json or a prediction file,
+and after a new lock-* file is written: the prediction file on display is
+the newest lock-*, derived here rather than edited into the page.
 
 Run:  python -m pipeline.build_fallbacks
 """
 import json
 import re
-from datetime import datetime, timezone
 from pathlib import Path
 
-from pipeline.site_figures import figures, gb_date
+from pipeline.site_figures import (
+    AUTHOR,
+    figures,
+    gb_date,
+    gb_stamp_utc,
+    index_value,
+    lock_date_for,
+    neutral,
+    next_meeting_after,
+    pct,
+    plain,
+    prediction_file,
+    score,
+)
 
 ROOT = Path(__file__).resolve().parents[1]
-REPO_URL = "https://github.com/jakefoulkes1/mpc-index"
-PREDICTION_FILE = "data/predictions/lock-2026-07.json"
+REPO_URL = AUTHOR["repo"]
+PREDICTION_FILE = prediction_file()
 
 BADGE_LABEL = {"locked": "Locked", "dryrun": "Dry run", "rehearsal": "Rehearsal", "other": "Other"}
 
@@ -49,21 +65,36 @@ MODEL_GLOSS = {
 }
 M0_GLOSS = "market pricing only"
 
+# The README's longer descriptions of the same five models. Author's labels.
+MODEL_DESCRIPTION = {
+    "L0": "always hold",
+    "L1": "market-only (OIS-implied, two-state ±{move_bp}bp)",
+    "L2": "ordered logit on the market-implied change",
+    "L3": "L2 + lagged tone index + lagged vote skew",
+    "L4": "member-level transition simulation, blended with market",
+}
+
+# The context panel's standing label. A sentence in the template rather than
+# the JSON's own disclaimer string printed verbatim, so its punctuation is
+# the site's (DECISIONS.md 2026-09-02, dash policy). Mirrored in
+# renderContext().
+CONTEXT_NOTE = (
+    "Context, not model inputs. These series are shown for orientation only; "
+    "none of them feed the A&amp;BG communication index, the market benchmark, "
+    "or any locked call."
+)
+
 
 def load(rel: str):
     return json.loads((ROOT / rel).read_text())
 
 
-def pct(v: float) -> str:
-    return f"{v * 100:.0f}%"
-
-
-def replace_region(html: str, name: str, body: str, kind: str = "fallback", where: str = "index.html") -> str:
+def replace_region(text: str, name: str, body: str, kind: str = "fallback", where: str = "index.html") -> str:
     pattern = re.compile(
         rf"(<!--\s*{kind}:{name}\b.*?-->)(.*?)(<!--\s*/{kind}:{name}\s*-->)",
         re.S,
     )
-    new, n = pattern.subn(lambda m: m.group(1) + body + m.group(3), html)
+    new, n = pattern.subn(lambda m: m.group(1) + body + m.group(3), text)
     if n != 1:
         raise SystemExit(f"{kind}:{name} matched {n} times in {where}, expected 1")
     return new
@@ -72,9 +103,9 @@ def replace_region(html: str, name: str, body: str, kind: str = "fallback", wher
 # ------------------------------------------------------------- figures
 
 
-def write_figures(html: str, where: str) -> str:
-    """Fill every <!-- fig:NAME --> region on the page from the catalogue."""
-    catalogue = figures()
+def write_figures(text: str, where: str, catalogue: dict[str, str] | None = None) -> str:
+    """Fill every <!-- fig:NAME --> region on the surface from the catalogue."""
+    catalogue = catalogue if catalogue is not None else figures()
     used: set[str] = set()
 
     def repl(m: re.Match) -> str:
@@ -93,10 +124,52 @@ def write_figures(html: str, where: str) -> str:
         r"(?P<close><!--\s*/fig:(?P=name)\s*-->)",
         re.S,
     )
-    html = pattern.sub(repl, html)
+    text = pattern.sub(repl, text)
     if used:
         print(f"  {where}: {len(used)} distinct figures written")
-    return html
+    return text
+
+
+# -------------------------------------------------- byline and metadata
+
+
+def build_byline(html: str, where: str) -> str:
+    """The footer byline, from the one AUTHOR record."""
+    body = (
+        f'\n    <p class="byline"><strong>{AUTHOR["name"]}</strong>, {AUTHOR["affiliation"]}<br>'
+        f'<a href="mailto:{AUTHOR["email"]}">{AUTHOR["email"]}</a></p>\n    '
+    )
+    return replace_region(html, "byline", body, where=where)
+
+
+def build_meta(html: str, where: str) -> str:
+    """<meta> tags that carry a figure or the byline: generated whole, because
+    a fig region cannot sit inside an attribute."""
+    f = figures()
+    html = replace_region(
+        html, "metaauthor",
+        f'\n<meta name="author" content="{AUTHOR["name"]}">\n',
+        where=where,
+    )
+    alt = (
+        f"The A&amp;BG communication index for Bank of England MPC minutes, "
+        f"{f['corpus_start_month']} to {f['corpus_end_month']}, plotted against its neutral value."
+    )
+    return replace_region(
+        html, "ogalt",
+        f'\n<meta property="og:image:alt" content="{alt}">\n',
+        where=where,
+    )
+
+
+def build_gen_note(html: str) -> str:
+    """The footer's "index data generated" note - shipped filled in, so the
+    separator before it never dangles. renderLatest() refreshes it."""
+    f = figures()
+    return replace_region(
+        html, "gennote",
+        f'<span id="gen-note">Index data generated {f["index_generated"]}.</span>',
+    )
 
 
 # -------------------------------------------------------------- ladder
@@ -104,17 +177,18 @@ def write_figures(html: str, where: str) -> str:
 
 def build_ladder(html: str) -> str:
     d = load("data/ladder_v1.json")
+    f = figures()
     scores = d["headline_scores_scheduled_only"]
     rows = []
     for model in ("L0", "L1", "L2", "L3", "L4"):
         s = scores[model]
-        skill = "&mdash;" if s.get("skill_vs_l1") is None else f"{s['skill_vs_l1']:.4f}"
+        skill = "&mdash;" if s.get("skill_vs_l1") is None else score(s["skill_vs_l1"])
         cls = ' class="model-l1"' if model == "L1" else ""
         rows.append(
             f"            <tr{cls}><td><strong>{model}</strong>"
             f'<span class="model-gloss">{MODEL_GLOSS[model]}</span></td>'
-            f"<td>{s['mean_brier']}</td>"
-            f"<td>{s['mean_log_score']}</td><td>{skill}</td><td>{s['n']}</td></tr>"
+            f"<td>{score(s['mean_brier'])}</td>"
+            f"<td>{score(s['mean_log_score'])}</td><td>{skill}</td><td>{s['n']}</td></tr>"
         )
     body = '\n          <tbody id="ladder-tbody">\n' + "\n".join(rows) + "\n          </tbody>\n        "
     html = replace_region(html, "ladder", body)
@@ -124,9 +198,9 @@ def build_ladder(html: str) -> str:
     # the July ingest until a test caught it.
     meta = (
         f'\n          <p class="fine" id="ladder-meta" style="margin-top:0">Scheduled meetings '
-        f'only, evaluated {gb_date(d["eval_start"])} &rarr; present (<strong>n={d["n_scheduled"]}'
-        f'</strong>) &middot; {d["n_specials"]} special meeting(s) reported separately, not '
-        f'blended in &middot; log-score probability floor {d["log_score_probability_clip"]}.</p>\n'
+        f'only, evaluated from {f["eval_start"]} onwards (n&nbsp;=&nbsp;{f["n_scheduled"]}); '
+        f'{f["n_specials"]} special meetings reported separately, not blended in; '
+        f'log-score probability floor {f["log_clip"]}.</p>\n'
         f'          '
     )
     return replace_region(html, "laddermeta", meta)
@@ -135,26 +209,27 @@ def build_ladder(html: str) -> str:
 # -------------------------------------------------------------- spec 3
 
 
-def build_spec3(html: str) -> str:
-    """Rounded for reading, with the full precision one link away.
-
-    Six decimal places on a coefficient whose p-value is 0.03 asserts a
-    precision the estimate does not have; the JSON keeps every digit and the
-    sentence names the file.
-    """
-    f = figures()
-    line = (
-        f"Regressing each meeting's market surprise on the <em>previous</em> meeting's index "
-        f"(OLS, Newey&ndash;West standard errors, {f['nw_lags']} lags, n={f['spec3_n']} "
-        f"scheduled meetings): coefficient <strong>{f['spec3_coef']}</strong> "
-        f"(t = {f['spec3_t']}, <strong>p = {f['spec3_p']}</strong>). On the post-hiking-cycle "
+def spec3_sentence(f: dict[str, str], code_open: str = "<code>", code_close: str = "</code>",
+                   strong_open: str = "<strong>", strong_close: str = "</strong>",
+                   em_open: str = "<em>", em_close: str = "</em>", ndash: str = "&ndash;") -> str:
+    """The one Spec 3 / Spec 2 sentence, rounded for reading, with the full
+    precision one link away. Shared by index.html and README.md."""
+    return (
+        f"Regressing each meeting's market surprise on the {em_open}previous{em_close} meeting's index "
+        f"(OLS, Newey{ndash}West standard errors, {f['nw_lags']} lags, n={f['spec3_n']} "
+        f"scheduled meetings): coefficient {strong_open}{f['spec3_coef']}{strong_close} "
+        f"(t = {f['spec3_t']}, {strong_open}p = {f['spec3_p']}{strong_close}). On the post-hiking-cycle "
         f"subsample (from {f['frag_start']}, n={f['frag_n']}) the result does not "
         f"replicate: coefficient {f['frag_coef']} (t = {f['frag_t']}, p = {f['frag_p']}). "
         f"Spec 2, an ordered-logit likelihood-ratio test on the discrete decision, finds "
         f"nothing: LR = {f['spec2_lr']}, p = {f['spec2_p']}. "
         f"Coefficients and t-statistics are rounded to 2 decimal places and p-values to 4; "
-        f"full precision is in <code>data/inference_v1.json</code>."
+        f"full precision is in {code_open}data/inference_v1.json{code_close}."
     )
+
+
+def build_spec3(html: str) -> str:
+    line = spec3_sentence(figures())
     return replace_region(
         html, "spec3",
         f'\n          <p id="spec3-line" class="prose" style="margin:0">{line}</p>\n        ',
@@ -177,7 +252,7 @@ def build_track(html: str) -> str:
         if r["kind"] != "locked":
             continue
         m0 = r["m0_market_only"]
-        brier = "&mdash;" if r["brier_m0"] is None else f"{r['brier_m0']:.4f}"
+        brier = "&mdash;" if r["brier_m0"] is None else score(r["brier_m0"])
         rows.append(
             f'            <tr class="kind-{r["kind"]}">'
             f'<td>{gb_date(r["meeting_announcement"])}</td>'
@@ -196,7 +271,6 @@ def build_track(html: str) -> str:
 def build_verify(html: str) -> str:
     """The tag, the git command and the repository, in one place.
 
-    These three used to be spread across the call card and the footer nav.
     Generated from the prediction file actually on display, so it can never
     invite a reader to check a tag that does not exist.
     """
@@ -229,7 +303,6 @@ def build_verify(html: str) -> str:
 
 def build_call(html: str) -> str:
     lock = load(PREDICTION_FILE)
-    ctx = load("data/site_context.json")
     m0 = lock["m0_market_only"]
     probs = [("cut", m0["p_cut"]), ("hold", m0["p_hold"]), ("hike", m0["p_hike"])]
     lead = max(probs, key=lambda kv: kv[1])[0]
@@ -241,22 +314,11 @@ def build_call(html: str) -> str:
     hit = lock["point_call"] == lock["outcome"]
 
     # Next announcement: the first meeting in the Bank's published calendar
-    # after this call's own. Read from site_context.json, never typed in.
-    later = sorted(
-        m["meeting_date"] for m in ctx["ois_path"]["meetings"]
-        if m["meeting_date"] > lock["meeting_announcement"]
-    )
-    if not later:
-        raise SystemExit(
-            "no meeting after the locked call in data/site_context.json - "
-            "rebuild it (python -m pipeline.site_context) before stating a next announcement"
-        )
-    next_meeting = later[0]
+    # after this call's own. From the calendar constant, never typed in.
+    next_meeting = next_meeting_after(lock["meeting_announcement"])
 
     stamp_iso = lock["lock_timestamp"]
-    utc = datetime.fromisoformat(stamp_iso).astimezone(timezone.utc)
-    # Matches fmtUTCStamp() in index.html: site date format, to the second, UTC.
-    stamp_utc = f"{utc.day} {utc.strftime('%B')} {utc.year}, {utc.strftime('%H:%M:%S')} UTC"
+    stamp_utc = gb_stamp_utc(stamp_iso)
     lock_day = gb_date(stamp_iso)
 
     rationale = (
@@ -268,7 +330,7 @@ def build_call(html: str) -> str:
     )
     prob_divs = "".join(
         f'<div class="call-prob{" is-lead" if k == lead else ""}">'
-        f'<span class="n">{v * 100:.0f}%</span><span class="l">{k}</span></div>'
+        f'<span class="n">{pct(v)}</span><span class="l">{k}</span></div>'
         for k, v in probs
     )
     bar_segs = "".join(
@@ -278,7 +340,8 @@ def build_call(html: str) -> str:
     word = "above" if lock["index_current"] > lock["index_trailing_mean"] else "below"
 
     body = f'''
-  <section class="card call-card locked" id="call-card" aria-labelledby="call-badge">
+  <section class="card call-card locked" id="call-card" aria-labelledby="call-badge"
+           data-prediction-file="{PREDICTION_FILE}">
     <div class="call-badge locked" id="call-badge">LOCKED CALL{" &middot; SCORED" if scored else ""}</div>
     <p class="call-heading" id="call-heading">Call for <strong>{gb_date(lock["meeting_announcement"])}</strong></p>
     <p class="call-stamp" id="call-stamp"><span class="stamp-label">Locked</span><time
@@ -301,7 +364,7 @@ def build_call(html: str) -> str:
     <div class="call-probs" id="call-probs">{prob_divs}</div>
     <div class="call-probbar" id="call-probbar" aria-hidden="true">{bar_segs}</div>
     <p class="call-probsrc" id="call-probsrc"><strong>m0</strong> <span class="prob-gloss">{M0_GLOSS}</span> &mdash; OIS forward curve vs SONIA, {m0["assumed_move_bp"]:g}bp two-state assumption. Not the point call.</p>
-    <p class="fine call-index-line" id="call-index-line">A&amp;BG index ({lock["index_current_doc_id"]}): <strong>{lock["index_current"]:.3f}</strong> vs trailing {lock["index_trailing_n"]}-document mean <strong>{lock["index_trailing_mean"]:.3f}</strong> ({vs:.3f} {word})</p>
+    <p class="fine call-index-line" id="call-index-line">A&amp;BG index ({lock["index_current_doc_id"]}): <strong>{index_value(lock["index_current"])}</strong> vs trailing {lock["index_trailing_n"]}-document mean <strong>{index_value(lock["index_trailing_mean"])}</strong> ({index_value(vs)} {word})</p>
     <div class="call-rationale" id="call-rationale">
       <p class="call-rationale-h" id="call-rationale-h">Point call <span class="pt-call">{lock["point_call"]}</span></p>
       <p class="call-rationale-body" id="call-rationale-body">{rationale}</p>
@@ -313,7 +376,7 @@ def build_call(html: str) -> str:
          card stops being a forward-looking notice and becomes a result. Both
          figures come from the locked file's own outcome/scores fields. -->
     <div class="call-outcome" id="call-outcome">
-      <div class="call-outcome-row"><span class="oc-item"><span class="oc-l">Outcome</span><span class="oc-v">{lock["outcome"]}</span></span><span class="oc-item"><span class="oc-l">Brier (m0)</span><span class="oc-v">{brier:.4f}</span></span><span class="oc-item"><span class="oc-l">Point call</span><span class="oc-v{" oc-hit" if hit else ""}">{"matched" if hit else "missed"}</span></span></div>
+      <div class="call-outcome-row"><span class="oc-item"><span class="oc-l">Outcome</span><span class="oc-v">{lock["outcome"]}</span></span><span class="oc-item"><span class="oc-l">Brier (m0)</span><span class="oc-v">{score(brier)}</span></span><span class="oc-item"><span class="oc-l">Point call</span><span class="oc-v{" oc-hit" if hit else ""}">{"matched" if hit else "missed"}</span></span></div>
       <p class="oc-note" id="call-outcome-note">Scored after the announcement by
       <code>pipeline/predict/score_outcomes.py</code>, which fills the outcome and scores fields
       and nothing else.</p>
@@ -329,21 +392,29 @@ def build_call(html: str) -> str:
 # ------------------------------------------------- latest reading / chart
 
 
+def lexicon_id(index: dict) -> str:
+    """The lexicon's short name. data/index.json's `lexicon` field is a
+    sentence of provenance ("abg_2012 (Apel & Blix Grimaldi 2012, verbatim -
+    see ...)"); the page shows its identifier and links the file. Mirrored in
+    renderLatest()."""
+    return index["lexicon"].split()[0]
+
+
 def build_latest(html: str) -> str:
     """renderLatest()'s output, generated - the reading, not "Loading..."."""
     data = load("data/index.json")
     doc = data["documents"][-1]
-    neutral = data["neutral_value"]
-    net = doc["abg_net_index"] - neutral
+    mid = data["neutral_value"]
+    net = doc["abg_net_index"] - mid
     cls = "sign-hawk" if net > 0 else ("sign-dove" if net < 0 else "")
     word = "net hawkish" if net > 0 else ("net dovish" if net < 0 else "neutral")
     body = f'''
     <div class="reading" id="content">
       <p class="docline" id="docline">MPC minutes, meeting ending <strong>{gb_date(doc["meeting_end"])}</strong> &middot; published {gb_date(doc["published"])} &middot; decision: {doc["decision"]} &middot; vote {doc["vote"]}</p>
-      <p class="score" id="score"><span class="{cls}">{doc["abg_net_index"]:.3f}</span> <span class="score-word">{word} (A&amp;BG Net Index, 0&ndash;2 scale, {neutral} = neutral)</span></p>
+      <p class="score" id="score"><span class="{cls}">{index_value(doc["abg_net_index"])}</span> <span class="score-word">{word} (A&amp;BG Net Index, 0&ndash;2 scale, {neutral(mid)} = neutral)</span></p>
       <div class="scale"><div class="marker" id="marker" style="left:{50 + net * 50:.4f}%"></div></div>
       <div class="scale-labels"><span>&larr; dovish</span><span>neutral</span><span>hawkish &rarr;</span></div>
-      <p class="fine" id="detail">{doc["abg_hawk"]} hawkish vs {doc["abg_dove"]} dovish noun+adjective hits &middot; lexicon: {data["lexicon"]} &middot; sha256 <code>{doc["sha256"][:16]}&hellip;</code> &middot; <a href="{doc["source_url"]}">source document</a></p>
+      <p class="fine" id="detail">{doc["abg_hawk"]} hawkish vs {doc["abg_dove"]} dovish noun+adjective hits &middot; lexicon <code>{lexicon_id(data)}</code> &middot; sha256 <code>{doc["sha256"][:16]}&hellip;</code> &middot; <a href="{doc["source_url"]}">source document</a></p>
     </div>
     '''
     return replace_region(html, "latest", body)
@@ -363,9 +434,9 @@ def build_chart(html: str) -> str:
     body = f'''
     <p class="fine" id="chart-fallback">The chart is drawn by JavaScript. In words:
     <strong>{len(series)}</strong> readings from {gb_date(series[0]["date"])} to
-    {gb_date(series[-1]["date"])} on the A&amp;BG 0&ndash;2 scale, where {data["neutral_value"]}
-    is neutral. Latest <strong>{values[-1]:.3f}</strong> ({series[-1]["doc_id"]}); series low
-    {lo["abg_net_index"]:.3f} ({lo["doc_id"]}), high {hi["abg_net_index"]:.3f} ({hi["doc_id"]}).
+    {gb_date(series[-1]["date"])} on the A&amp;BG 0&ndash;2 scale, where {neutral(data["neutral_value"])}
+    is neutral. Latest <strong>{index_value(values[-1])}</strong> ({series[-1]["doc_id"]}); series low
+    {index_value(lo["abg_net_index"])} ({lo["doc_id"]}), high {index_value(hi["abg_net_index"])} ({hi["doc_id"]}).
     Every point is in <code>data/index.json</code>.</p>
     '''
     return replace_region(html, "chart", body)
@@ -429,7 +500,7 @@ def build_context(html: str) -> str:
         </div>
       </div>
 
-      <p class="ctx-note" id="context-note">{ctx["disclaimer"]} Sources: Bank of England OIS forward curve &amp; SONIA; GLC nominal gilt curve; Bank Rate from the voting record.</p>
+      <p class="ctx-note" id="context-note">{CONTEXT_NOTE} Sources: Bank of England OIS forward curve &amp; SONIA; GLC nominal gilt curve; Bank Rate from the voting record.</p>
 '''
     return replace_region(html, "context", body)
 
@@ -486,23 +557,84 @@ def build_episodes(html: str) -> str:
     return replace_region(html, "episodes", body)
 
 
+# -------------------------------------------------------------- README
+
+
+def build_readme(md: str) -> str:
+    """README.md's headline table, Spec 3 paragraph, lock line and byline.
+
+    Markdown, so the values are plain characters (a real minus sign, not an
+    entity) and the table is a pipe table. Same catalogue, same rounding.
+    """
+    f = plain()
+    d = load("data/ladder_v1.json")
+    scores = d["headline_scores_scheduled_only"]
+    rows = [
+        "| Model | Description | Mean Brier | Mean log score | Skill vs L1 | n |",
+        "|---|---|---|---|---|---|",
+    ]
+    for model in ("L0", "L1", "L2", "L3", "L4"):
+        s = scores[model]
+        if model == "L1":
+            skill = "reference"
+        elif s.get("skill_vs_l1") is None:
+            skill = "—"
+        else:
+            skill = plain({"v": score(s["skill_vs_l1"])})["v"]
+        desc = MODEL_DESCRIPTION[model].format(move_bp=f["move_bp"])
+        rows.append(
+            f"| {model} | {desc} | {plain({'v': score(s['mean_brier'])})['v']} | "
+            f"{plain({'v': score(s['mean_log_score'])})['v']} | {skill} | {s['n']} |"
+        )
+    md = replace_region(md, "readme_ladder", "\n" + "\n".join(rows) + "\n", where="README.md")
+
+    spec3 = spec3_sentence(
+        f, code_open="`", code_close="`", strong_open="**", strong_close="**",
+        em_open="*", em_close="*", ndash="–",
+    )
+    md = replace_region(md, "readme_spec3", spec3, where="README.md")
+
+    lock_line = (
+        f"**First pre-registered lock: {f['lock_stamp_utc']}, for the {f['lock_meeting']} "
+        f"announcement** (tag `{f['lock_tag']}`). Locked calls so far: {f['lock_count']}. "
+        f"Next lock: {f['next_lock_date']}, for the {f['next_meeting']} announcement."
+    )
+    md = replace_region(md, "readme_lock", lock_line, where="README.md")
+
+    byline = (
+        f"Built and maintained by {AUTHOR['name']}, {AUTHOR['affiliation']}. "
+        f"Contact: <{AUTHOR['email']}>."
+    )
+    return replace_region(md, "byline", byline, where="README.md")
+
+
 def main() -> None:
     index_path = ROOT / "index.html"
     html = index_path.read_text()
     for fn in (
         build_verify, build_call, build_latest, build_chart, build_context,
-        build_ladder, build_spec3, build_track, build_episodes,
+        build_ladder, build_spec3, build_track, build_episodes, build_gen_note,
     ):
         html = fn(html)
+    html = build_meta(html, "index.html")
+    html = build_byline(html, "index.html")
     html = write_figures(html, "index.html")
     index_path.write_text(html)
 
     meth_path = ROOT / "methodology.html"
-    meth_path.write_text(write_figures(meth_path.read_text(), "methodology.html"))
+    meth = meth_path.read_text()
+    meth = build_meta(meth, "methodology.html")
+    meth = build_byline(meth, "methodology.html")
+    meth_path.write_text(write_figures(meth, "methodology.html"))
+
+    readme_path = ROOT / "README.md"
+    readme = build_readme(readme_path.read_text())
+    readme_path.write_text(write_figures(readme, "README.md", plain()))
 
     print(
         "regenerated index.html blocks: verify, call, latest, chart, context, "
-        "ladder, spec3, track, episodes"
+        "ladder, spec3, track, episodes, gennote, meta, byline; methodology.html: meta, byline; "
+        "README.md: ladder table, spec3, lock line, byline"
     )
 
 

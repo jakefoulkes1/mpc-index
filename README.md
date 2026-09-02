@@ -11,7 +11,9 @@
 Does the tone of the Bank of England Monetary Policy Committee's published
 minutes carry information about the next Bank Rate decision beyond what
 financial markets already price into the OIS/SONIA curve? Every MPC minutes
-document from August 2015 to the present (94 documents) is scored with the
+document from <!-- fig:corpus_start_month -->August 2015<!-- /fig:corpus_start_month --> to
+<!-- fig:corpus_end_month -->July 2026<!-- /fig:corpus_end_month -->
+(<!-- fig:corpus_n -->95<!-- /fig:corpus_n --> documents) is scored with the
 Apel & Blix Grimaldi (2012) hawkish/dovish dictionary index, exactly as
 described in that paper. The benchmark is the market itself: probabilities
 implied by the Bank's own published OIS forward curve. Models that add the
@@ -39,7 +41,7 @@ Five stages: scrape → score → benchmark → lock → score.
    data/index.json  ---------------+------------+
                                    |
                                    v
-                expanding-window benchmark ladder, L0-L4
+                expanding-window benchmark ladder, L0 to L4
                   pipeline/ladder.py -> data/ladder_v1.json
                                    |
                                    v
@@ -54,39 +56,39 @@ Five stages: scrape → score → benchmark → lock → score.
 
 ## Headline results
 
-Values below are copied verbatim from [data/ladder_v1.json](data/ladder_v1.json)
-and [data/inference_v1.json](data/inference_v1.json) — the JSON files are the
-source of truth.
+Every figure below is written by `pipeline/build_fallbacks.py` from
+[data/ladder_v1.json](data/ladder_v1.json) and
+[data/inference_v1.json](data/inference_v1.json), which are the source of
+truth; `pipeline/tests/test_site_figures.py` fails if this file drifts from
+them. Rounding: scores to 4 decimal places, coefficients and t-statistics
+to 2, p-values to 4.
 
 **Benchmark ladder** — scheduled meetings only, expanding-window evaluation
-from 1 January 2019 (60 meetings; the two March 2020 emergency meetings are
-reported separately in the JSON as a robustness line). Lower Brier / log
+from <!-- fig:eval_start -->1 January 2019<!-- /fig:eval_start -->
+(<!-- fig:n_scheduled -->61<!-- /fig:n_scheduled --> meetings; the
+<!-- fig:n_specials -->2<!-- /fig:n_specials --> March 2020 emergency meetings
+are reported separately in the JSON as a robustness line). Lower Brier / log
 score is better; positive skill vs L1 would mean beating the market.
 
+<!-- fallback:readme_ladder -->
 | Model | Description | Mean Brier | Mean log score | Skill vs L1 | n |
 |---|---|---|---|---|---|
-| L0 | always hold | 0.6667 | 6.9078 | — | 60 |
-| L1 | market-only (OIS-implied, two-state ±25bp) | 0.0905 | 0.1454 | reference | 60 |
-| L2 | ordered logit on the market-implied change | 0.1011 | 0.1701 | −0.1171 | 60 |
-| L3 | L2 + lagged tone index + lagged vote skew | 0.1514 | 0.2664 | −0.6729 | 60 |
-| L4 | member-level transition simulation, blended with market | 0.1644 | 0.263 | −0.8166 | 60 |
+| L0 | always hold | 0.6557 | 6.7945 | — | 61 |
+| L1 | market-only (OIS-implied, two-state ±25bp) | 0.0891 | 0.1437 | reference | 61 |
+| L2 | ordered logit on the market-implied change | 0.0995 | 0.1676 | −0.1167 | 61 |
+| L3 | L2 + lagged tone index + lagged vote skew | 0.1489 | 0.2623 | −0.6712 | 61 |
+| L4 | member-level transition simulation, blended with market | 0.1617 | 0.2587 | −0.8148 | 61 |
+<!-- /fallback:readme_ladder -->
 
 No model that adds the tone index beats the market-only benchmark (L1) in
 this backtest.
 
-**Spec 3** — OLS of the market surprise (actual minus market-implied rate
-change, in basis points) on the previous meeting's tone index, Newey–West
-standard errors (4 lags), full sample of 91 scheduled meetings:
-coefficient −2.163349, t = −2.1499, **p = 0.0316**. On the post-hiking-cycle
-subsample (from 1 September 2023, n = 23) the result does not replicate:
-coefficient −3.441919, t = −1.4678, p = 0.1422. Spec 2, an ordered-logit
-likelihood-ratio test of the same lagged index on the three-class decision,
-finds nothing on the full sample: LR = 0.4726, p = 0.4918. The two
-specifications disagree; both are reported.
+**Spec 3** — <!-- fallback:readme_spec3 -->Regressing each meeting's market surprise on the *previous* meeting's index (OLS, Newey–West standard errors, 4 lags, n=92 scheduled meetings): coefficient **−2.15** (t = −2.16, **p = 0.0310**). On the post-hiking-cycle subsample (from 1 September 2023, n=24) the result does not replicate: coefficient −3.35 (t = −1.55, p = 0.1221). Spec 2, an ordered-logit likelihood-ratio test on the discrete decision, finds nothing: LR = 0.4778, p = 0.4894. Coefficients and t-statistics are rounded to 2 decimal places and p-values to 4; full precision is in `data/inference_v1.json`.<!-- /fallback:readme_spec3 -->
+The two specifications disagree; both are reported.
 
-**First pre-registered lock: 28 July 2026, 12:00, for the 30 July 2026
-announcement.** Files under `data/predictions/lock-*` are permanent once
-written, misses included.
+<!-- fallback:readme_lock -->**First pre-registered lock: 28 July 2026, 19:08:36 UTC, for the 30 July 2026 announcement** (tag `lock-2026-07`). Locked calls so far: 1. Next lock: 15 September 2026, for the 17 September 2026 announcement.<!-- /fallback:readme_lock -->
+Files under `data/predictions/lock-*` are permanent once written, misses
+included.
 
 ## Quickstart
 
@@ -113,12 +115,14 @@ pipeline/
   score/      A&BG (2012) index (abg.py); lexicon/ holds the term lists
   market/     OIS forward curve + SONIA readers (Bank of England data)
   predict/    market-implied probabilities, lock machinery, scoring rules
-  ladder.py   expanding-window benchmark ladder L0-L4
+  ladder.py   expanding-window benchmark ladder L0 to L4
   inference.py         Spec 2 / Spec 3 statistical tests
   validate.py          contemporaneous tone-vs-votes checks
   build_*.py           orchestrators: raw inputs -> data/*.json|csv
+  site_figures.py      the one catalogue of every published figure
+  build_fallbacks.py   writes those figures into the site and this README
   inspect.py           per-document evidence inspector (drafting tool)
-  tests/      105 tests; fixtures only, no live network calls
+  tests/      pytest suite; fixtures only, no live network calls
 data/
   raw/                 local cache of source texts (gitignored, never public)
   index.json           the published tone-index series
@@ -129,6 +133,7 @@ data/
 index.html       the site (static, GitHub Pages, no build step)
 methodology.html specification sheet for data, index, benchmark, evaluation
 site/annotations/     episode write-ups rendered by the site
+site/fonts/           Source Serif 4, self-hosted (SIL Open Font License)
 DECISIONS.md     dated log of every methodological choice (append-only)
 ```
 
@@ -145,3 +150,5 @@ each traceable to a dated entry in [DECISIONS.md](DECISIONS.md).
 Not investment advice. Source documents © Bank of England, linked, not
 republished; raw texts stay in a local gitignored cache and only derived
 scores and hashes are published.
+
+<!-- fallback:byline -->Built and maintained by Jake Foulkes, BSc Economics, Loughborough University. Contact: <jakefoulkes@aol.com>.<!-- /fallback:byline -->

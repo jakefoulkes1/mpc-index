@@ -18,6 +18,9 @@ from pathlib import Path
 
 import pytest
 
+from pipeline.site_context import UPCOMING_MEETINGS
+from pipeline.site_figures import clip, score
+
 ROOT = Path(__file__).resolve().parents[2]
 INDEX_HTML = ROOT / "index.html"
 METHODOLOGY_HTML = ROOT / "methodology.html"
@@ -72,12 +75,13 @@ def test_ladder_fallback_rows_match_json(index_html):
 
     for model in LADDER_MODELS:
         s = scores[model]
-        skill = "&mdash;" if s.get("skill_vs_l1") is None else f"{s['skill_vs_l1']:.4f}"
+        # Rounding policy: scores to 4 d.p., a true minus sign, never a hyphen.
+        skill = "&mdash;" if s.get("skill_vs_l1") is None else score(s["skill_vs_l1"])
         expected = (
             f"<td><strong>{model}</strong>"
             f'<span class="model-gloss">{MODEL_GLOSS[model]}</span></td>'
-            f"<td>{s['mean_brier']}</td>"
-            f"<td>{s['mean_log_score']}</td><td>{skill}</td><td>{s['n']}</td>"
+            f"<td>{score(s['mean_brier'])}</td>"
+            f"<td>{score(s['mean_log_score'])}</td><td>{skill}</td><td>{s['n']}</td>"
         )
         assert expected in block, (
             f"index.html's built-in ladder row for {model} no longer matches "
@@ -94,10 +98,10 @@ def test_ladder_fallback_schema_and_meta_match_json(index_html):
     meta = re.search(r'id="ladder-meta"[^>]*>(.*?)</p>', index_html, re.S)
     assert meta, "index.html has no #ladder-meta paragraph"
     text = meta.group(1)
-    assert gb_date(ladder["eval_start"]) in text
-    assert f"n={ladder['n_scheduled']}" in text
-    assert f"{ladder['n_specials']} special meeting(s)" in text
-    assert str(ladder["log_score_probability_clip"]) in text
+    assert f"evaluated from {gb_date(ladder['eval_start'])} onwards" in text
+    assert f"n&nbsp;=&nbsp;{ladder['n_scheduled']}" in text
+    assert f"{ladder['n_specials']} special meetings" in text
+    assert clip(ladder["log_score_probability_clip"]) in text
 
 
 # ------------------------------------------------------------- call card
@@ -221,7 +225,7 @@ def test_track_record_fallback_matches_json(index_html):
 
     for r in locked:
         m0 = r["m0_market_only"]
-        brier = "&mdash;" if r["brier_m0"] is None else f"{r['brier_m0']:.4f}"
+        brier = "&mdash;" if r["brier_m0"] is None else score(r["brier_m0"])
         expected = (
             f'<td>{gb_date(r["meeting_announcement"])}</td>'
             f'<td><span class="track-badge locked">Locked</span></td>'
@@ -261,7 +265,7 @@ def test_call_card_fallback_outcome_matches_lock_file(index_html):
     block = region(index_html, "call")
     brier = lock["scores"]["m0_market_only"]["brier_score"]
     assert f'<span class="oc-v">{lock["outcome"]}</span>' in block
-    assert f'<span class="oc-v">{brier:.4f}</span>' in block
+    assert f'<span class="oc-v">{score(brier)}</span>' in block
     assert "SCORED" in block, "a scored call must say so in the badge"
 
     hit = lock["point_call"] == lock["outcome"]
@@ -269,17 +273,14 @@ def test_call_card_fallback_outcome_matches_lock_file(index_html):
 
 
 def test_call_card_fallback_next_announcement_comes_from_the_calendar(index_html):
-    """The next announcement is the first meeting in site_context.json after
-    this call's own - never a hand-typed date."""
+    """The next announcement is the first meeting in the Bank's published
+    calendar (pipeline/site_context.py) after this call's own - never a
+    hand-typed date, and never read off the clock."""
     lock = json.loads(LOCK.read_text())
-    ctx = json.loads(CONTEXT.read_text())
     block = region(index_html, "call")
 
-    later = sorted(
-        m["meeting_date"] for m in ctx["ois_path"]["meetings"]
-        if m["meeting_date"] > lock["meeting_announcement"]
-    )
-    assert later, "site_context.json lists no meeting after the locked call's"
+    later = sorted(m for m in UPCOMING_MEETINGS if m > lock["meeting_announcement"])
+    assert later, "the calendar lists no meeting after the locked call's"
     assert f"<strong>{gb_date(later[0])}</strong>" in block, (
         f"the built-in next announcement is not {gb_date(later[0])}, "
         f"the next meeting in data/site_context.json"
@@ -344,3 +345,34 @@ def test_no_section_can_sit_on_loading_without_a_timeout(index_html):
         assert f"failSection('{status_id}'" in index_html, (
             f"#{status_id} has no failure state"
         )
+
+
+# ---------------------------------------------- prediction file on display
+
+
+def test_prediction_file_on_display_is_the_newest_lock_and_the_js_reads_it(index_html):
+    """The call card carries the prediction file it was built from as a data
+    attribute, derived from data/predictions/ by the generator, and the
+    JavaScript reads that attribute rather than a hand-edited constant - so
+    lock day has no "edit line 465" step."""
+    from pipeline.site_figures import prediction_file
+
+    block = region(index_html, "call")
+    assert f'data-prediction-file="{prediction_file()}"' in block
+    assert "dataset.predictionFile" in index_html
+    assert "const PREDICTION_FILE = 'data/predictions/" not in index_html
+
+
+def test_byline_and_meta_come_from_the_author_record():
+    """Footer byline, meta author and the share-card alt text are generated
+    from AUTHOR / the catalogue on both pages - no page carries its own copy."""
+    from pipeline.site_figures import AUTHOR, figures
+
+    f = figures()
+    for path in (INDEX_HTML, METHODOLOGY_HTML):
+        html = path.read_text()
+        byline = region(html, "byline")
+        assert AUTHOR["name"] in byline and AUTHOR["affiliation"] in byline
+        assert f'href="mailto:{AUTHOR["email"]}"' in byline
+        assert f'content="{AUTHOR["name"]}"' in region(html, "metaauthor")
+        assert f"{f['corpus_start_month']} to {f['corpus_end_month']}" in region(html, "ogalt")
