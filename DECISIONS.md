@@ -3107,4 +3107,13 @@ it will look.
   own smaller size, which is a narrower column than the `dt`. The cap is
   gone from `.refs dd`; the glossary keeps its own.
 - **`git diff --stat main`**: no science module, no locked file, no science
-  output. Deploy check below.
+  output - eight files changed, all of them the log, the two pages, the
+  generator, the stylesheet and three tests.
+- **Deploy check, 2026-09-02, 15:03 BST.** Pushed to `main` and Pages
+  reported `built 8565de1` on the sixth poll; the `tests` workflow for the
+  push passed. Fetched live with cache-busting and compared by SHA-256:
+  index.html `1852909e8f143f63`, methodology.html `02faba9e90dbe9ea`,
+  site/site.css `6726bee43cbb8f55`, og-image.png `5a6f7ac9f9ea217b` -
+  **all four identical to `main`**. The share card is byte-identical to the
+  one deployed this morning, as it should be: nothing in this session
+  touched the series it draws.
