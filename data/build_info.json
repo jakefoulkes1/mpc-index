@@ -1,9 +1,9 @@
 {
   "schema": "build-info-v1",
-  "last_commit_sha": "85b7fd5f4ec42465f396262c2e62247a829f3001",
-  "last_commit_short_sha": "85b7fd5",
-  "last_commit_iso": "2026-09-02T11:11:38+01:00",
-  "last_commit_subject": "Deploy check recorded for the presentation pass",
-  "generated_utc": "2026-09-02T10:11:38+00:00",
+  "last_commit_sha": "83eb5fc32dd96728b2060d5ec50a1ac8bb01f359",
+  "last_commit_short_sha": "83eb5fc",
+  "last_commit_iso": "2026-09-02T11:12:34+01:00",
+  "last_commit_subject": "Pronouns in today's entries and comments: they/them for the maintainer",
+  "generated_utc": "2026-09-02T10:12:34+00:00",
   "note": "Written by pipeline/build_build_info.py from git log -1 at the time it ran. Not a claim about the data's vintage - data/index.json carries its own generated_utc."
 }
