@@ -157,6 +157,13 @@ def build_related_work(html: str, where: str) -> str:
     return replace_region(html, name, related_work_html(), where=where)
 
 
+def build_toc(html: str, where: str) -> str:
+    """methodology.html's in-page contents, read from its own sections."""
+    pairs = re.findall(r'<section class="section" id="([^"]+)">\s*<h2>(.*?)</h2>', html, re.S)
+    items = "".join(f'\n      <li><a href="#{i}">{re.sub(r"<[^>]+>", "", t).strip()}</a></li>' for i, t in pairs)
+    return replace_region(html, "toc", f"\n    <ol>{items}\n    </ol>\n    ", where=where)
+
+
 def build_status(html: str, where: str) -> str:
     """The masthead status line: counts from the record and the corpus, the
     next lock from the calendar, and the build stamp from build_info.json.
@@ -376,7 +383,7 @@ def build_verify(html: str) -> str:
     tag = Path(PREDICTION_FILE).stem
     tag_url = f"{REPO_URL}/releases/tag/{tag}"
     body = f'''
-  <section class="card" id="how-to-check">
+  <section class="section" id="how-to-check">
     <h2>How to check this</h2>
     <p class="plain-summary">Nothing here has to be taken on trust. The call below was tagged
     and pushed to GitHub before the announcement it is about, and everything behind it is in
@@ -428,7 +435,7 @@ def build_call(html: str) -> str:
         .replace("−", "&minus;")
     )
     prob_divs = "".join(
-        f'<div class="call-prob{" is-lead" if k == lead else ""}">'
+        f'<div class="call-prob{" is-lead" if k == lead else ""}{" is-call" if k == lock["point_call"] else ""}">'
         f'<span class="n">{pct(v)}</span><span class="l">{k}</span></div>'
         for k, v in probs
     )
@@ -439,7 +446,7 @@ def build_call(html: str) -> str:
     word = "above" if lock["index_current"] > lock["index_trailing_mean"] else "below"
 
     body = f'''
-  <section class="card call-card locked" id="call-card" aria-labelledby="call-badge"
+  <section class="section call-card locked" id="call-card" aria-labelledby="call-badge"
            data-prediction-file="{PREDICTION_FILE}">
     <div class="call-badge locked" id="call-badge">LOCKED CALL{" &middot; SCORED" if scored else ""}</div>
     <p class="call-heading" id="call-heading">Call for <strong>{gb_date(lock["meeting_announcement"])}</strong></p>
@@ -506,36 +513,85 @@ def build_latest(html: str) -> str:
     word = "net hawkish" if net > 0 else ("net dovish" if net < 0 else "neutral")
     body = f'''
     <div class="reading" id="content">
-      <p class="docline" id="docline">MPC minutes, meeting ending <strong>{gb_date(doc["meeting_end"])}</strong> &middot; published {gb_date(doc["published"])} &middot; decision: {doc["decision"]} &middot; vote {doc["vote"]}</p>
+      <p class="docline" id="docline">MPC minutes for the meeting ending <strong>{gb_date(doc["meeting_end"])}</strong>, published {gb_date(doc["published"])}. Decision: {doc["decision"]}; vote {doc["vote"].replace("-", "&ndash;")}.</p>
       <p class="score" id="score"><span class="{cls}">{index_value(doc["abg_net_index"])}</span> <span class="score-word">{word} (A&amp;BG Net Index, 0&ndash;2 scale, {neutral(mid)} = neutral)</span></p>
       <div class="scale"><div class="marker" id="marker" style="left:{50 + net * 50:.4f}%"></div></div>
       <div class="scale-labels"><span>&larr; dovish</span><span>neutral</span><span>hawkish &rarr;</span></div>
-      <p class="fine" id="detail">{doc["abg_hawk"]} hawkish vs {doc["abg_dove"]} dovish noun+adjective hits &middot; lexicon <code>{lexicon_id(data)}</code> &middot; sha256 <code>{doc["sha256"][:16]}&hellip;</code> &middot; <a href="{doc["source_url"]}">source document</a></p>
+      <p class="fine" id="detail">{doc["abg_hawk"]} hawkish and {doc["abg_dove"]} dovish noun+adjective hits; lexicon <code>{lexicon_id(data)}</code>; sha256 <code>{doc["sha256"][:16]}&hellip;</code>; <a href="{doc["source_url"]}">source document</a>.</p>
     </div>
     '''
     return replace_region(html, "latest", body)
 
 
+def hiking_cycle(points: list[dict]) -> dict | None:
+    """The longest run of consecutive Bank Rate rises in the step series,
+    from the first rise to the last. Mirrors hikingCycle() in index.html."""
+    best = None
+    start = end = None
+    length = 0
+
+    def close():
+        nonlocal best, start, end, length
+        if length and (best is None or length > best["len"]):
+            best = {"start": start, "end": end, "len": length}
+        start = end = None
+        length = 0
+
+    for prev, cur in zip(points, points[1:]):
+        if cur["rate_pct"] > prev["rate_pct"]:
+            if start is None:
+                start = cur["date"]
+            end = cur["date"]
+            length += 1
+        else:
+            close()
+    close()
+    return best
+
+
 def build_chart(html: str) -> str:
-    """The chart in words.
+    """The chart in words, and the overlay dates the drawing reads.
 
     An SVG line chart cannot be drawn without JavaScript, so the honest
-    static state is not an empty box: it is the same series described.
+    static state is not an empty box: it is the same series described,
+    overlays included. The chart-wrap's data attributes carry the two dates
+    the JavaScript cannot derive from the files it draws from: the fragility
+    sub-sample start (data/inference_v1.json) and the locked call's meeting
+    (the prediction file on display).
     """
     data = load("data/index.json")
     series = data["series"]
     values = [p["abg_net_index"] for p in series]
     lo = min(series, key=lambda p: p["abg_net_index"])
     hi = max(series, key=lambda p: p["abg_net_index"])
+    frag_iso = load("data/inference_v1.json")["fragility_check_subsample"]["start_date"]
+    lock = load(PREDICTION_FILE)
+    band = hiking_cycle(load("data/site_context.json")["bank_rate_history"]["points"])
+    band_words = (
+        f" A shaded band marks the hiking cycle, {gb_date(band['start'])} to {gb_date(band['end'])}, "
+        f"derived from the Bank Rate history;" if band else ""
+    )
     body = f'''
     <p class="fine" id="chart-fallback">The chart is drawn by JavaScript. In words:
     <strong>{len(series)}</strong> readings from {gb_date(series[0]["date"])} to
     {gb_date(series[-1]["date"])} on the A&amp;BG 0&ndash;2 scale, where {neutral(data["neutral_value"])}
     is neutral. Latest <strong>{index_value(values[-1])}</strong> ({series[-1]["doc_id"]}); series low
-    {index_value(lo["abg_net_index"])} ({lo["doc_id"]}), high {index_value(hi["abg_net_index"])} ({hi["doc_id"]}).
-    Every point is in <code>data/index.json</code>.</p>
+    {index_value(lo["abg_net_index"])} ({lo["doc_id"]}), high {index_value(hi["abg_net_index"])} ({hi["doc_id"]}).{band_words}
+    a dashed rule marks where the fragility sub-sample begins, {gb_date(frag_iso)}; a diamond marks
+    the locked call for {gb_date(lock["meeting_announcement"])}. Every point is in
+    <code>data/index.json</code>.</p>
     '''
-    return replace_region(html, "chart", body)
+    html = replace_region(html, "chart", body)
+    meta = f'''
+    <div class="chart-wrap" id="chart-wrap" data-fragility-start="{frag_iso}"
+         data-fragility-label="fragility sub-sample begins"
+         data-locked-meeting="{lock["meeting_announcement"]}">
+      <svg id="chart" viewBox="0 0 700 260" style="display:none"
+           role="img" aria-labelledby="chart-title chart-desc" tabindex="0"></svg>
+      <div class="chart-tip" id="chart-tip" style="display:none" role="status" aria-live="polite"></div>
+    </div>
+    '''
+    return replace_region(html, "chartmeta", meta)
 
 
 # ------------------------------------------------------- context panel
@@ -567,7 +623,7 @@ def build_context(html: str) -> str:
     body = f'''
       <div class="ctx-block">
         <h3 class="ctx-h" id="ois-h">OIS-implied path &middot; next {n} scheduled meeting{"" if n == 1 else "s"}</h3>
-        <p class="ctx-sub" id="ois-sub">Curve as of <b style="color:var(--text)">{gb_date(op["curve_as_of"])}</b> vs SONIA {op["sonia_pct"]:.3f}% ({gb_date(op["sonia_as_of"])}) &middot; two-state &plusmn;{op["assumed_move_bp"]:g}bp assumption.</p>
+        <p class="ctx-sub" id="ois-sub">Curve as of <b>{gb_date(op["curve_as_of"])}</b> vs SONIA {op["sonia_pct"]:.3f}% ({gb_date(op["sonia_as_of"])}) &middot; two-state &plusmn;{op["assumed_move_bp"]:g}bp assumption.</p>
         <div class="ois-legend">
           <span class="key"><span class="box cut"></span> cut</span>
           <span class="key"><span class="box hold"></span> hold</span>
@@ -627,7 +683,7 @@ def render_markdown(md: str) -> str:
             continue
         h = re.match(r"^(#{2,4})\s+(.*)$", block)
         if h and len(lines) == 1:
-            level = len(h.group(1)) + 1
+            level = len(h.group(1)) + 2  # ## -> h4, under the episode's h3 title
             out.append(f"<h{level}>{inline(h.group(2))}</h{level}>")
             continue
         out.append(f"<p>{inline(block.replace(chr(10), ' '))}</p>")
@@ -725,6 +781,7 @@ def main() -> None:
     meth = build_byline(meth, "methodology.html")
     meth = build_status(meth, "methodology.html")
     meth = build_related_work(meth, "methodology.html")
+    meth = build_toc(meth, "methodology.html")
     meth_path.write_text(write_figures(meth, "methodology.html"))
 
     readme_path = ROOT / "README.md"

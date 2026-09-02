@@ -88,7 +88,6 @@ NOT_A_FIGURE = [
     ("after Gerlach-Kristen 2004", "a citation year"),
     ("a published 2012 dictionary", "the lexicon's vintage"),
     ("the paper's 2012 vintage", "the lexicon's vintage"),
-    ("Aug 2015-present", "the chart's own axis label, abbreviated"),
     ("the two emergency meetings of March 2020", "a historical fact, not a count from a file"),
     ("the March 2020 emergency meetings", "a historical fact, not a count from a file"),
     ("March 2020 emergency meetings", "a historical fact, not a count from a file"),

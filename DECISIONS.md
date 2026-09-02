@@ -54,6 +54,7 @@ Changes apply forward only; nothing is retrofitted. Locked calls are never touch
 - 2026-08-30 — [presentation and consistency pass: every figure generated](#2026-08-30--presentation-and-consistency-pass-every-figure-generated)
 - 2026-09-02 — [README brought under the figure generator; lock time discrepancy corrected; rounding and sign policy enforced across surfaces](#2026-09-02--readme-brought-under-the-figure-generator-lock-time-discrepancy-corrected-rounding-and-sign-policy-enforced-across-surfaces)
 - 2026-09-02 — [presentation pass, stage two: the words](#2026-09-02--presentation-pass-stage-two-the-words)
+- 2026-09-02 — [design pass: paper theme, single-family type, call card as focal element, chart overlays, print stylesheet](#2026-09-02--design-pass-paper-theme-single-family-type-call-card-as-focal-element-chart-overlays-print-stylesheet)
 
 ## 2026-07-05 — repo created
 - **Thesis:** does the tone of MPC communication carry information about the next
@@ -2531,3 +2532,240 @@ diffing the page.
   pre-registered risk-management series; the vote split as a scored
   distribution. **Found, not fixed**: the dead `.draft-note` and `.beta` CSS
   rules (stage three rewrites the stylesheet); the chart hint text.
+
+## 2026-09-02 — design pass: paper theme, single-family type, call card as focal element, chart overlays, print stylesheet
+
+Stage 3 of the September presentation pass. Presentation only. **No model,
+no specification and no recomputation**; nothing under `data/predictions/`
+and no science-layer file touched. 166 -> 169 tests, all green (three new,
+in `pipeline/tests/test_contrast.py`). The design plan below was written
+before any CSS and critiqued against the brief's list of what to move away
+from; the approval gate was passed on the maintainer's instruction of
+2 September and the plan is his to overturn.
+
+### The plan, as written before building
+
+```
+## Tokens
+
+Light (default)            Dark (prefers-color-scheme, or the toggle)
+--paper   #fcfbf9          #151412   page ground: near-white with a barely warm cast / warm near-black
+--stamp   #f5f0e6          #1f1b15   the call card's own sheet, and nothing else
+--ink     #1c1b19          #e9e6e0   text
+--ink-2   #57534d          #b0aaa1   secondary text: captions, fine print, axis labels
+--rule    #d8d3cb          #3a3631   hairlines
+--accent  #8a5a12          #d9a94a   dark ochre / amber: the call card's rule and badge, the
+                                     "Locked" badge in the track record, the lock marker on the chart
+Semantic pairs, never used alone (shape or label always accompanies them):
+--hawk    #a8382a          #e0796a   hike markers (▲, filled), hawkish reading
+--dove    #2f5d9b          #84ade8   cut markers (▽, open), dovish reading
+--rate    #3b7a68          #7fc0a8   Bank Rate step line (dashed)
+--gilt    #6b4d9e          #b39fdc   gilt sparkline
+
+## Type roles (one family: Source Serif 4, self-hosted, five faces)
+
+Display instance   h1 (38px), the three probabilities on the call card (46px), the latest index reading (38px)
+Text instance      body 18px / 1.65, measure 68ch; h2 26px regular, sentence case; h3 22px italic;
+                   captions and fine print 15px; small labels 13px in all-small-caps (badge, column heads,
+                   probability labels) - the serif's own small caps, not a sans
+Tabular figures    on every number (tables, probabilities, stamps, index readings); proportional in prose
+Monospace          only the tag, the git command, hashes and file paths
+No sans-serif anywhere; controls (checkboxes, the theme toggle) set in the serif.
+
+## Layout — first two screens at desktop
+
+┌──────────────────────────────────────────────────────────────────────┐
+│ MPC Communication Index                                  [Dark]      │ h1 display; toggle quiet, top right
+│ Does the tone of Bank of England communication carry information     │ standfirst, italic, ink-2
+│ about the next rate decision beyond what markets already price?      │
+│ Jake Foulkes · 1 locked call · next lock 15 September 2026 ·         │ status line, 15px, ink-2
+│ 95 documents · site built 2 September 2026 (e50ee92)                 │
+│ ──────────────────────────────────────────────────────────────────── │ hairline
+│ Question.  Does the hawkish or dovish tone of the MPC's minutes ...   │ run-in bold labels, no bullets
+│ Answer.    No. Every model that adds the tone index does worse ...    │
+│ Limits.    One weaker test on the size of the market surprise ...     │
+│ Three things here are new. ...                                        │ contribution, plain paragraph
+│                                                                       │
+│ How to check this                                                     │ h2
+│ Nothing here has to be taken on trust. ...                            │
+│   1  The timestamp. Open the tag lock-2026-07, which GitHub dates ... │ numbered: it is a sequence
+│   2  The call itself. ... git show lock-2026-07:data/... (mono)       │
+│   3  Everything else. The code, the data, and the dated log ...       │
+│ ──────────────────────────────────────────────────────────────────── │
+│ ┌──────────────────────────────────────────────────────────────────┐ │ ← screen two
+│ │ LOCKED CALL · SCORED  (small caps, accent)                        │ │ call card: --stamp sheet,
+│ │ Call for 30 July 2026                                             │ │ one accent rule, 2px radius
+│ │ Locked 28 July 2026, 19:08:36 UTC · tag lock-2026-07 (mono)       │ │ timestamp + tag = the anchor
+│ │ Figures as at the lock date (28 July 2026).                       │ │
+│ │ In plain English: this is the call, written down and tagged ...   │ │
+│ │       0%                96%                 4%                    │ │ display instance, tabular
+│ │      cut               hold ●               hike                  │ │ ● marks the point call
+│ │ ────────────────────────────────────────────────────────────────  │ │ proportion bar, 4px
+│ │ m0 market pricing only — OIS forward curve vs SONIA, 25bp ...     │ │
+│ │ A&BG index (minutes-2026-06): 1.714 vs trailing 4-document ...    │ │
+│ │ Point call  hold                                                  │ │
+│ │ │ Hold at 3.75%. The communication index is recorded as ...       │ │ rationale, hairline left rule
+│ │ Outcome hold      Brier (m0) 0.0030      Point call matched       │ │
+│ │ Next announcement: 17 September 2026 — the next call locks ...    │ │
+│ └──────────────────────────────────────────────────────────────────┘ │
+│                                                                       │
+│ The communication index                                               │ h2
+│ MPC minutes for the meeting ending 29 July 2026, published 30 July.   │ a sentence, not a dotted string
+│ 0.667   net dovish (A&BG net index, 0–2 scale, 1.0 = neutral)         │ display number
+│ ◄ dovish ───────────────┼──────────────── hawkish ►                   │
+│ [chart: thin ink line; hiking-cycle band shaded in --rule; vertical   │
+│  rule at 1 September 2023 "fragility sub-sample begins"; ▲ ▽ markers; │
+│  ◆ accent at the locked call; y-axis "A&BG net index, 1.0 = neutral"] │
+└──────────────────────────────────────────────────────────────────────┘
+
+## Three principles
+
+1. A document, not a dashboard. One column, one family, sections separated by
+   space and a hairline; headings in sentence case with no tracking, no
+   eyebrows, no cards, no shadows, no gradients, no arrows on links.
+2. Boldness spent once. The locked call is the only element with its own
+   sheet, a rule box and the accent; the accent appears in exactly two other
+   places (the Locked badge in the track record, the lock marker on the chart).
+3. Every mark carries information. Colour never alone (shape or label with
+   it); tabular figures on every number; monospace only for things one would
+   type; the status line is the one place a middle dot joins metadata.
+
+## Self-critique against 3.0 (what changed after writing the above)
+
+- First draft used a cream ground (#f7f2e8) and a terracotta accent (#b5533c):
+  the paper cliché the brief names. Changed to a near-white with a barely
+  warm cast and a dark ochre accent that is ink-like on paper.
+- First draft kept rounded "cards" in the light theme with a faint border,
+  because that is the default for a sectioned page. Changed: sections have no
+  box at all; only the call card is boxed, and its radius is 2px.
+- First draft set captions, table headers and small labels in a humanist sans
+  "for legibility at small sizes". That is the dashboard reflex. Changed: the
+  serif's own small caps at 13px carry every label, and there is no sans.
+- First draft drew the index line in the accent colour, which is what every
+  chart on the old site did. Changed: the line is ink; the accent is reserved
+  for the single locked-call marker, so the eye goes to the one live thing.
+- First draft kept the middle-dot doc line under the index reading ("meeting
+  ending · published · decision · vote"). Changed to a sentence, generated
+  the same way on both sides.
+- First draft put the theme toggle as an icon button. Changed to a word
+  ("Dark" / "Light") in small caps: quieter, and announced without an aria
+  label doing the work.
+```
+
+### What was built
+
+- **One stylesheet, `site/site.css`, linked from both pages.** The two pages
+  had carried near-identical inline stylesheets that had already drifted
+  (methodology.html had no chart or call-card rules and an older token set).
+  A same-origin file is not an external dependency and cannot drift between
+  the pages; the head of each page keeps only a two-line inline bootstrap
+  that applies a remembered theme before first paint. `site/theme.js`
+  (deferred, no fetches) wires the toggle, closes the disclosures on load,
+  and opens every `<details>` on `beforeprint` and restores them on
+  `afterprint`. **methodology.html therefore now runs a script**, which the
+  2026-07-30 entry said it did not "by design"; the design reason was that
+  its figures must not depend on a fetch, and they still do not - the script
+  touches theme and disclosure only.
+- **Fonts.** Source Serif 4 v4.005R (Adobe; SIL Open Font License 1.1, the
+  full licence text at `site/fonts/LICENSE.md`), subset to Latin plus the
+  typographic ranges the site uses, five faces: text Regular, Italic and
+  Semibold; Display Regular and Italic (the last declared but never
+  requested by the current rules, 43 KB that no reader downloads). Loaded
+  with `font-display: swap` and two preloads. Checked in a real browser:
+  all four used faces report `loaded`; body computes to "Source Serif 4"
+  at 18px on desktop and 17px at 380px. There is no sans-serif on either
+  page; the controls are set in the serif.
+- **Removed, and why.** The card kit (`.card` background, border, 12px
+  radius and two-layer shadow) - sections are now separated by space and a
+  hairline, because a paper has no boxes; the eyebrow (`.card > h2` and
+  `.subhead`: 12px sans, uppercase, +.14em tracking) - headings are the
+  serif in sentence case at 26px and 22px italic; the `.beta` badge; the
+  dead `.draft-note` rule (the device it served is gone); the `&larr;` and
+  `&rarr;` arrows on the backlinks and in the ladder meta line; the
+  middle-dot strings in the latest-reading lines, which are now sentences
+  on both the static and scripted side ("MPC minutes for the meeting ending
+  29 July 2026, published 30 July 2026. Decision: ...; vote 6–3."); the
+  "Hover or tap the line for details" hint; the gradient wash on the
+  dovish–hawkish scale (now a hairline with a neutral tick and an ink
+  marker); the accent colour on the chart line, on L1's table row and on the
+  latest-reading document line. The only rounded corners left are the call
+  card's 2px and the form controls'.
+- **The call card is the one bold element.** Its own sheet (`--stamp`), a
+  single accent rule, the badge in the serif's small caps, the timestamp and
+  tag as the first line after the heading, the three probabilities in the
+  display instance at 46px with the point call marked by a filled circle
+  after its label (a class the static template sets and, after a first
+  render showed it missing, the JavaScript mirrors), the rationale behind a
+  hairline in the accent. Nothing else on the page uses the accent except
+  the Locked badge in the track record and the lock marker on the chart.
+- **Chart.** Line in ink at 1.25px; hairline axes; the y-axis labelled
+  "A&BG net index, 1.0 = neutral"; decision markers as shapes, a filled
+  upward triangle for a hike and an open downward one for a cut, in the
+  hawk and dove colours; the locked call as a diamond in the accent at its
+  meeting date. **Two generated overlays**: a shaded band for the hiking
+  cycle, derived in both the JavaScript and the fallback generator as the
+  longest run of consecutive Bank Rate rises in `site_context.json`'s
+  history (16 December 2021 to 3 August 2023, which is the brief's
+  "December 2021–August 2023" read off the data rather than typed), and a
+  dashed rule labelled "fragility sub-sample begins" at the start date in
+  `data/inference_v1.json`, carried to the drawing as a data attribute the
+  generator writes (`fallback:chartmeta`), alongside the locked meeting from
+  the prediction file. The chart's `<title>` is now built from the series'
+  first and last months rather than typed. The words-only fallback names all
+  three overlays. **Found by looking, not by testing:** the old chart's
+  triangles pointed the wrong way (the apex was drawn nearer the point than
+  the base) and had done since 2026-07-12; corrected, and the legend now
+  shows the shapes as drawn.
+- **Tables.** Hairline rules; visible captions above; tabular figures; the
+  L1 row marked as the benchmark by weight and a rule above it, not by
+  colour; wide tables still scroll inside `.table-scroll`.
+- **Disclosures ship open.** `<details class="disclosure" open>` in the
+  markup; `theme.js` closes them on load and marks them ready (the
+  stylesheet hides their bodies until then, so nothing flashes). A reader
+  without scripting sees everything, which is the honest no-JS state, and so
+  does the printer without a handler. The market panel is collapsed by
+  default with scripting, as the brief asks.
+- **Print.** Light tokens forced (also over a dark toggle), point sizes,
+  80ch measure, no shadows (there are none), every `<details>` open, URLs
+  printed after external links except for the commit stamps (the hash
+  identifies the commit; the URL added a line of noise), `break-inside:
+  avoid` on tables, the call card, the verification list and each episode,
+  the chart printed as the inline SVG when it was drawn and the words when it
+  was not. Checked as A4 and Letter PDFs in Chromium: "How to check this"
+  is on page one at both sizes; index.html runs to 12 pages at A4 (the July
+  episode is most of it), methodology.html to 8.
+- **Share card and favicon.** `og-image.png` redrawn in the light tokens
+  with the site's own typeface (the woff2 decoded through fontTools, now in
+  `requirements.txt` with brotli, so a rebuild anywhere matches the page),
+  the series in ink, the locked call as the one accent mark, and the byline
+  from `AUTHOR`. The favicon is a paper square with an ink line and an
+  accent dot.
+- **Accessibility floor, verified.** `pipeline/tests/test_contrast.py`
+  parses both token sets out of the stylesheet and asserts thirteen
+  text-on-ground pairs against 4.5:1 (body) or 3:1 (large text and marks).
+  Output, light: ink/paper 16.64, ink-2/paper 7.38, accent/paper 5.72,
+  ink/stamp 15.15, ink-2/stamp 6.72, accent/stamp 5.21, hawk/paper 6.22,
+  dove/paper 6.43, rate/paper 4.87, gilt/paper 6.38, paper/hawk 6.22,
+  paper/dove 6.43, ink/rule 11.56. Dark: 14.78, 7.99, 8.53, 13.75, 7.43,
+  7.93, 6.24, 8.00, 8.77, 7.81, 6.24, 8.00, 9.62. Colour-vision simulation
+  (Machado, Oliveira and Fernandes 2009 matrices, severity 1.0): under
+  protanopia the light hawk/dove pair becomes #584f28/#41629d and under
+  deuteranopia #736826/#30589a - an olive against a blue, still two hues -
+  and rate/gilt #777367/#315da1 and #6d6c69/#385c9c; the dark theme
+  behaves the same way. Their luminance contrast with each other is low
+  (1.0–1.6:1) in every condition, which is why no pair relies on hue: hikes
+  and cuts differ in shape and fill, the Bank Rate line is dashed and
+  stepped, the gilt series is its own chart, and every reading is labelled.
+  Also verified in Chromium at 1280px and 380px on both pages: heading
+  order h1→h2→h3→h4 with no skips (the episode's internal headings moved
+  from h3 to h4 to sit under the episode's own h3), every `<svg>` with a
+  role and an accessible name, both tables captioned, `scrollWidth` equal
+  to the viewport at 380px, the theme toggle operable with Tab and Enter and
+  announced through `aria-pressed`, the choice surviving a reload, and no
+  console errors or warnings.
+- **Not done / found, not fixed.** The Display Italic face above. The
+  static context panel's `<b>` inline colour was a `var(--text)` that no
+  longer exists and would have silently rendered in the inherited colour;
+  it is a class now. `qa/` holds the stage's captures (18 files:
+  380/768/1280px in both themes, the no-JS render, A4 and Letter PDFs for
+  each page) and is gitignored.

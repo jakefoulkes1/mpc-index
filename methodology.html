@@ -8,7 +8,16 @@
 <!-- fallback:metaauthor -->
 <meta name="author" content="Jake Foulkes">
 <!-- /fallback:metaauthor -->
-<meta name="theme-color" content="#0f1115">
+<meta name="theme-color" media="(prefers-color-scheme: light)" content="#fcfbf9">
+<meta name="theme-color" media="(prefers-color-scheme: dark)" content="#151412">
+<!-- Applies a remembered theme before first paint and marks scripting as
+     available; everything else is in site/theme.js. This page fetches
+     nothing: every figure is generated into the markup. -->
+<script>(function(){var r=document.documentElement;r.classList.add('js');try{var t=localStorage.getItem('mpc-index-theme');if(t)r.setAttribute('data-theme',t);}catch(e){}})();</script>
+<link rel="preload" href="site/fonts/SourceSerif4-Regular.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="site/fonts/SourceSerif4Display-Regular.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="stylesheet" href="site/site.css">
+<script src="site/theme.js" defer></script>
 <meta property="og:type" content="article">
 <meta property="og:site_name" content="MPC Communication Index">
 <meta property="og:url" content="https://jakefoulkes1.github.io/mpc-index/methodology.html">
@@ -26,166 +35,46 @@
 <meta name="twitter:title" content="Methodology — MPC Communication Index">
 <meta name="twitter:description" content="Data, index construction, market benchmark, evaluation and limitations — every choice traceable to code or a dated entry in the decisions log.">
 <meta name="twitter:image" content="https://jakefoulkes1.github.io/mpc-index/og-image.png">
-<link rel="icon" href="data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='0%200%2032%2032'%3E%3Crect%20width='32'%20height='32'%20rx='7'%20fill='%230f1115'/%3E%3Cpolyline%20points='4,22%2011,14%2016,18%2022,7%2028,12'%20fill='none'%20stroke='%23c9a34e'%20stroke-width='2.6'%20stroke-linecap='round'%20stroke-linejoin='round'/%3E%3C/svg%3E">
-<style>
-  :root {
-    --bg: #0f1115; --panel: #171a21; --panel-2: #1c2029; --line: #2a2f3a;
-    /* --faint lightened from #6b7280 for WCAG AA on --panel (3.4:1 -> 5.2:1) */
-    --text: #e8e6e1; --muted: #9aa0ab; --faint: #868d99;
-    --accent: #c9a34e; --accent-dim: #7a5f2e;
-    --serif: Georgia, 'Times New Roman', serif;
-    --sans: system-ui, -apple-system, 'Segoe UI', sans-serif;
-    --radius: 12px;
-    --shadow: 0 1px 2px rgba(0,0,0,.4), 0 8px 24px rgba(0,0,0,.25);
-
-    /* Same type scale and rhythm tokens as index.html - one system, two pages. */
-    --fs-micro: 11px; --fs-label: 12px; --fs-sm: 13px; --fs-ui: 14px;
-    --fs-body: 17px; --fs-md: 19px; --fs-lg: 22px; --fs-xl: 27px;
-    --fs-2xl: 34px;
-    --lh-tight: 1.25; --lh-snug: 1.45; --lh-body: 1.7;
-    --sp-1: 4px; --sp-2: 8px; --sp-3: 12px; --sp-4: 18px;
-    --sp-5: 26px; --sp-6: 38px; --sp-7: 56px;
-    --measure: 70ch;
-  }
-  * { box-sizing: border-box; }
-  html { -webkit-text-size-adjust: 100%; }
-  /* Parity with index.html: figures in tables line up in columns. Running
-     prose keeps proportional figures, which is correct for prose. */
-  table { font-variant-numeric: tabular-nums; }
-  body {
-    margin: 0; background: var(--bg); color: var(--text);
-    font: var(--fs-body)/var(--lh-body) var(--serif);
-    -webkit-font-smoothing: antialiased; text-rendering: optimizeLegibility;
-  }
-  .wrap { max-width: 800px; margin: 0 auto; padding: var(--sp-7) 22px 72px; }
-  :focus-visible {
-    outline: 2px solid var(--accent); outline-offset: 2px; border-radius: 3px;
-  }
-  .skip-link {
-    position: absolute; left: -9999px; top: 0;
-    background: var(--accent); color: var(--bg); padding: 10px 16px;
-    font: 600 var(--fs-ui) var(--sans); border-radius: 0 0 6px 0; z-index: 20;
-  }
-  .skip-link:focus { left: 0; }
-  .backlink { font: var(--fs-sm) var(--sans); color: var(--muted); text-decoration: none; }
-  .backlink:hover { color: var(--text); }
-  h1 { font: normal var(--fs-2xl)/var(--lh-tight) var(--serif); margin: var(--sp-4) 0 var(--sp-3); letter-spacing: -.01em; }
-  .lede { color: var(--muted); font-style: italic; font-size: var(--fs-md); line-height: var(--lh-snug); margin: 0 0 var(--sp-3); max-width: 62ch; }
-  .lede a { color: var(--accent); }
-  .toc { display: flex; flex-wrap: wrap; gap: var(--sp-2) var(--sp-4); margin: 0 0 var(--sp-6); font: var(--fs-ui) var(--sans); }
-  .toc a { color: var(--muted); text-decoration: none; }
-  .toc a:hover { color: var(--text); }
-  .card {
-    background: var(--panel); border: 1px solid var(--line);
-    border-radius: var(--radius); padding: var(--sp-5) 28px; margin-bottom: var(--sp-4);
-    box-shadow: var(--shadow); scroll-margin-top: 20px;
-  }
-  .card h2 {
-    font: 600 var(--fs-label)/1 var(--sans); letter-spacing: .14em;
-    text-transform: uppercase; color: var(--muted); margin: 0 0 var(--sp-4);
-  }
-  .card h3 {
-    font: 600 var(--fs-label)/1 var(--sans); letter-spacing: .08em;
-    text-transform: uppercase; color: var(--faint); margin: var(--sp-5) 0 var(--sp-3);
-  }
-  .card p, .card li { font: var(--fs-body)/var(--lh-body) var(--serif); color: var(--text); max-width: var(--measure); }
-  .card p { margin: 0 0 var(--sp-3); }
-
-  /* ---------- progressive disclosure (same pattern as index.html) ---------- */
-  .plain-summary {
-    font: var(--fs-md)/var(--lh-snug) var(--serif) !important; color: var(--text);
-    margin: 0 0 var(--sp-4) !important; max-width: var(--measure);
-  }
-  .disclosure { margin: 0; border-top: 1px solid var(--line); padding-top: var(--sp-3); }
-  .disclosure > summary {
-    font: 600 var(--fs-label)/1 var(--sans); letter-spacing: .1em;
-    text-transform: uppercase; color: var(--muted); cursor: pointer;
-    list-style: none; display: flex; align-items: center; gap: var(--sp-2);
-    padding: var(--sp-1) 0; width: max-content;
-  }
-  .disclosure > summary::-webkit-details-marker { display: none; }
-  .disclosure > summary:hover { color: var(--text); }
-  .disclosure > summary .caret {
-    display: inline-block; width: 9px; height: 9px; flex: none;
-    border-right: 1.5px solid currentColor; border-bottom: 1.5px solid currentColor;
-    transform: rotate(-45deg); margin-bottom: 2px;
-  }
-  .disclosure[open] > summary .caret { transform: rotate(45deg); margin-bottom: 4px; }
-  .disclosure[open] > summary { margin-bottom: var(--sp-3); }
-  .disclosure-body > *:last-child { margin-bottom: 0; }
-  .disclosure-body > h3:first-child { margin-top: 0; }
-  .card p:last-child { margin-bottom: 0; }
-  .card ul { margin: 0 0 var(--sp-3); padding-left: 20px; }
-  .card li { margin: 0 0 var(--sp-2); }
-  .card code { font-size: var(--fs-sm); color: var(--muted); }
-  .card a { color: var(--accent); text-decoration: none; }
-  .card a:hover { text-decoration: underline; }
-  .ref { font: var(--fs-label) var(--sans); color: var(--faint); }
-  .formula {
-    font: var(--fs-ui)/var(--lh-body) var(--sans); color: var(--text); background: var(--panel-2);
-    border-left: 3px solid var(--accent-dim); padding: var(--sp-3) 16px;
-    border-radius: 0 6px 6px 0; margin: 0 0 var(--sp-3); overflow-x: auto;
-  }
-  .draft-note {
-    font: 700 var(--fs-micro)/1 var(--sans); letter-spacing: .1em; text-transform: uppercase;
-    color: #ffe9b3; background: var(--accent-dim); display: inline-block;
-    padding: 4px 8px; border-radius: 4px; margin: 0 0 14px;
-  }
-  .status-line { font: var(--fs-sm)/1.6 var(--sans); color: var(--muted); margin: 0 0 var(--sp-4); }
-  .status-line .sep { color: var(--faint); margin: 0 2px; }
-  .status-line a { color: var(--muted); }
-  .refs { margin: 0; font: var(--fs-ui)/var(--lh-body) var(--sans); color: var(--muted); }
-  .refs dt { color: var(--text); margin-top: var(--sp-3); }
-  .refs dt:first-child { margin-top: 0; }
-  .refs dd { margin: 2px 0 0; }
-  .verify { color: var(--accent); font-size: var(--fs-label); }
-  footer { font: var(--fs-sm)/var(--lh-body) var(--sans); color: var(--faint); margin-top: var(--sp-6); padding-top: var(--sp-5); border-top: 1px solid var(--line); }
-  footer a { color: var(--muted); }
-  footer .affiliation { color: var(--muted); }
-  @media (max-width: 640px) {
-    .wrap { padding: var(--sp-6) 16px var(--sp-7); }
-    :root { --fs-2xl: 27px; --fs-md: 17px; --fs-body: 16px; }
-    .card { padding: 20px 18px; }
-  }
-  @media (max-width: 430px) {
-    .wrap { padding: 28px 13px 48px; }
-    .card { padding: 17px 14px; }
-    .formula { font-size: var(--fs-sm); padding: var(--sp-3) 12px; }
-  }
-  @media (prefers-reduced-motion: reduce) {
-    * { animation: none !important; transition: none !important; }
-  }
-</style>
+<link rel="icon" href="data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='0%200%2032%2032'%3E%3Crect%20width='32'%20height='32'%20fill='%23fcfbf9'/%3E%3Crect%20x='.5'%20y='.5'%20width='31'%20height='31'%20fill='none'%20stroke='%23d8d3cb'/%3E%3Cpolyline%20points='5,22%2011,14%2016,18%2022,8%2027,12'%20fill='none'%20stroke='%231c1b19'%20stroke-width='2'%20stroke-linecap='round'%20stroke-linejoin='round'/%3E%3Ccircle%20cx='27'%20cy='12'%20r='2.6'%20fill='%238a5a12'/%3E%3C/svg%3E">
 </head>
 <body>
 <a class="skip-link" href="#main">Skip to content</a>
 <div class="wrap">
-  <a class="backlink" href="index.html">&larr; MPC Communication Index</a>
-  <h1>Methodology</h1>
-  <p class="lede">How the index is built and evaluated. Every choice is also recorded, dated
-  and forward-only, in the <a href="https://github.com/jakefoulkes1/mpc-index/blob/main/DECISIONS.md">decisions log</a>;
-  dates in brackets below point at the governing entry.</p>
-  <!-- Status line: the same generated regions as index.html's masthead. -->
-  <p class="status-line" id="status-line"><!-- fallback:status -->1 locked call <span class="sep" aria-hidden="true">&middot;</span> next lock 15 September 2026 <span class="sep" aria-hidden="true">&middot;</span> 95 documents<!-- /fallback:status --> <span class="sep" aria-hidden="true">&middot;</span> <span id="build-stamp"><!-- fallback:buildstamp -->site built 2 September 2026 (<a href="https://github.com/jakefoulkes1/mpc-index/commit/fdcb7b4756842975b920156863d6069dd5200380"><code>fdcb7b4</code></a>)<!-- /fallback:buildstamp --></span></p>
+  <header class="masthead">
+    <button type="button" class="theme-toggle" id="theme-toggle" aria-pressed="false">Dark</button>
+    <a class="backlink" href="index.html">MPC Communication Index</a>
+    <h1>Methodology</h1>
+    <p class="lede">How the index is built and evaluated. Every choice is also recorded, dated
+    and forward-only, in the <a href="https://github.com/jakefoulkes1/mpc-index/blob/main/DECISIONS.md">decisions log</a>;
+    dates in brackets below point at the governing entry.</p>
+    <!-- Status line: the same generated regions as index.html's masthead. -->
+    <p class="status-line" id="status-line"><!-- fallback:status -->1 locked call <span class="sep" aria-hidden="true">&middot;</span> next lock 15 September 2026 <span class="sep" aria-hidden="true">&middot;</span> 95 documents<!-- /fallback:status --> <span class="sep" aria-hidden="true">&middot;</span> <span id="build-stamp"><!-- fallback:buildstamp -->site built 2 September 2026 (<a href="https://github.com/jakefoulkes1/mpc-index/commit/fdcb7b4756842975b920156863d6069dd5200380"><code>fdcb7b4</code></a>)<!-- /fallback:buildstamp --></span></p>
+  </header>
 
+  <!-- In-page contents, generated from this page's own h2s by
+       pipeline/build_fallbacks.py (build_toc). -->
   <nav class="toc" id="main" aria-label="Sections">
-    <a href="#data">Data</a>
-    <a href="#sample-sizes">Sample sizes</a>
-    <a href="#index-construction">Index construction</a>
-    <a href="#market-benchmark">Market benchmark</a>
-    <a href="#evaluation">Evaluation</a>
-    <a href="#limitations">Limitations</a>
-    <a href="#references">References</a>
+    <!-- fallback:toc -->
+    <ol>
+      <li><a href="#data">Data</a></li>
+      <li><a href="#sample-sizes">Why the sample sizes differ</a></li>
+      <li><a href="#index-construction">Index construction</a></li>
+      <li><a href="#market-benchmark">Market benchmark</a></li>
+      <li><a href="#evaluation">Evaluation</a></li>
+      <li><a href="#limitations">Limitations</a></li>
+      <li><a href="#references">References</a></li>
+    </ol>
+    <!-- /fallback:toc -->
   </nav>
 
-  <section class="card" id="data">
+  <section class="section" id="data">
     <h2>Data</h2>
     <p class="plain-summary">Every MPC minutes publication since
     <!-- fig:corpus_start_month -->August 2015<!-- /fig:corpus_start_month --> &mdash; <!-- fig:corpus_n -->95<!-- /fig:corpus_n --> documents
     &mdash; together with the Bank's own voting record, reconciled against the Bank's sitemap
     rather than assumed complete.</p>
 
-    <details class="disclosure">
+    <details class="disclosure" open>
       <summary><span class="caret" aria-hidden="true"></span>More detail</summary>
       <div class="disclosure-body">
 
@@ -243,7 +132,7 @@
     </details>
   </section>
 
-  <section class="card" id="sample-sizes">
+  <section class="section" id="sample-sizes">
     <h2>Why the sample sizes differ</h2>
     <p>Five different n's appear across this site, and they are not
     inconsistencies. The <strong><!-- fig:corpus_n -->95<!-- /fig:corpus_n --></strong> above is the whole corpus: every MPC
@@ -275,7 +164,7 @@
     fixes.)</span></p>
   </section>
 
-  <section class="card" id="index-construction">
+  <section class="section" id="index-construction">
     <h2>Index construction</h2>
     <p class="plain-summary">Each document is scored with a published 2012 dictionary of hawkish
     and dovish word pairs, producing one number on a 0&ndash;2 scale where 1.0 is neutral.</p>
@@ -296,7 +185,7 @@
     <span class="ref">(DECISIONS.md 2026-07-11 &mdash; A&amp;BG (2012) baseline lexicon;
     2026-09-02 &mdash; presentation pass, stage two.)</span></p>
 
-    <details class="disclosure">
+    <details class="disclosure" open>
       <summary><span class="caret" aria-hidden="true"></span>More detail</summary>
       <div class="disclosure-body">
 
@@ -333,13 +222,13 @@
     </details>
   </section>
 
-  <section class="card" id="market-benchmark">
+  <section class="section" id="market-benchmark">
     <h2>Market benchmark</h2>
     <p class="plain-summary">The bar to clear is what the market already prices: the Bank's own
     OIS forward curve, read three days after each meeting and mapped to cut, hold and hike
     probabilities.</p>
 
-    <details class="disclosure">
+    <details class="disclosure" open>
       <summary><span class="caret" aria-hidden="true"></span>More detail</summary>
       <div class="disclosure-body">
 
@@ -379,12 +268,12 @@
     </details>
   </section>
 
-  <section class="card" id="evaluation">
+  <section class="section" id="evaluation">
     <h2>Evaluation</h2>
     <p class="plain-summary">Five forecasters are scored against each other on scheduled meetings
     only, each fitted on strictly earlier data, with the market-only model as the bar to beat.</p>
 
-    <details class="disclosure">
+    <details class="disclosure" open>
       <summary><span class="caret" aria-hidden="true"></span>More detail</summary>
       <div class="disclosure-body">
 
@@ -451,13 +340,13 @@
     </details>
   </section>
 
-  <section class="card" id="limitations">
+  <section class="section" id="limitations">
     <h2>Limitations</h2>
     <p class="plain-summary">What could undermine the result: very few dictionary hits per
     document, a 2012 word list, risk premia inside the forward curve, a small sample, and a
     skill differential that has not been tested for significance.</p>
 
-    <details class="disclosure">
+    <details class="disclosure" open>
       <summary><span class="caret" aria-hidden="true"></span>More detail</summary>
       <div class="disclosure-body">
     <ul>
@@ -529,7 +418,7 @@
 
   <!-- References: the same list as index.html's Related work, generated by
        pipeline/build_fallbacks.py from RELATED_WORK. -->
-  <section class="card" id="references">
+  <section class="section" id="references">
     <h2>References</h2>
     <p>Entries marked [VERIFY] have not yet been checked against the source from this
     repository; nothing in them has been added from memory.</p>
@@ -554,8 +443,8 @@
   </section>
 
   <footer>
-    <p><a href="index.html">&larr; Back to the index</a> &middot; Not investment advice &middot;
-    Source documents &copy; Bank of England, linked not republished.</p>
+    <p><a href="index.html">Back to the index</a>. Not investment advice. Source documents
+    &copy; Bank of England, linked, not republished.</p>
     <!-- fallback:byline - from AUTHOR in pipeline/site_figures.py -->
     <p class="byline"><strong>Jake Foulkes</strong>, BSc Economics, Loughborough University<br><a href="mailto:jakefoulkes@aol.com">jakefoulkes@aol.com</a></p>
     <!-- /fallback:byline -->

@@ -8,7 +8,15 @@
 <!-- fallback:metaauthor -->
 <meta name="author" content="Jake Foulkes">
 <!-- /fallback:metaauthor -->
-<meta name="theme-color" content="#0f1115">
+<meta name="theme-color" media="(prefers-color-scheme: light)" content="#fcfbf9">
+<meta name="theme-color" media="(prefers-color-scheme: dark)" content="#151412">
+<!-- Applies a remembered theme before first paint and marks scripting as
+     available; everything else is in site/theme.js. -->
+<script>(function(){var r=document.documentElement;r.classList.add('js');try{var t=localStorage.getItem('mpc-index-theme');if(t)r.setAttribute('data-theme',t);}catch(e){}})();</script>
+<link rel="preload" href="site/fonts/SourceSerif4-Regular.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="site/fonts/SourceSerif4Display-Regular.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="stylesheet" href="site/site.css">
+<script src="site/theme.js" defer></script>
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="MPC Communication Index">
 <meta property="og:url" content="https://jakefoulkes1.github.io/mpc-index/">
@@ -27,516 +35,13 @@
 <meta name="twitter:title" content="MPC Communication Index">
 <meta name="twitter:description" content="A pre-registered call for each Bank of England rate decision — locked and timestamped before the announcement, scored after, misses included.">
 <meta name="twitter:image" content="https://jakefoulkes1.github.io/mpc-index/og-image.png">
-<link rel="icon" href="data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='0%200%2032%2032'%3E%3Crect%20width='32'%20height='32'%20rx='7'%20fill='%230f1115'/%3E%3Cpolyline%20points='4,22%2011,14%2016,18%2022,7%2028,12'%20fill='none'%20stroke='%23c9a34e'%20stroke-width='2.6'%20stroke-linecap='round'%20stroke-linejoin='round'/%3E%3C/svg%3E">
-<style>
-  :root {
-    --bg: #0f1115; --panel: #171a21; --panel-2: #1c2029; --line: #2a2f3a;
-    /* --faint lightened from #6b7280 for WCAG AA on --panel (3.4:1 -> 5.2:1) */
-    --text: #e8e6e1; --muted: #9aa0ab; --faint: #868d99;
-    --hawk: #d16a5a; --dove: #5a8fd1; --accent: #c9a34e; --accent-dim: #7a5f2e;
-    --rate: #7fb0a0; --gilt: #a98fd1;
-    --serif: Georgia, 'Times New Roman', serif;
-    --sans: system-ui, -apple-system, 'Segoe UI', sans-serif;
-    --radius: 12px;
-    --shadow: 0 1px 2px rgba(0,0,0,.4), 0 8px 24px rgba(0,0,0,.25);
-
-    /* Type scale (1.25 modular, rounded to whole px) and vertical rhythm.
-       One scale for the whole page - sizes elsewhere reference these. */
-    --fs-micro: 11px; --fs-label: 12px; --fs-sm: 13px; --fs-ui: 14px;
-    --fs-body: 17px; --fs-md: 19px; --fs-lg: 22px; --fs-xl: 27px;
-    --fs-2xl: 34px; --fs-display: 46px;
-    --lh-tight: 1.25; --lh-snug: 1.45; --lh-body: 1.7;
-    --sp-1: 4px; --sp-2: 8px; --sp-3: 12px; --sp-4: 18px;
-    --sp-5: 26px; --sp-6: 38px; --sp-7: 56px;
-    /* Comfortable measure for running prose */
-    --measure: 70ch;
-  }
-  * { box-sizing: border-box; }
-  html { -webkit-text-size-adjust: 100%; }
-  body {
-    margin: 0; background: var(--bg); color: var(--text);
-    font: var(--fs-body)/var(--lh-body) var(--serif);
-    -webkit-font-smoothing: antialiased; text-rendering: optimizeLegibility;
-  }
-  .wrap { max-width: 800px; margin: 0 auto; padding: var(--sp-7) 22px 72px; }
-
-  /* Keyboard focus: visible on every interactive element, never removed. */
-  :focus-visible {
-    outline: 2px solid var(--accent); outline-offset: 2px; border-radius: 3px;
-  }
-  .skip-link {
-    position: absolute; left: -9999px; top: 0;
-    background: var(--accent); color: var(--bg); padding: 10px 16px;
-    font: 600 var(--fs-ui) var(--sans); border-radius: 0 0 6px 0; z-index: 20;
-  }
-  .skip-link:focus { left: 0; }
-  .visually-hidden {
-    position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px;
-    overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; border: 0;
-  }
-
-  /* Prose measure: running text never exceeds a comfortable line length. */
-  .prose, .card > p, .plain-summary, .results-framing, .call-rationale-body {
-    max-width: var(--measure);
-  }
-  table { font-variant-numeric: tabular-nums; }
-
-  /* ---------- masthead ---------- */
-  .masthead { margin-bottom: var(--sp-6); }
-  .beta {
-    display: inline-block; font: 700 var(--fs-micro)/1 var(--sans);
-    letter-spacing: .13em; color: var(--bg); background: var(--accent);
-    padding: 5px 9px; border-radius: 4px; text-transform: uppercase;
-  }
-  h1 {
-    font: normal var(--fs-2xl)/var(--lh-tight) var(--serif);
-    margin: var(--sp-4) 0 var(--sp-3); letter-spacing: -.01em;
-  }
-  .thesis {
-    color: var(--muted); font-style: italic; font-size: var(--fs-md);
-    line-height: var(--lh-snug); margin: 0; max-width: 62ch;
-  }
-
-  /* ---------- cards ---------- */
-  .card {
-    background: var(--panel); border: 1px solid var(--line);
-    border-radius: var(--radius); padding: var(--sp-5) 28px;
-    margin-bottom: var(--sp-4); box-shadow: var(--shadow);
-  }
-  .eyebrow, .card > h2 {
-    font: 600 var(--fs-label)/1 var(--sans); letter-spacing: .14em;
-    text-transform: uppercase; color: var(--muted); margin: 0 0 var(--sp-4);
-  }
-  .card > h2 .count { color: var(--faint); letter-spacing: .04em; }
-
-  /* ---------- progressive disclosure ----------
-     Native <details>/<summary>: keyboard-operable and screen-reader
-     announced without JavaScript. The plain summary above it is always
-     visible; the technical content is layered underneath, never removed. */
-  .plain-summary {
-    font: var(--fs-md)/var(--lh-snug) var(--serif); color: var(--text);
-    margin: 0 0 var(--sp-4);
-  }
-  .plain-summary em { font-style: italic; color: var(--text); }
-  .disclosure { margin: 0; border-top: 1px solid var(--line); padding-top: var(--sp-3); }
-  .disclosure + .disclosure { margin-top: var(--sp-3); }
-  .disclosure > summary {
-    font: 600 var(--fs-label)/1 var(--sans); letter-spacing: .1em;
-    text-transform: uppercase; color: var(--muted); cursor: pointer;
-    list-style: none; display: flex; align-items: center; gap: var(--sp-2);
-    padding: var(--sp-1) 0; width: max-content;
-  }
-  .disclosure > summary::-webkit-details-marker { display: none; }
-  .disclosure > summary:hover { color: var(--text); }
-  .disclosure > summary .caret {
-    display: inline-block; width: 9px; height: 9px; flex: none;
-    border-right: 1.5px solid currentColor; border-bottom: 1.5px solid currentColor;
-    transform: rotate(-45deg); margin-bottom: 2px;
-  }
-  .disclosure[open] > summary .caret { transform: rotate(45deg); margin-bottom: 4px; }
-  .disclosure[open] > summary { margin-bottom: var(--sp-3); }
-  .disclosure-body > *:last-child { margin-bottom: 0; }
-
-  /* ---------- call card ---------- */
-  .call-card.dry-run {
-    border: 1px dashed var(--accent-dim);
-    background:
-      repeating-linear-gradient(135deg, var(--panel), var(--panel) 11px, #201b12 11px, #201b12 22px);
-  }
-  .call-card.locked { border: 1px solid var(--accent); }
-  .call-badge {
-    display: inline-block; font: 700 var(--fs-micro)/1 var(--sans);
-    letter-spacing: .12em; text-transform: uppercase; padding: 6px 10px;
-    border-radius: 4px; margin-bottom: 18px;
-  }
-  .call-badge.dry-run { background: var(--accent-dim); color: #ffe9b3; }
-  .call-badge.locked { background: var(--accent); color: var(--bg); }
-  .call-heading { margin: 0 0 var(--sp-2); font-size: var(--fs-md); }
-  .call-heading strong { color: var(--accent); font-weight: normal; }
-
-  /* Lock timestamp as evidence: monospaced-feel, linked to the git tag. */
-  .call-stamp {
-    font: var(--fs-sm)/1.6 var(--sans); color: var(--muted);
-    margin: 0 0 var(--sp-5); display: flex; flex-wrap: wrap;
-    align-items: baseline; gap: var(--sp-1) var(--sp-3);
-  }
-  .call-stamp .stamp-label {
-    font: 600 var(--fs-micro)/1 var(--sans); letter-spacing: .1em;
-    text-transform: uppercase; color: var(--faint);
-  }
-  .call-stamp time { color: var(--text); font-variant-numeric: tabular-nums; }
-  .call-stamp a { color: var(--accent); text-decoration: none; border-bottom: 1px solid var(--accent-dim); }
-  .call-stamp a:hover { border-bottom-color: var(--accent); }
-
-  /* Probabilities: the visual centrepiece of the card. */
-  .call-probs {
-    display: grid; grid-template-columns: repeat(3, minmax(0, 1fr));
-    gap: var(--sp-4); margin: 0 0 var(--sp-3);
-  }
-  .call-prob { min-width: 0; }
-  .call-prob .n {
-    font: var(--fs-display)/1 var(--serif); font-variant-numeric: tabular-nums;
-    letter-spacing: -.015em; display: block;
-  }
-  .call-prob.is-lead .n { color: var(--accent); }
-  .call-prob .l {
-    font: 600 var(--fs-label)/1 var(--sans); color: var(--muted);
-    text-transform: uppercase; letter-spacing: .1em; margin-top: var(--sp-2);
-    display: block;
-  }
-  .call-probbar {
-    display: flex; height: 8px; border-radius: 4px; overflow: hidden;
-    background: var(--line); margin: 0 0 var(--sp-2);
-  }
-  .call-probbar span { height: 100%; display: block; }
-  .call-probbar .seg-cut { background: var(--dove); }
-  .call-probbar .seg-hold { background: #3a3f4a; }
-  .call-probbar .seg-hike { background: var(--hawk); }
-  .call-probsrc {
-    font: var(--fs-label)/1.6 var(--sans); color: var(--faint);
-    margin: 0 0 var(--sp-5);
-  }
-  .call-index-line { margin: 0 0 var(--sp-4); }
-
-  /* ---------- outcome (a scored call) ----------
-     Shown only once the announcement has happened and score_outcomes has
-     filled the locked file's outcome/scores fields. */
-  .call-outcome {
-    border-top: 1px solid var(--line); margin-top: var(--sp-5); padding-top: var(--sp-4);
-  }
-  .call-outcome-row {
-    display: flex; flex-wrap: wrap; gap: var(--sp-3) var(--sp-6); margin-bottom: var(--sp-3);
-  }
-  .oc-item { display: flex; flex-direction: column; gap: var(--sp-2); }
-  .oc-l {
-    font: 600 var(--fs-label)/1 var(--sans); letter-spacing: .1em;
-    text-transform: uppercase; color: var(--muted);
-  }
-  .oc-v {
-    font: var(--fs-lg)/1 var(--serif); color: var(--text);
-    font-variant-numeric: tabular-nums;
-  }
-  .oc-v.oc-hit { color: var(--accent); }
-  .oc-note { font: var(--fs-label)/1.6 var(--sans); color: var(--faint); margin: 0; }
-  .oc-note code { font-size: var(--fs-micro); color: var(--muted); }
-
-  /* Next announcement: a forward pointer, subordinate to the result above it. */
-  .call-next {
-    font: var(--fs-ui)/var(--lh-snug) var(--sans); color: var(--muted);
-    margin: var(--sp-4) 0 0; padding-top: var(--sp-3);
-    border-top: 1px solid var(--line);
-  }
-  .call-next strong { color: var(--text); font-weight: 600; }
-
-  /* ---------- rationale ----------
-     Long-form hand-written prose sitting in a card otherwise built for
-     figures and fine print. It gets its own measure, leading and rule so it
-     reads as an argument rather than as a caption. */
-  .call-rationale {
-    margin-top: var(--sp-5); padding-left: var(--sp-4);
-    border-left: 2px solid var(--accent-dim);
-  }
-  .call-rationale-h {
-    font: 600 var(--fs-label)/1 var(--sans); letter-spacing: .1em;
-    text-transform: uppercase; color: var(--muted); margin: 0 0 var(--sp-3);
-  }
-  .call-rationale-h .pt-call {
-    color: var(--accent); letter-spacing: .06em; margin-left: var(--sp-2);
-  }
-  .call-rationale-body {
-    font: var(--fs-body)/1.75 var(--serif); color: var(--text);
-    margin: 0; max-width: 66ch; text-wrap: pretty;
-  }
-  .call-rationale-attrib {
-    font: var(--fs-label)/1.6 var(--sans); color: var(--faint);
-    margin: var(--sp-4) 0 0;
-  }
-
-  /* ---------- latest reading (lead of the index card) ---------- */
-  .reading { margin-bottom: var(--sp-5); }
-  .docline { margin: 0 0 var(--sp-3); color: var(--muted); font-size: var(--fs-ui); line-height: var(--lh-snug); }
-  .docline strong { color: var(--accent); font-weight: normal; }
-  .score { font-size: var(--fs-display); line-height: 1.1; margin: 0; font-variant-numeric: tabular-nums; }
-  .score .sign-hawk { color: var(--hawk); }
-  .score .sign-dove { color: var(--dove); }
-  .score .score-word { font-size: var(--fs-ui); color: var(--muted); }
-  .scale {
-    position: relative; height: 10px; border-radius: 5px; margin: 20px 0 7px;
-    background: linear-gradient(90deg, var(--dove), #3a3f4a 50%, var(--hawk));
-  }
-  .marker {
-    position: absolute; top: -5px; width: 4px; height: 20px;
-    background: var(--text); border-radius: 2px; transform: translateX(-50%);
-    box-shadow: 0 0 0 2px var(--panel);
-  }
-  .scale-labels {
-    display: flex; justify-content: space-between;
-    font: var(--fs-label) var(--sans); color: var(--muted);
-  }
-
-  .divider { border: 0; border-top: 1px solid var(--line); margin: var(--sp-5) 0; }
-  .subhead {
-    font: 600 var(--fs-label)/1 var(--sans); letter-spacing: .1em; text-transform: uppercase;
-    color: var(--muted); margin: 0 0 var(--sp-3);
-  }
-
-  .fine { font: var(--fs-ui)/var(--lh-body) var(--sans); color: var(--muted); margin-top: var(--sp-4); max-width: var(--measure); }
-  .fine code { color: var(--text); font-size: var(--fs-sm); }
-  .fine a, .card a { color: var(--muted); text-decoration-color: var(--line); }
-  .fine a:hover, .card a:hover { color: var(--text); }
-  #status, #chart-status, #ladder-status, #call-status { color: var(--muted); }
-
-  /* ---------- failure states ----------
-     Every JS-loaded section has one of these. It names the file that failed
-     and links to it on GitHub, so a reader who hits a broken load can still
-     read the numbers rather than staring at "Loading...". */
-  /* Draft marker: same device as methodology.html, so a section still under
-     the author's pen says so in one place and in one style. */
-  .draft-note {
-    font: 700 var(--fs-micro)/1 var(--sans); letter-spacing: .1em; text-transform: uppercase;
-    color: #ffe9b3; background: var(--accent-dim); display: inline-block;
-    padding: 4px 8px; border-radius: 4px; margin: 0 0 14px;
-  }
-  /* Three-line summary at the head of the page. */
-  .summary-list { margin: 0; padding-left: 20px; font: var(--fs-body)/var(--lh-body) var(--serif); color: var(--text); }
-  .summary-list li { margin: 0 0 var(--sp-3); }
-  .summary-list li:last-child { margin-bottom: 0; }
-  .summary-list strong { color: var(--accent); font-weight: normal; }
-  /* Verification box: the same voice as the call card's old inline note,
-     consolidated into one place near the top of the page. */
-  .verify-list { margin: 0; padding-left: 20px; font: var(--fs-ui)/var(--lh-body) var(--sans); color: var(--muted); }
-  .verify-list li { margin: 0 0 var(--sp-3); }
-  .verify-list li:last-child { margin-bottom: 0; }
-  .verify-list strong { color: var(--text); font-weight: 600; }
-  .verify-list a { color: var(--accent); text-decoration-color: var(--accent-dim); }
-  .verify-list code {
-    font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: var(--fs-sm);
-    background: var(--panel-2); border: 1px solid var(--line); border-radius: 4px; padding: 2px 6px;
-    color: var(--text); overflow-wrap: anywhere;
-  }
-  /* One-line glossary, collapsed by default. */
-  .glossary-list { margin: 0; font: var(--fs-ui)/var(--lh-body) var(--sans); color: var(--muted); }
-  .glossary-list dt { color: var(--text); font-weight: 600; margin-top: var(--sp-3); }
-  .glossary-list dt:first-child { margin-top: 0; }
-  .glossary-list dd { margin: 2px 0 0; }
-  /* Model glosses inside the ladder's Model column. */
-  .model-gloss { display: block; font: var(--fs-micro)/1.3 var(--sans); color: var(--faint); margin-top: 2px; }
-  .prob-gloss { color: var(--muted); }
-  /* The call card's "figures as at" note, and the July miss note. */
-  .call-asat { font: var(--fs-label) var(--sans); color: var(--faint); margin: 0 0 var(--sp-3); }
-  .miss-note {
-    font: var(--fs-ui)/var(--lh-body) var(--sans); color: var(--muted);
-    border-left: 3px solid var(--accent-dim); padding: var(--sp-2) 0 var(--sp-2) 14px;
-    margin: var(--sp-4) 0 0;
-  }
-  .miss-note strong { color: var(--text); font-weight: 600; }
-  .miss-note a { color: var(--accent); }
-  .section-error {
-    font: var(--fs-ui)/var(--lh-body) var(--sans); color: var(--text);
-    background: rgba(209,106,90,.09); border-left: 3px solid var(--hawk);
-    border-radius: 0 6px 6px 0; padding: var(--sp-3) 16px;
-    margin: var(--sp-3) 0; max-width: var(--measure);
-  }
-  .section-error strong { color: var(--hawk); font-weight: 600; }
-  .section-error a { color: var(--text); text-decoration-color: var(--line); }
-  .section-error a:hover { text-decoration-color: var(--text); }
-  .section-error code { font-size: var(--fs-sm); color: var(--muted); }
-
-  /* Rehearsal toggle on the track record: locked calls are never hidden. */
-  .row-toggle {
-    display: inline-flex; align-items: center; gap: 7px; cursor: pointer;
-    font: var(--fs-ui) var(--sans); color: var(--muted);
-    user-select: none; margin: 0 0 var(--sp-3);
-  }
-  .row-toggle input { accent-color: var(--accent); }
-  .row-toggle:hover { color: var(--text); }
-
-  /* ---------- results table ---------- */
-  .results-framing {
-    font: var(--fs-body)/var(--lh-body) var(--serif); color: var(--text);
-    background: var(--panel-2); border-left: 3px solid var(--accent);
-    padding: var(--sp-4) 20px; margin: 0 0 var(--sp-5); border-radius: 0 6px 6px 0;
-  }
-  .table-scroll { overflow-x: auto; -webkit-overflow-scrolling: touch; }
-  .table-scroll:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
-  #ladder-table { width: 100%; border-collapse: collapse; font: var(--fs-ui) var(--sans); }
-  #ladder-table th, #ladder-table td {
-    text-align: right; padding: 10px 14px; border-bottom: 1px solid var(--line);
-    white-space: nowrap; font-variant-numeric: tabular-nums;
-  }
-  #ladder-table th:first-child, #ladder-table td:first-child { text-align: left; }
-  #ladder-table th {
-    color: var(--muted); font-weight: 600; font-size: var(--fs-label);
-    text-transform: uppercase; letter-spacing: .06em;
-  }
-  #ladder-table tbody tr:last-child td { border-bottom: 0; }
-  #ladder-table tr.model-l1 td { color: var(--accent); }
-
-  /* ---------- track record ---------- */
-  #track-table { width: 100%; border-collapse: collapse; font: var(--fs-ui) var(--sans); }
-  #track-table th, #track-table td {
-    text-align: right; padding: 10px 14px; border-bottom: 1px solid var(--line);
-    white-space: nowrap; font-variant-numeric: tabular-nums;
-  }
-  #track-table th:first-child, #track-table td:first-child { text-align: left; }
-  #track-table th {
-    color: var(--muted); font-weight: 600; font-size: var(--fs-label);
-    text-transform: uppercase; letter-spacing: .06em;
-  }
-  #track-table tbody tr:last-child td { border-bottom: 0; }
-  #track-table tr.kind-locked { color: var(--text); }
-  #track-table tr.kind-locked td:first-child { border-left: 2px solid var(--accent); padding-left: 12px; }
-  #track-table tr.kind-dryrun, #track-table tr.kind-rehearsal { color: var(--muted); }
-  .track-badge {
-    display: inline-block; font: 700 var(--fs-micro)/1 var(--sans); letter-spacing: .08em;
-    text-transform: uppercase; padding: 3px 7px; border-radius: 4px; margin-left: 8px;
-  }
-  .track-badge.locked { background: var(--accent); color: var(--bg); }
-  .track-badge.dryrun, .track-badge.rehearsal { background: var(--accent-dim); color: #ffe9b3; }
-
-  /* ---------- status line, contribution, references, pending row ---------- */
-  .status-line { font: var(--fs-sm)/1.6 var(--sans); color: var(--muted); margin: var(--sp-3) 0 0; }
-  .status-line .sep { color: var(--faint); margin: 0 2px; }
-  .status-line a { color: var(--muted); }
-  .contribution { margin: var(--sp-4) 0 0; padding-top: var(--sp-3); border-top: 1px solid var(--line); }
-  .refs { margin: 0; font: var(--fs-ui)/var(--lh-body) var(--sans); color: var(--muted); }
-  .refs dt { color: var(--text); margin-top: var(--sp-3); }
-  .refs dt:first-child { margin-top: 0; }
-  .refs dd { margin: 2px 0 0; }
-  .verify { color: var(--accent); font-size: var(--fs-label); }
-  #track-table tr.kind-pending { color: var(--faint); }
-  .track-badge.pending { border: 1px solid var(--line); color: var(--faint); }
-  .track-lockdate { font-size: var(--fs-label); color: var(--faint); margin-left: 6px; }
-
-  /* ---------- methodology + footer ---------- */
-  .methodology {
-    display: flex; flex-wrap: wrap; gap: 10px 22px; align-items: baseline;
-    margin: 34px 0 22px; padding-top: 22px; border-top: 1px solid var(--line);
-    font: var(--fs-ui) var(--sans);
-  }
-  .methodology .m-label {
-    font: 600 var(--fs-label) var(--sans); letter-spacing: .1em; text-transform: uppercase;
-    color: var(--muted);
-  }
-  .methodology a { color: var(--accent); text-decoration: none; }
-  .methodology a:hover { text-decoration: underline; }
-  footer {
-    font: var(--fs-sm)/1.7 var(--sans); color: var(--faint); margin-top: var(--sp-2);
-  }
-  footer a { color: var(--muted); }
-  footer .affiliation { color: var(--muted); }
-  footer .nia { color: var(--muted); }
-
-  /* ---------- chart interactivity ---------- */
-  .chart-controls {
-    display: flex; flex-wrap: wrap; gap: 8px 18px; margin: 0 0 12px;
-    font: var(--fs-sm) var(--sans); color: var(--muted);
-  }
-  .chart-controls label { display: inline-flex; align-items: center; gap: 7px; cursor: pointer; user-select: none; }
-  .chart-controls input { accent-color: var(--accent); }
-  .chart-controls .swatch { width: 22px; height: 3px; border-radius: 2px; display: inline-block; }
-  .chart-wrap { position: relative; }
-  .chart-tip {
-    position: absolute; pointer-events: none; z-index: 5;
-    background: #0c0e12; border: 1px solid var(--line); border-radius: 8px;
-    padding: 9px 11px; font: var(--fs-label)/1.55 var(--sans); color: var(--text);
-    box-shadow: 0 6px 20px rgba(0,0,0,.55); width: max-content; max-width: 250px;
-    transform: translate(-50%, calc(-100% - 14px));
-  }
-  .chart-tip .tt-doc { color: var(--accent); font-weight: 600; margin-bottom: 3px; }
-  .chart-tip .tt-row { color: var(--muted); }
-  .chart-tip .tt-row b { color: var(--text); font-weight: 600; }
-  .chart-tip .tt-hike { color: var(--hawk); font-weight: 600; }
-  .chart-tip .tt-cut { color: var(--dove); font-weight: 600; }
-  .chart-tip .tt-hold { color: var(--text); font-weight: 600; }
-
-  /* ---------- market & macro context ---------- */
-  .context-badge {
-    display: inline-block; font: 700 var(--fs-micro)/1 var(--sans); letter-spacing: .1em;
-    text-transform: uppercase; color: var(--muted); border: 1px solid var(--line);
-    background: var(--panel-2); padding: 5px 9px; border-radius: 4px;
-    margin-left: 12px; vertical-align: middle;
-  }
-  .ctx-block { margin: 0 0 26px; }
-  .ctx-block:last-of-type { margin-bottom: 0; }
-  .ctx-h { font: 600 var(--fs-label) var(--sans); letter-spacing: .09em; text-transform: uppercase; color: var(--muted); margin: 0 0 3px; }
-  .ctx-sub { font: var(--fs-sm)/1.5 var(--sans); color: var(--faint); margin: 0 0 14px; }
-  .ois-legend { font: var(--fs-label) var(--sans); color: var(--muted); margin: 0 0 12px; display: flex; gap: 16px; flex-wrap: wrap; }
-  .ois-legend .key { display: inline-flex; align-items: center; gap: 6px; }
-  .ois-legend .box { width: 11px; height: 11px; border-radius: 3px; display: inline-block; }
-  .ois-legend .box.cut { background: var(--dove); }
-  .ois-legend .box.hold { background: #3a3f4a; }
-  .ois-legend .box.hike { background: var(--hawk); }
-  .ois-row { display: grid; grid-template-columns: 96px 1fr 66px; align-items: center; gap: 14px; margin-bottom: 11px; }
-  .ois-row .ois-date { font: var(--fs-ui) var(--sans); color: var(--text); }
-  .ois-bar { display: flex; height: 22px; border-radius: 4px; overflow: hidden; background: var(--line); }
-  .ois-seg { height: 100%; display: flex; align-items: center; justify-content: center; font: var(--fs-micro) var(--sans); color: rgba(255,255,255,.92); overflow: hidden; }
-  .ois-seg.cut { background: var(--dove); }
-  .ois-seg.hold { background: #3a3f4a; color: var(--muted); }
-  .ois-seg.hike { background: var(--hawk); }
-  .ois-row .ois-chg { font: var(--fs-label) var(--sans); color: var(--muted); text-align: right; font-variant-numeric: tabular-nums; }
-  .ctx-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; }
-  .ctx-figure .big { font: var(--fs-2xl)/1 var(--serif); font-variant-numeric: tabular-nums; }
-  .ctx-figure .big .unit { font-size: var(--fs-ui); color: var(--muted); }
-  .ctx-figure .asof { font: var(--fs-label) var(--sans); color: var(--faint); margin: 4px 0 10px; }
-  .ctx-figure svg { width: 100%; height: auto; display: block; }
-  .ctx-note { font: var(--fs-label)/1.6 var(--sans); color: var(--faint); margin: 18px 0 0; padding-top: 14px; border-top: 1px solid var(--line); }
-  .ctx-footnote { font: var(--fs-label)/1.5 var(--sans); color: var(--faint); margin: 12px 0 0; }
-  .ctx-footnote a { color: var(--muted); }
-
-  /* ---------- episodes ---------- */
-  .episode { padding: 22px 0; border-bottom: 1px solid var(--line); }
-  .episode:last-child { border-bottom: 0; padding-bottom: 2px; }
-  .episode h3 { font: normal var(--fs-lg)/1.3 var(--serif); margin: 0 0 4px; }
-  .episode .ep-date { font: var(--fs-label) var(--sans); color: var(--muted); text-transform: uppercase; letter-spacing: .06em; margin: 0 0 13px; }
-  .ep-body { font: var(--fs-body)/var(--lh-body) var(--serif); color: var(--text); }
-  .ep-body p { margin: 0 0 12px; }
-  .ep-body p:last-child { margin-bottom: 0; }
-  .ep-body h3, .ep-body h4, .ep-body h5 { font-family: var(--sans); color: var(--muted); text-transform: uppercase; letter-spacing: .06em; font-size: var(--fs-label); font-weight: 600; margin: var(--sp-5) 0 var(--sp-2); }
-  .ep-body a { color: var(--accent); }
-  .ep-body ul { margin: 0 0 12px; padding-left: 20px; }
-  .ep-body li { margin: 0 0 5px; }
-
-  /* ---------- responsive ---------- */
-  @media (max-width: 560px) { .ctx-grid { grid-template-columns: 1fr; } }
-  @media (max-width: 640px) {
-    .wrap { padding: var(--sp-6) 16px var(--sp-7); }
-    :root {
-      --fs-2xl: 27px; --fs-display: 34px; --fs-xl: 22px;
-      --fs-md: 17px; --fs-body: 16px;
-    }
-    .card { padding: 20px 18px; }
-    .call-probs { gap: var(--sp-3); }
-    .results-framing { padding: var(--sp-3) 15px; }
-  }
-  /* 380px pass: the narrowest phone we support. Nothing may overflow the
-     viewport horizontally - wide tables scroll inside .table-scroll. */
-  @media (max-width: 430px) {
-    .wrap { padding: 28px 13px 48px; }
-    .card { padding: 17px 14px; }
-    :root { --fs-display: 27px; }
-    .call-prob .n { letter-spacing: -.02em; }
-    .call-prob .l { font-size: var(--fs-micro); letter-spacing: .06em; }
-    .call-probs { gap: 10px; }
-    .call-stamp { gap: var(--sp-1) var(--sp-2); }
-    .ois-row { grid-template-columns: 74px 1fr 52px; gap: 9px; }
-    .ois-row .ois-date { font-size: var(--fs-sm); }
-    .ois-row .ois-chg { font-size: var(--fs-micro); }
-    .beta { letter-spacing: .1em; }
-    #ladder-table th, #ladder-table td,
-    #track-table th, #track-table td { padding: 9px 10px; }
-  }
-  /* Users who ask for reduced motion get no transitions at all. The design
-     has none by default; this is a guard for anything added later. */
-  @media (prefers-reduced-motion: reduce) {
-    * { animation: none !important; transition: none !important; }
-  }
-</style>
+<link rel="icon" href="data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='0%200%2032%2032'%3E%3Crect%20width='32'%20height='32'%20fill='%23fcfbf9'/%3E%3Crect%20x='.5'%20y='.5'%20width='31'%20height='31'%20fill='none'%20stroke='%23d8d3cb'/%3E%3Cpolyline%20points='5,22%2011,14%2016,18%2022,8%2027,12'%20fill='none'%20stroke='%231c1b19'%20stroke-width='2'%20stroke-linecap='round'%20stroke-linejoin='round'/%3E%3Ccircle%20cx='27'%20cy='12'%20r='2.6'%20fill='%238a5a12'/%3E%3C/svg%3E">
 </head>
 <body>
 <a class="skip-link" href="#main">Skip to content</a>
 <div class="wrap">
   <header class="masthead">
+    <button type="button" class="theme-toggle" id="theme-toggle" aria-pressed="false">Dark</button>
     <h1>MPC Communication Index</h1>
     <p class="thesis">Does the tone of Bank of England communication carry information
     about the next rate decision beyond what markets already price?</p>
@@ -553,7 +58,7 @@
        Prose written under the maintainer's 2 September 2026 instruction to
        bypass the approval gate; awaiting his post-hoc review (DECISIONS.md
        2026-09-02, Stage 2). -->
-  <section class="card" id="summary" aria-labelledby="summary-h">
+  <section class="section" id="summary" aria-labelledby="summary-h">
     <h2 id="summary-h" class="visually-hidden">Summary</h2>
     <ul class="summary-list">
       <li><strong>Question.</strong> Does the hawkish or dovish tone of the MPC's minutes,
@@ -588,7 +93,7 @@
        across the call card and the footer nav. Generated from the locked
        prediction file by pipeline/build_fallbacks.py. -->
   <!-- fallback:verify -->
-  <section class="card" id="how-to-check">
+  <section class="section" id="how-to-check">
     <h2>How to check this</h2>
     <p class="plain-summary">Nothing here has to be taken on trust. The call below was tagged
     and pushed to GitHub before the announcement it is about, and everything behind it is in
@@ -614,7 +119,7 @@
        on success. pipeline/tests/test_static_fallback.py asserts these
        figures still match the JSON - regenerate them, never retype them. -->
   <!-- fallback:call -->
-  <section class="card call-card locked" id="call-card" aria-labelledby="call-badge"
+  <section class="section call-card locked" id="call-card" aria-labelledby="call-badge"
            data-prediction-file="data/predictions/lock-2026-07.json">
     <div class="call-badge locked" id="call-badge">LOCKED CALL &middot; SCORED</div>
     <p class="call-heading" id="call-heading">Call for <strong>30 July 2026</strong></p>
@@ -633,7 +138,7 @@
     down and tagged before the announcement so it cannot be revised afterwards. The
     percentages are the market's; the point call and the reasoning are mine.</em></p>
 
-    <div class="call-probs" id="call-probs"><div class="call-prob"><span class="n">0%</span><span class="l">cut</span></div><div class="call-prob is-lead"><span class="n">96%</span><span class="l">hold</span></div><div class="call-prob"><span class="n">4%</span><span class="l">hike</span></div></div>
+    <div class="call-probs" id="call-probs"><div class="call-prob"><span class="n">0%</span><span class="l">cut</span></div><div class="call-prob is-lead is-call"><span class="n">96%</span><span class="l">hold</span></div><div class="call-prob"><span class="n">4%</span><span class="l">hike</span></div></div>
     <div class="call-probbar" id="call-probbar" aria-hidden="true"><span class="seg-cut" style="width:0.0%"></span><span class="seg-hold" style="width:96.1%"></span><span class="seg-hike" style="width:3.9%"></span></div>
     <p class="call-probsrc" id="call-probsrc"><strong>m0</strong> <span class="prob-gloss">market pricing only</span> &mdash; OIS forward curve vs SONIA, 25bp two-state assumption. Not the point call.</p>
     <p class="fine call-index-line" id="call-index-line">A&amp;BG index (minutes-2026-06): <strong>1.714</strong> vs trailing 4-document mean <strong>1.054</strong> (0.661 above)</p>
@@ -660,7 +165,7 @@
   <div id="call-status" style="display:none"></div>
 
   <!-- 2. The index (latest reading + history chart) -->
-  <section class="card">
+  <section class="section">
     <h2>The communication index</h2>
 
     <div id="status" style="display:none"></div>
@@ -669,16 +174,16 @@
          success. Shown by default so a failed fetch leaves a reading, not a
          blank. -->
     <div class="reading" id="content">
-      <p class="docline" id="docline">MPC minutes, meeting ending <strong>29 July 2026</strong> &middot; published 30 July 2026 &middot; decision: maintain Bank Rate at 3.75% &middot; vote 6-3</p>
+      <p class="docline" id="docline">MPC minutes for the meeting ending <strong>29 July 2026</strong>, published 30 July 2026. Decision: maintain Bank Rate at 3.75%; vote 6&ndash;3.</p>
       <p class="score" id="score"><span class="sign-dove">0.667</span> <span class="score-word">net dovish (A&amp;BG Net Index, 0&ndash;2 scale, 1.0 = neutral)</span></p>
       <div class="scale"><div class="marker" id="marker" style="left:33.3350%"></div></div>
       <div class="scale-labels"><span>&larr; dovish</span><span>neutral</span><span>hawkish &rarr;</span></div>
-      <p class="fine" id="detail">1 hawkish vs 2 dovish noun+adjective hits &middot; lexicon <code>abg_2012</code> &middot; sha256 <code>30d23354736d7d77&hellip;</code> &middot; <a href="https://www.bankofengland.co.uk/monetary-policy-summary-and-minutes/2026/july-2026">source document</a></p>
+      <p class="fine" id="detail">1 hawkish and 2 dovish noun+adjective hits; lexicon <code>abg_2012</code>; sha256 <code>30d23354736d7d77&hellip;</code>; <a href="https://www.bankofengland.co.uk/monetary-policy-summary-and-minutes/2026/july-2026">source document</a>.</p>
     </div>
     <!-- /fallback:latest -->
 
     <hr class="divider">
-    <h3 class="subhead">A&amp;BG index &middot; Aug 2015&ndash;present</h3>
+    <h3 class="subhead">A&amp;BG index, <!-- fig:corpus_start_month -->August 2015<!-- /fig:corpus_start_month --> to present</h3>
     <div id="chart-status" class="fine" style="display:none"></div>
     <!-- fallback:chart - the chart needs JavaScript to draw; this is the same
          series described in words, generated from data/index.json and hidden
@@ -687,25 +192,34 @@
     <strong>95</strong> readings from 6 August 2015 to
     30 July 2026 on the A&amp;BG 0&ndash;2 scale, where 1.0
     is neutral. Latest <strong>0.667</strong> (minutes-2026-07); series low
-    0.000 (minutes-2015-12), high 2.000 (minutes-2015-08).
-    Every point is in <code>data/index.json</code>.</p>
+    0.000 (minutes-2015-12), high 2.000 (minutes-2015-08). A shaded band marks the hiking cycle, 16 December 2021 to 3 August 2023, derived from the Bank Rate history;
+    a dashed rule marks where the fragility sub-sample begins, 1 September 2023; a diamond marks
+    the locked call for 30 July 2026. Every point is in
+    <code>data/index.json</code>.</p>
     <!-- /fallback:chart -->
     <div class="chart-controls" id="chart-controls" style="display:none">
       <label><input type="checkbox" id="toggle-decisions" checked> Decision markers</label>
       <label><input type="checkbox" id="toggle-bankrate" checked>
-        <span class="swatch" style="background:var(--rate)"></span> Bank Rate</label>
-      <span style="color:var(--faint)" id="chart-hint">Hover or tap the line for details</span>
+        <span class="swatch"></span> Bank Rate</label>
     </div>
-    <div class="chart-wrap">
-      <svg id="chart" viewBox="0 0 700 260" style="display:none;width:100%;height:auto"
+    <!-- fallback:chartmeta - the overlays' dates, generated by
+         pipeline/build_fallbacks.py from data/inference_v1.json (the
+         fragility sub-sample start) and the prediction file on display
+         (the locked call's meeting); the hiking-cycle band is derived by
+         the chart itself from the Bank Rate history in site_context.json. -->
+    <div class="chart-wrap" id="chart-wrap" data-fragility-start="2023-09-01"
+         data-fragility-label="fragility sub-sample begins"
+         data-locked-meeting="2026-07-30">
+      <svg id="chart" viewBox="0 0 700 260" style="display:none"
            role="img" aria-labelledby="chart-title chart-desc" tabindex="0"></svg>
       <div class="chart-tip" id="chart-tip" style="display:none" role="status" aria-live="polite"></div>
     </div>
+    <!-- /fallback:chartmeta -->
     <div class="fine" id="chart-legend"></div>
   </section>
 
   <!-- 2b. Market & macro context (NOT model inputs) -->
-  <section class="card">
+  <section class="section">
     <h2>Market &amp; macro context <span class="context-badge">Context &mdash; not model inputs</span></h2>
     <div id="context-status" class="fine" style="display:none"></div>
     <div id="context-content">
@@ -715,7 +229,7 @@
       and the gilt curve stood around the latest reading. Background only; nothing here feeds
       the index, the benchmark or a locked call.</em></p>
 
-      <details class="disclosure">
+      <details class="disclosure" open>
         <summary><span class="caret" aria-hidden="true"></span>More detail</summary>
         <div class="disclosure-body">
 
@@ -726,7 +240,7 @@
            illustrate are here in full. -->
       <div class="ctx-block">
         <h3 class="ctx-h" id="ois-h">OIS-implied path &middot; next 3 scheduled meetings</h3>
-        <p class="ctx-sub" id="ois-sub">Curve as of <b style="color:var(--text)">7 August 2026</b> vs SONIA 3.732% (6 August 2026) &middot; two-state &plusmn;25bp assumption.</p>
+        <p class="ctx-sub" id="ois-sub">Curve as of <b>7 August 2026</b> vs SONIA 3.732% (6 August 2026) &middot; two-state &plusmn;25bp assumption.</p>
         <div class="ois-legend">
           <span class="key"><span class="box cut"></span> cut</span>
           <span class="key"><span class="box hold"></span> hold</span>
@@ -764,7 +278,7 @@
   </section>
 
   <!-- 3. Results -->
-  <section class="card">
+  <section class="section">
     <h2 id="ladder-heading">Results</h2>
     <h3 class="subhead">Benchmark ladder <span class="count" id="ladder-schema">(ladder-v1)</span></h3>
     <div id="ladder-status" style="display:none"></div>
@@ -788,7 +302,7 @@
       </p>
       <div class="table-scroll" tabindex="0" role="region" aria-label="Benchmark ladder scores, L0 to L4">
         <table id="ladder-table">
-          <caption class="visually-hidden">Mean Brier score, mean log score, skill versus the
+          <caption>Mean Brier score, mean log score, skill versus the
           L1 market benchmark, and number of meetings, for models L0 to L4</caption>
           <thead>
             <tr><th scope="col">Model</th><th scope="col">Mean Brier</th><th scope="col">Mean log score</th><th scope="col">Skill vs L1</th><th scope="col">n</th></tr>
@@ -831,7 +345,7 @@
       <!-- fig:frag_start -->1 September 2023<!-- /fig:frag_start -->. <a href="methodology.html#sample-sizes">Full note in the
       methodology</a>.</p>
 
-      <details class="disclosure">
+      <details class="disclosure" open>
         <summary><span class="caret" aria-hidden="true"></span>More detail</summary>
         <div class="disclosure-body">
           <!-- fallback:laddermeta - generated from data/ladder_v1.json by
@@ -865,7 +379,7 @@
     test finds nothing.</em></p>
     <div id="inference-status" style="display:none"></div>
     <div id="inference-content">
-      <details class="disclosure">
+      <details class="disclosure" open>
         <summary><span class="caret" aria-hidden="true"></span>More detail</summary>
         <div class="disclosure-body">
         <!-- fallback:spec3 - generated from data/inference_v1.json, replaced by
@@ -883,9 +397,9 @@
 
   <!-- 9. Glossary. Collapsed, because a reader who knows these terms should
        not have to scroll past them. -->
-  <section class="card" id="glossary">
+  <section class="section" id="glossary">
     <h2>Glossary</h2>
-    <details class="disclosure">
+    <details class="disclosure" open>
       <summary><span class="caret" aria-hidden="true"></span>One line each: the seven terms this page uses</summary>
       <div class="disclosure-body">
         <dl class="glossary-list">
@@ -917,7 +431,7 @@
   </section>
 
   <!-- 3b. Track record -->
-  <section class="card">
+  <section class="section">
     <h2>Track record</h2>
     <p class="fine" style="margin-top:-6px">Every locked call &mdash; marked as such, and never
     editable after the fact. Dry runs and rehearsals are hidden by default and can be shown
@@ -931,7 +445,7 @@
       </label>
       <div class="table-scroll" tabindex="0" role="region" aria-label="Track record of every locked call">
         <table id="track-table">
-          <caption class="visually-hidden">Every locked call: meeting date, kind,
+          <caption>Every locked call: meeting date, kind,
           point call, market-implied probabilities, outcome and Brier score</caption>
           <thead>
             <tr><th scope="col">Meeting</th><th scope="col">Locked</th><th scope="col">Call</th><th scope="col">Cut</th><th scope="col">Hold</th><th scope="col">Hike</th><th scope="col">Outcome</th><th scope="col">Brier (m0)</th></tr>
@@ -959,7 +473,7 @@
   </section>
 
   <!-- 4. Episodes (hand-written annotations) -->
-  <section class="card" id="episodes">
+  <section class="section" id="episodes">
     <h2>Episodes</h2>
     <p class="fine" style="margin-top:-6px">Short, dated annotations on specific meetings and
     moments &mdash; written by hand, not generated.</p>
@@ -969,14 +483,14 @@
          renderMarkdown() implements, and overwritten by renderEpisodes() on
          success. -->
     <div id="episodes-list">
-      <article class="episode" id="episode-2026-07-30"><h3>The minority grew</h3><p class="ep-date">30 July 2026</p><div class="ep-body"><p>The July call scored cleanly. Bank Rate held at 3.75% on 30 July; the locked probabilities returned a Brier of 0.003; nothing in the record moved between lock and score but the outcome field and the scores that follow from it. That is the mechanism working exactly as designed, and it is not what this note is about. The interesting thing about July is not the call. It is the part of the reading that failed while the call succeeded.</p><h3>1. What happened</h3><p>At the meeting ending 29 July, announced on the 30th, the MPC voted six to three to maintain Bank Rate at 3.75%. Megan Greene, Catherine Mann and Huw Pill preferred an immediate quarter-point rise to 4.00%. It was the fifth consecutive meeting at 3.75% and the third consecutive meeting at which the hawkish minority has grown: 8–1 in April, 7–2 in June, 6–3 in July. The run begins from a unanimous 9–0 in March — the Committee's first undivided decision in four and a half years — which makes the sequence cleaner still: one dissent added at each of three successive meetings from a base of none.</p><p>The accompanying Monetary Policy Report carried a central projection of CPI peaking near 3.2% in the fourth quarter. At the press conference Bailey moved directly to damp the hawkish reading, telling reporters not to leave the room thinking the Bank was edging towards a hike. On the day, then, the vote record and the Governor's communication pointed in opposite directions, and the Governor was managing that divergence deliberately.</p><h3>2. What I called</h3><p>Hold at 3.75%. Correct. The probabilities were locked on 28 July under the announcement-minus-two convention, with p(hike) shaded modestly below the market-implied 3.86% for the two documented regime-specific reasons: a forward read at meeting-plus-three, interpolated across whole-month buckets on a steeply upward-sloping short curve, absorbs September's expectations into July's; and the fiscal repricing of 20 July that carried the ten-year gilt to 5.04% is a risk premium rather than an expectation of Bank Rate. Both remain testable against the September lock, when the near-month slope will differ. The communication index was recorded as context and kept out of the call, on the standing ground that L3 scores −0.6729 against the market-only benchmark and Spec 2 returns p = 0.4918. [Figures as at the 28 July lock. The ladder was re-run on 10 August after the July minutes were ingested and now reads −0.6712 / 0.4894 — Ed., September 2026.] There is no warrant on this project's own evidence for letting tone override L1, and July gave none.</p><p>The ancillary vote-split call — unscored — was that the minority would hold at two. It went to three. Mann moved. She was named in the lock-day rationale as the member most likely to reason her way towards an activist hike while continuing to vote for a hold. I had identified the right person and drawn precisely the wrong conclusion about her.</p><h3>3. Why I was wrong</h3><p>The argument was that the macro flow since 18 June ran against the two dissenters on nearly every measure they had invoked. Headline CPI fell to 2.6% against a 2.7% consensus, its lowest in fifteen months; services eased to 3.6%; regular pay growth slowed to 3.4%, joint-slowest since October 2020; input producer prices decelerated to 7.3% from 9.3% as Brent retraced. Greene and Pill, on that reading, had dissented on an energy shock that was already unwinding.</p><p>The flow did run against them. Every one of those figures held. They dissented anyway, and a third member joined them.</p><p>So the error is not in the data. It is in the assumption that connected the data to the votes. I had read the June dissents as claims about realised inflation — that prices were running hotter than the majority allowed — and inferred that a run of disinflationary prints would erode the claim and, with it, the dissent. That is not what the dissenters were saying, and July made it explicit. Their stated reasons, taken together:</p><ul><li>Greene argued that moving early reduces the probability that second-round effects take hold at all.</li><li>Mann named the decisive change as diplomatic and geopolitical — the collapse of the US–Iran memorandum, the widening of the conflict, the energy volatility that followed — and not any price series.</li><li>Pill argued for raising now precisely in order to cut through the noise in commodity and asset prices, as an unambiguous signal of willingness to act on upside risk.</li></ul><p>Not one of the three is an argument from realised inflation. Pill's is the sharpest against me: he treats the incoming data as noise to be seen through. My reasoning assigned decisive weight to a series that the decisive voters had explicitly set aside.</p><p>Bailey's own framing is the gap in a sentence. Inflation has fallen faster than expected, to 2.6%; the Bank's central projection has it peaking near 3.2% in Q4. Both are true at once. A committee looking backwards sees disinflation; a committee looking forwards sees a peak still ahead of it. The minority is not disputing the first fact. It is pricing the second. They are not reasoning from realised disinflation. They are reasoning from forward risk.</p><h3>4. What it changes</h3><p>Two things, of different orders.</p><p>The smaller is a correction to how I read the Committee. It is not divided about the object of concern. Bailey, Breeden, Lombardelli, Ramsden, Taylor and Dhingra all framed the hold in terms of second-round effects, insurance, or the conditions under which they would tighten; Ramsden said outright that crystallised upside risk could warrant a hike and that subsiding risk would have him considering a resumption of cuts. Everyone is watching the same thing. What separates the six from the three is the evidentiary threshold for acting on it before it appears. Greene would move pre-emptively; Ramsden would move on confirmation. On a hawk–dove scale those two positions read as near-neighbours. In vote space they are opposite.</p><p>The larger is that this may be a problem with what the index measures rather than with how I read its output. A lexicon keyed to realised-inflation language is not mis-calibrated here; it is oriented along the wrong axis. It cannot see the dimension the July vote actually turned on, and its failure mode is worse than silence: it will score July's disinflationary language as dovish at exactly the meeting where the hawkish minority grew. The index and the vote record will diverge systematically, and the divergence will present as noise rather than as the finding it is.</p><p>That points to a second series rather than a rescaling of the first — a risk-management measure counting conditionality, pre-emption, insurance, second-round effects, signalling and tail risk, scored separately from realised-inflation tone. The testable proposition is that the gap between the two carries the vote information: that in July the realised-inflation series fell while the risk-management series rose, and that the divergence, not the level of either, is what tracks dissent counts.</p><p>One discipline note, because it is the whole point of the exercise. None of this touches the July record, and none of it may be fitted to July. If a second series is built, it must be specified and pre-registered before the September lock and run over the full sample from January 2019 under the same expanding-window protocol as everything else. Otherwise the fix is in-sample, and the negative result it claims to overturn is merely reproduced with extra steps.</p><p>The last change I am persuaded of is procedural. The vote split should be pre-registered as a scored distribution from September rather than carried as an unscored ancillary. July's miss cost nothing in the ledger — which is precisely the problem. A reading that can be wrong without penalty is not doing the work the rest of the project does.</p></div></article>
+      <article class="episode" id="episode-2026-07-30"><h3>The minority grew</h3><p class="ep-date">30 July 2026</p><div class="ep-body"><p>The July call scored cleanly. Bank Rate held at 3.75% on 30 July; the locked probabilities returned a Brier of 0.003; nothing in the record moved between lock and score but the outcome field and the scores that follow from it. That is the mechanism working exactly as designed, and it is not what this note is about. The interesting thing about July is not the call. It is the part of the reading that failed while the call succeeded.</p><h4>1. What happened</h4><p>At the meeting ending 29 July, announced on the 30th, the MPC voted six to three to maintain Bank Rate at 3.75%. Megan Greene, Catherine Mann and Huw Pill preferred an immediate quarter-point rise to 4.00%. It was the fifth consecutive meeting at 3.75% and the third consecutive meeting at which the hawkish minority has grown: 8–1 in April, 7–2 in June, 6–3 in July. The run begins from a unanimous 9–0 in March — the Committee's first undivided decision in four and a half years — which makes the sequence cleaner still: one dissent added at each of three successive meetings from a base of none.</p><p>The accompanying Monetary Policy Report carried a central projection of CPI peaking near 3.2% in the fourth quarter. At the press conference Bailey moved directly to damp the hawkish reading, telling reporters not to leave the room thinking the Bank was edging towards a hike. On the day, then, the vote record and the Governor's communication pointed in opposite directions, and the Governor was managing that divergence deliberately.</p><h4>2. What I called</h4><p>Hold at 3.75%. Correct. The probabilities were locked on 28 July under the announcement-minus-two convention, with p(hike) shaded modestly below the market-implied 3.86% for the two documented regime-specific reasons: a forward read at meeting-plus-three, interpolated across whole-month buckets on a steeply upward-sloping short curve, absorbs September's expectations into July's; and the fiscal repricing of 20 July that carried the ten-year gilt to 5.04% is a risk premium rather than an expectation of Bank Rate. Both remain testable against the September lock, when the near-month slope will differ. The communication index was recorded as context and kept out of the call, on the standing ground that L3 scores −0.6729 against the market-only benchmark and Spec 2 returns p = 0.4918. [Figures as at the 28 July lock. The ladder was re-run on 10 August after the July minutes were ingested and now reads −0.6712 / 0.4894 — Ed., September 2026.] There is no warrant on this project's own evidence for letting tone override L1, and July gave none.</p><p>The ancillary vote-split call — unscored — was that the minority would hold at two. It went to three. Mann moved. She was named in the lock-day rationale as the member most likely to reason her way towards an activist hike while continuing to vote for a hold. I had identified the right person and drawn precisely the wrong conclusion about her.</p><h4>3. Why I was wrong</h4><p>The argument was that the macro flow since 18 June ran against the two dissenters on nearly every measure they had invoked. Headline CPI fell to 2.6% against a 2.7% consensus, its lowest in fifteen months; services eased to 3.6%; regular pay growth slowed to 3.4%, joint-slowest since October 2020; input producer prices decelerated to 7.3% from 9.3% as Brent retraced. Greene and Pill, on that reading, had dissented on an energy shock that was already unwinding.</p><p>The flow did run against them. Every one of those figures held. They dissented anyway, and a third member joined them.</p><p>So the error is not in the data. It is in the assumption that connected the data to the votes. I had read the June dissents as claims about realised inflation — that prices were running hotter than the majority allowed — and inferred that a run of disinflationary prints would erode the claim and, with it, the dissent. That is not what the dissenters were saying, and July made it explicit. Their stated reasons, taken together:</p><ul><li>Greene argued that moving early reduces the probability that second-round effects take hold at all.</li><li>Mann named the decisive change as diplomatic and geopolitical — the collapse of the US–Iran memorandum, the widening of the conflict, the energy volatility that followed — and not any price series.</li><li>Pill argued for raising now precisely in order to cut through the noise in commodity and asset prices, as an unambiguous signal of willingness to act on upside risk.</li></ul><p>Not one of the three is an argument from realised inflation. Pill's is the sharpest against me: he treats the incoming data as noise to be seen through. My reasoning assigned decisive weight to a series that the decisive voters had explicitly set aside.</p><p>Bailey's own framing is the gap in a sentence. Inflation has fallen faster than expected, to 2.6%; the Bank's central projection has it peaking near 3.2% in Q4. Both are true at once. A committee looking backwards sees disinflation; a committee looking forwards sees a peak still ahead of it. The minority is not disputing the first fact. It is pricing the second. They are not reasoning from realised disinflation. They are reasoning from forward risk.</p><h4>4. What it changes</h4><p>Two things, of different orders.</p><p>The smaller is a correction to how I read the Committee. It is not divided about the object of concern. Bailey, Breeden, Lombardelli, Ramsden, Taylor and Dhingra all framed the hold in terms of second-round effects, insurance, or the conditions under which they would tighten; Ramsden said outright that crystallised upside risk could warrant a hike and that subsiding risk would have him considering a resumption of cuts. Everyone is watching the same thing. What separates the six from the three is the evidentiary threshold for acting on it before it appears. Greene would move pre-emptively; Ramsden would move on confirmation. On a hawk–dove scale those two positions read as near-neighbours. In vote space they are opposite.</p><p>The larger is that this may be a problem with what the index measures rather than with how I read its output. A lexicon keyed to realised-inflation language is not mis-calibrated here; it is oriented along the wrong axis. It cannot see the dimension the July vote actually turned on, and its failure mode is worse than silence: it will score July's disinflationary language as dovish at exactly the meeting where the hawkish minority grew. The index and the vote record will diverge systematically, and the divergence will present as noise rather than as the finding it is.</p><p>That points to a second series rather than a rescaling of the first — a risk-management measure counting conditionality, pre-emption, insurance, second-round effects, signalling and tail risk, scored separately from realised-inflation tone. The testable proposition is that the gap between the two carries the vote information: that in July the realised-inflation series fell while the risk-management series rose, and that the divergence, not the level of either, is what tracks dissent counts.</p><p>One discipline note, because it is the whole point of the exercise. None of this touches the July record, and none of it may be fitted to July. If a second series is built, it must be specified and pre-registered before the September lock and run over the full sample from January 2019 under the same expanding-window protocol as everything else. Otherwise the fix is in-sample, and the negative result it claims to overturn is merely reproduced with extra steps.</p><p>The last change I am persuaded of is procedural. The vote split should be pre-registered as a scored distribution from September rather than carried as an unscored ancillary. July's miss cost nothing in the ledger — which is precisely the problem. A reading that can be wrong without penalty is not doing the work the rest of the project does.</p></div></article>
     </div>
     <!-- /fallback:episodes -->
   </section>
 
   <!-- Related work: one list, shared with methodology.html's References and
        generated by pipeline/build_fallbacks.py from RELATED_WORK. -->
-  <section class="card" id="related-work">
+  <section class="section" id="related-work">
     <h2>Related work</h2>
     <p class="fine" style="margin-top:-6px">Where this sits. Entries marked [VERIFY] have not
     yet been checked against the source from this repository; nothing in them has been added
@@ -1088,6 +602,10 @@ function failSection(statusId, path, reason, opts) {
 // 30 July everywhere), never shifted by the reader's time zone: a bare date
 // parses as UTC midnight, which is the previous evening west of Greenwich.
 // Mirrors gb_date() in pipeline/site_figures.py.
+function fmtMonth(iso) {
+  return new Date(iso.slice(0, 10) + 'T00:00:00Z').toLocaleDateString('en-GB',
+    { month: 'long', year: 'numeric', timeZone: 'UTC' });
+}
 function fmtDate(iso, opts) {
   return new Date(iso.slice(0, 10) + 'T00:00:00Z').toLocaleDateString('en-GB',
     Object.assign({ day: 'numeric', month: 'long', year: 'numeric' }, opts || {}, { timeZone: 'UTC' }));
@@ -1404,7 +922,7 @@ function renderCallCard(p) {
   const probs = [['cut', m0.p_cut], ['hold', m0.p_hold], ['hike', m0.p_hike]];
   const lead = probs.reduce((a, b) => (b[1] > a[1] ? b : a))[0];
   document.getElementById('call-probs').innerHTML = probs.map(([label, v]) =>
-    `<div class="call-prob${label === lead ? ' is-lead' : ''}">` +
+    `<div class="call-prob${label === lead ? ' is-lead' : ''}${label === p.point_call ? ' is-call' : ''}">` +
     `<span class="n">${fmtPct(v)}</span>` +
     `<span class="l">${label}</span></div>`).join('');
   document.getElementById('call-probbar').innerHTML = probs.map(([label, v]) =>
@@ -1468,18 +986,18 @@ function renderLatest(data) {
   const cls = net > 0 ? 'sign-hawk' : (net < 0 ? 'sign-dove' : '');
   const word = net > 0 ? 'net hawkish' : (net < 0 ? 'net dovish' : 'neutral');
   document.getElementById('docline').innerHTML =
-    `MPC minutes, meeting ending <strong>${fmtDate(doc.meeting_end)}</strong> &middot; published ${fmtDate(doc.published)}` +
-    ` &middot; decision: ${doc.decision} &middot; vote ${doc.vote}`;
+    `MPC minutes for the meeting ending <strong>${fmtDate(doc.meeting_end)}</strong>, ` +
+    `published ${fmtDate(doc.published)}. Decision: ${doc.decision}; vote ${doc.vote.replace('-', '\u2013')}.`;
   document.getElementById('score').innerHTML =
     `<span class="${cls}">${fmtIndex(doc.abg_net_index)}</span>` +
     ` <span class="score-word">${word} (A&amp;BG Net Index, 0&ndash;2 scale, ${fmtNeutral(neutral)} = neutral)</span>`;
   document.getElementById('marker').style.left = `${50 + net * 50}%`;
   document.getElementById('detail').innerHTML =
-    `${doc.abg_hawk} hawkish vs ${doc.abg_dove} dovish noun+adjective hits &middot; ` +
+    `${doc.abg_hawk} hawkish and ${doc.abg_dove} dovish noun+adjective hits; ` +
     // The lexicon field is a sentence of provenance; the page shows its
     // identifier (mirrors lexicon_id() in pipeline/build_fallbacks.py).
-    `lexicon <code>${data.lexicon.split(' ')[0]}</code> &middot; sha256 <code>${doc.sha256.slice(0, 16)}&hellip;</code> &middot; ` +
-    `<a href="${doc.source_url}">source document</a>`;
+    `lexicon <code>${data.lexicon.split(' ')[0]}</code>; sha256 <code>${doc.sha256.slice(0, 16)}&hellip;</code>; ` +
+    `<a href="${doc.source_url}">source document</a>.`;
   document.getElementById('status').style.display = 'none';
   document.getElementById('content').style.display = 'block';
 
@@ -1496,16 +1014,40 @@ function renderLatest(data) {
 let chartPayload = null;
 
 function chartMetrics() {
-  const wrap = document.querySelector('.chart-wrap');
+  const wrap = document.getElementById('chart-wrap');
   const avail = Math.round((wrap && wrap.clientWidth) || 700);
   const W = Math.max(300, Math.min(760, avail));
   const narrow = W < 460;
   return {
     W,
-    H: narrow ? 300 : 260,
+    H: narrow ? 310 : 280,
     FS: narrow ? 12 : 11,
     narrow,
   };
+}
+
+// The hiking cycle: the longest run of consecutive Bank Rate rises in the
+// step series, from the first rise to the last. Derived from the data
+// rather than typed, so the band cannot outlive the history it shades.
+// Mirrors hiking_cycle() in pipeline/build_fallbacks.py.
+function hikingCycle(points) {
+  if (!points || points.length < 2) return null;
+  let best = null, start = null, end = null, len = 0;
+  const close = () => {
+    if (len && (!best || len > best.len)) best = { start, end, len };
+    start = null; end = null; len = 0;
+  };
+  for (let i = 1; i < points.length; i++) {
+    if (points[i].rate_pct > points[i - 1].rate_pct) {
+      if (start === null) start = points[i].date;
+      end = points[i].date;
+      len++;
+    } else {
+      close();
+    }
+  }
+  close();
+  return best;
 }
 
 function renderChart(data, context) {
@@ -1520,11 +1062,16 @@ function renderChart(data, context) {
   }
 
   const ratePoints = (context && context.bank_rate_history && context.bank_rate_history.points) || null;
+  const wrap = document.getElementById('chart-wrap');
+  // Overlay dates are generated into the markup by build_fallbacks.py.
+  const fragStart = wrap.dataset.fragilityStart || null;
+  const fragLabel = wrap.dataset.fragilityLabel || 'fragility sub-sample begins';
+  const lockedMeeting = wrap.dataset.lockedMeeting || null;
 
   const M = chartMetrics();
   const W = M.W, H = M.H, FS = M.FS;
-  const PAD_L = FS * 2.4, PAD_R = ratePoints ? FS * 3 : 12;
-  const PAD_T = 16, PAD_B = FS * 2.4;
+  const PAD_L = FS * 3.4, PAD_R = ratePoints ? FS * 3 : 12;
+  const PAD_T = FS * 2.2, PAD_B = FS * 2.4;
   const neutral = data.neutral_value;
   const t0 = new Date(docs[0].published).getTime();
   const t1 = new Date(docs[docs.length - 1].published).getTime();
@@ -1535,14 +1082,41 @@ function renderChart(data, context) {
   svg.textContent = '';
   svg.setAttribute('viewBox', `0 0 ${W} ${H}`);
   const el = svgNode;
+  const first = docs[0], latest = docs[docs.length - 1];
 
   // Clearing the SVG removes its <title>/<desc>, so the accessible name and
   // description are rebuilt here on every draw.
   svg.appendChild(el('title', { id: 'chart-title' })).textContent =
-    'A&BG communication index, August 2015 to present';
+    `A&BG communication index, ${fmtMonth(first.published)} to ${fmtMonth(latest.published)}`;
   svg.appendChild(el('desc', { id: 'chart-desc' }));
 
-  // ---- Bank Rate overlay (own right-hand scale) ----
+  // ---- overlay 1: the hiking cycle, a shaded band ----
+  const band = hikingCycle(ratePoints);
+  if (band) {
+    const bx0 = x(band.start), bx1 = x(band.end);
+    svg.appendChild(el('rect', {
+      x: bx0.toFixed(1), y: PAD_T, width: (bx1 - bx0).toFixed(1), height: (H - PAD_T - PAD_B),
+      fill: 'var(--rule)', 'fill-opacity': 0.5,
+    }));
+    svg.appendChild(el('text', {
+      x: (bx0 + 4).toFixed(1), y: H - PAD_B - 6, fill: 'var(--ink-2)', 'font-size': FS - 1,
+      'font-style': 'italic',
+    })).textContent = 'hiking cycle';
+  }
+  // ---- overlay 2: the fragility sub-sample boundary, a labelled rule ----
+  if (fragStart) {
+    const fx = x(fragStart);
+    svg.appendChild(el('line', {
+      x1: fx.toFixed(1), x2: fx.toFixed(1), y1: PAD_T, y2: H - PAD_B,
+      stroke: 'var(--ink-2)', 'stroke-width': 1, 'stroke-dasharray': '2,3',
+    }));
+    svg.appendChild(el('text', {
+      x: (fx + 4).toFixed(1), y: H - PAD_B - 6, fill: 'var(--ink-2)', 'font-size': FS - 1,
+      'font-style': 'italic',
+    })).textContent = M.narrow ? 'fragility sub-sample' : fragLabel;
+  }
+
+  // ---- Bank Rate overlay (own right-hand scale), dashed step line ----
   let rMax = 0;
   if (ratePoints) {
     rMax = Math.max(2, Math.ceil(Math.max(...ratePoints.map(p => p.rate_pct))));
@@ -1550,82 +1124,69 @@ function renderChart(data, context) {
   const yRate = r => PAD_T + (H - PAD_T - PAD_B) * (1 - r / rMax);
   const rateLayer = el('g', { id: 'layer-bankrate' });
   if (ratePoints) {
-    // right axis labels
     [0, rMax].forEach(r => {
       rateLayer.appendChild(el('text', {
-        x: W - PAD_R + 5, y: yRate(r) + FS / 3, fill: 'var(--rate)',
-        'font-size': FS - 1, 'font-family': 'system-ui, sans-serif',
+        x: W - PAD_R + 5, y: yRate(r) + FS / 3, fill: 'var(--rate)', 'font-size': FS - 1,
       })).textContent = r + '%';
     });
-    // step line: rate holds until the next meeting, then jumps
     const pts = [];
     ratePoints.forEach((p, i) => {
       const px = x(p.date);
       if (i > 0) pts.push(`${px.toFixed(1)},${yRate(ratePoints[i - 1].rate_pct).toFixed(1)}`);
       pts.push(`${px.toFixed(1)},${yRate(p.rate_pct).toFixed(1)}`);
     });
-    // extend the latest rate to the right edge
     pts.push(`${(W - PAD_R).toFixed(1)},${yRate(ratePoints[ratePoints.length - 1].rate_pct).toFixed(1)}`);
     rateLayer.appendChild(el('polyline', {
       points: pts.join(' '), fill: 'none', stroke: 'var(--rate)',
-      'stroke-width': 1.4, 'stroke-opacity': 0.9,
+      'stroke-width': 1.2, 'stroke-dasharray': '4,3',
     }));
     svg.appendChild(rateLayer);
   }
 
-  // ---- axes: a single hairline each, snapped to the pixel grid ----
+  // ---- axes: hairlines, snapped to the pixel grid ----
   const axis = el('g', { 'shape-rendering': 'crispEdges' });
-  axis.appendChild(el('line', {
-    x1: PAD_L, x2: PAD_L, y1: PAD_T, y2: H - PAD_B,
-    stroke: '#2a2f3a', 'stroke-width': 1,
-  }));
-  axis.appendChild(el('line', {
-    x1: PAD_L, x2: W - PAD_R, y1: H - PAD_B, y2: H - PAD_B,
-    stroke: '#2a2f3a', 'stroke-width': 1,
-  }));
-  // tick marks at each index gridline
+  axis.appendChild(el('line', { x1: PAD_L, x2: PAD_L, y1: PAD_T, y2: H - PAD_B, stroke: 'var(--rule)', 'stroke-width': 1 }));
+  axis.appendChild(el('line', { x1: PAD_L, x2: W - PAD_R, y1: H - PAD_B, y2: H - PAD_B, stroke: 'var(--rule)', 'stroke-width': 1 }));
   [0, 1, 2].forEach(v => {
-    axis.appendChild(el('line', {
-      x1: PAD_L - 4, x2: PAD_L, y1: y(v), y2: y(v),
-      stroke: '#2a2f3a', 'stroke-width': 1,
-    }));
+    axis.appendChild(el('line', { x1: PAD_L - 4, x2: PAD_L, y1: y(v), y2: y(v), stroke: 'var(--rule)', 'stroke-width': 1 }));
   });
   svg.appendChild(axis);
 
-  // ---- neutral gridline, labelled (paper's fixed ratio midpoint, p.10) ----
+  // ---- neutral gridline (the paper's fixed ratio midpoint, p.10) ----
   svg.appendChild(el('line', {
     x1: PAD_L, x2: W - PAD_R, y1: y(neutral), y2: y(neutral),
-    stroke: '#3b4150', 'stroke-width': 1, 'stroke-dasharray': '3,3',
+    stroke: 'var(--ink-2)', 'stroke-width': 1, 'stroke-dasharray': '3,3',
   }));
+  // y-axis label, rotated, and tick labels
   svg.appendChild(el('text', {
-    x: PAD_L + 4, y: y(neutral) - 5, fill: '#9aa0ab', 'font-size': FS, 'font-family': 'system-ui, sans-serif',
-  })).textContent = `neutral (${fmtNeutral(neutral)})`;
-
-  // left y-axis labels (index)
+    x: FS * 0.9, y: (PAD_T + (H - PAD_B)) / 2, fill: 'var(--ink-2)', 'font-size': FS - 1,
+    'text-anchor': 'middle', transform: `rotate(-90 ${FS * 0.9} ${(PAD_T + (H - PAD_B)) / 2})`,
+  })).textContent = `A&BG net index, ${fmtNeutral(neutral)} = neutral`;
   [0, 1, 2].forEach(v => {
     svg.appendChild(el('text', {
-      x: PAD_L - 7, y: y(v) + FS / 3, fill: '#9aa0ab', 'font-size': FS,
-      'font-family': 'system-ui, sans-serif', 'text-anchor': 'end',
+      x: PAD_L - 7, y: y(v) + FS / 3, fill: 'var(--ink-2)', 'font-size': FS, 'text-anchor': 'end',
     })).textContent = v.toFixed(0);
   });
 
-  // ---- index line ----
+  // ---- the index line: thin, in ink ----
   const points = docs.map(d => `${x(d.published).toFixed(1)},${y(d.abg_net_index).toFixed(1)}`).join(' ');
-  svg.appendChild(el('polyline', {
-    points, fill: 'none', stroke: '#c9a34e', 'stroke-width': 1.6,
-  }));
+  svg.appendChild(el('polyline', { points, fill: 'none', stroke: 'var(--ink)', 'stroke-width': 1.25 }));
 
-  // ---- decision markers (toggleable) ----
+  // ---- decision markers: shape and colour, never colour alone ----
+  // hike: a filled triangle pointing up; cut: an open triangle pointing down.
   const decisionLayer = el('g', { id: 'layer-decisions' });
   docs.forEach(d => {
     const cls = classifyDecision(d.decision);
     if (cls !== 'hike' && cls !== 'cut') return;
     const cx = x(d.published), cy = y(d.abg_net_index);
     const hawk = cls === 'hike';
-    const color = hawk ? '#d16a5a' : '#5a8fd1';
-    const dy = hawk ? -5 : 5;
-    const tri = `${cx},${cy + dy} ${cx - 4},${cy + dy + (hawk ? -6 : 6)} ${cx + 4},${cy + dy + (hawk ? -6 : 6)}`;
-    const marker = el('polygon', { points: tri, fill: color });
+    // apex away from the point: up for a hike, down for a cut
+    const base = hawk ? cy - 6 : cy + 6;
+    const apex = hawk ? cy - 13 : cy + 13;
+    const tri = `${cx},${apex} ${cx - 4},${base} ${cx + 4},${base}`;
+    const marker = el('polygon', hawk
+      ? { points: tri, fill: 'var(--hawk)' }
+      : { points: tri, fill: 'var(--paper)', stroke: 'var(--dove)', 'stroke-width': 1.3 });
     const title = el('title', {});
     title.textContent = `${d.doc_id}: ${d.decision} (${fmtDate(d.published)})`;
     marker.appendChild(title);
@@ -1633,9 +1194,24 @@ function renderChart(data, context) {
   });
   svg.appendChild(decisionLayer);
 
-  // x-axis year labels. Drawn left to right, skipping any label that would
-  // collide with the one before it - at 380px the series starts with two
-  // meetings-heavy years whose labels would otherwise overprint.
+  // ---- the locked call: the one accent mark on the chart ----
+  let lockedDoc = null;
+  if (lockedMeeting) {
+    lockedDoc = docs.find(d => d.published === lockedMeeting) ||
+      docs.reduce((a, b) => (Math.abs(new Date(b.published) - new Date(lockedMeeting)) <
+        Math.abs(new Date(a.published) - new Date(lockedMeeting)) ? b : a));
+    const cx = x(lockedDoc.published), cy = y(lockedDoc.abg_net_index);
+    const diamond = el('polygon', {
+      points: `${cx},${cy - 6} ${cx + 5},${cy} ${cx},${cy + 6} ${cx - 5},${cy}`,
+      fill: 'var(--accent)', stroke: 'var(--paper)', 'stroke-width': 1,
+    });
+    const title = el('title', {});
+    title.textContent = `Locked call: ${fmtDate(lockedMeeting)}`;
+    diamond.appendChild(title);
+    svg.appendChild(diamond);
+  }
+
+  // x-axis year labels, skipping any that would collide with the last one
   const years = [...new Set(docs.map(d => d.published.slice(0, 4)))];
   const minGap = FS * 2.6;
   let lastLabelX = -Infinity;
@@ -1646,15 +1222,14 @@ function renderChart(data, context) {
     if (lx > W - PAD_R - FS) return;
     lastLabelX = lx;
     svg.appendChild(el('text', {
-      x: lx, y: H - PAD_B + FS + 3, fill: '#9aa0ab', 'font-size': FS,
-      'font-family': 'system-ui, sans-serif', 'text-anchor': 'middle',
+      x: lx, y: H - PAD_B + FS + 3, fill: 'var(--ink-2)', 'font-size': FS, 'text-anchor': 'middle',
     })).textContent = yr;
   });
 
   // ---- hover layer (guide + dot), on top ----
   const hoverLayer = el('g', { id: 'layer-hover', style: 'display:none' });
-  const guide = el('line', { y1: PAD_T, y2: H - PAD_B, stroke: '#4a5160', 'stroke-width': 1 });
-  const dot = el('circle', { r: 4, fill: '#c9a34e', stroke: '#0f1115', 'stroke-width': 1.5 });
+  const guide = el('line', { y1: PAD_T, y2: H - PAD_B, stroke: 'var(--ink-2)', 'stroke-width': 1 });
+  const dot = el('circle', { r: 4, fill: 'var(--paper)', stroke: 'var(--ink)', 'stroke-width': 1.5 });
   hoverLayer.appendChild(guide);
   hoverLayer.appendChild(dot);
   svg.appendChild(hoverLayer);
@@ -1663,7 +1238,6 @@ function renderChart(data, context) {
   function moveTip(evt) {
     const rect = svg.getBoundingClientRect();
     const vbX = (evt.clientX - rect.left) / rect.width * W;
-    // nearest document by x
     let best = docs[0], bestDist = Infinity;
     for (const d of docs) {
       const dist = Math.abs(x(d.published) - vbX);
@@ -1680,10 +1254,10 @@ function renderChart(data, context) {
     if (next) {
       const cls = classifyDecision(next.decision);
       const cclass = cls === 'hike' ? 'tt-hike' : (cls === 'cut' ? 'tt-cut' : 'tt-hold');
-      followed = `<span class="${cclass}">${cls || '?'}</span> &middot; ${fmtDate(next.published)}<br>` +
-        `<span style="color:var(--faint)">${next.decision || ''}</span>`;
+      followed = `<span class="${cclass}">${cls || '?'}</span>, ${fmtDate(next.published)}<br>` +
+        `<span>${next.decision || ''}</span>`;
     } else {
-      followed = '<span style="color:var(--faint)">awaited (latest document)</span>';
+      followed = '<span>awaited (latest document)</span>';
     }
     tip.innerHTML =
       `<div class="tt-doc">${best.doc_id}</div>` +
@@ -1709,13 +1283,7 @@ function renderChart(data, context) {
     tip.style.display = 'none';
     hoverLayer.style.display = 'none';
   };
-  // Touch has no hover, so a tap has to do the work - and the tooltip has to
-  // stay up afterwards, because there is no pointerleave to dismiss it.
-  // `touched` suppresses the pointerleave that some browsers synthesise
-  // immediately after a tap, which would otherwise hide the tip instantly.
   let touched = false;
-  // A mouse move also clears `touched`: on a hybrid laptop, one earlier tap
-  // must not stop hover-out from dismissing the tip for the rest of the session.
   svg.onpointermove = evt => {
     if (evt.pointerType === 'touch') return;
     touched = false;
@@ -1727,8 +1295,6 @@ function renderChart(data, context) {
   };
   svg.onpointerleave = evt => { if (!touched) hideTip(); };
   svg.onblur = hideTip;
-  // A tap anywhere else on the page, or any scroll, dismisses it - the same
-  // affordance as closing a popover. Registered once, on the document.
   if (!window.__chartTipDismissBound) {
     window.__chartTipDismissBound = true;
     document.addEventListener('pointerdown', evt => {
@@ -1750,9 +1316,8 @@ function renderChart(data, context) {
     }, { passive: true });
   }
 
-  // Text alternative: screen readers get the shape of the series, not an
-  // empty graphic. Values come from the same docs array the line is drawn from.
-  const first = docs[0], latest = docs[docs.length - 1];
+  // Text alternative: screen readers get the shape of the series and the
+  // overlays, from the same arrays the picture is drawn from.
   const hi = docs.reduce((a, b) => (b.abg_net_index > a.abg_net_index ? b : a));
   const lo = docs.reduce((a, b) => (b.abg_net_index < a.abg_net_index ? b : a));
   document.getElementById('chart-desc').textContent =
@@ -1760,8 +1325,12 @@ function renderChart(data, context) {
     `${fmtDate(first.published)} to ${fmtDate(latest.published)}, on a 0 to 2 scale where ` +
     `${fmtNeutral(neutral)} is neutral. Latest reading ${fmtIndex(latest.abg_net_index)}. ` +
     `Highest ${fmtIndex(hi.abg_net_index)} (${hi.doc_id}), lowest ${fmtIndex(lo.abg_net_index)} ` +
-    `(${lo.doc_id}). Triangles mark meetings followed by a hike or a cut` +
-    (ratePoints ? '; a second line shows Bank Rate on the right-hand axis.' : '.');
+    `(${lo.doc_id}). Filled upward triangles mark meetings followed by a hike, open downward ` +
+    `triangles a cut` +
+    (lockedDoc ? `; a diamond marks the locked call for ${fmtDate(lockedMeeting)}` : '') +
+    (band ? `; a shaded band marks the hiking cycle, ${fmtDate(band.start)} to ${fmtDate(band.end)}` : '') +
+    (fragStart ? `; a dashed rule marks where the fragility sub-sample begins, ${fmtDate(fragStart)}` : '') +
+    (ratePoints ? '; a dashed line shows Bank Rate on the right-hand axis.' : '.');
 
   // ---- toggles ----
   const toggleDec = document.getElementById('toggle-decisions');
@@ -1775,12 +1344,13 @@ function renderChart(data, context) {
   }
 
   document.getElementById('chart-legend').innerHTML =
-    `<span style="color:#c9a34e">&mdash;</span> A&amp;BG Net Index (0&ndash;2 scale) &middot; ` +
-    `<span style="color:#d16a5a">&#9650;</span> hike &middot; ` +
-    `<span style="color:#5a8fd1">&#9660;</span> cut` +
-    (ratePoints ? ` &middot; <span style="color:var(--rate)">&mdash;</span> Bank Rate (right axis)` : '');
+    `Line: A&amp;BG net index. <span class="lg-hawk">&#9650;</span> hike, ` +
+    `<span class="lg-dove">&#9661;</span> cut` +
+    (lockedDoc ? `, <span class="lg-accent">&#9670;</span> locked call` : '') + `.` +
+    (band ? ` Shaded band: hiking cycle, ${fmtDate(band.start)} to ${fmtDate(band.end)}.` : '') +
+    (fragStart ? ` Dashed rule: ${fragLabel}, ${fmtDate(fragStart)}.` : '') +
+    (ratePoints ? ` <span class="lg-rate">&#8212; &#8212;</span> Bank Rate (right axis).` : '');
   document.getElementById('chart-status').style.display = 'none';
-  // The chart-in-words fallback has done its job once the real chart is up.
   const chartFallback = document.getElementById('chart-fallback');
   if (chartFallback) chartFallback.style.display = 'none';
   document.getElementById('chart-controls').style.display = 'flex';
@@ -1813,7 +1383,7 @@ function renderContext(ctx) {
     oisH.innerHTML = `OIS-implied path &middot; next ${n} scheduled meeting${n === 1 ? '' : 's'}`;
   }
   document.getElementById('ois-sub').innerHTML =
-    `Curve as of <b style="color:var(--text)">${fmtDate(op.curve_as_of)}</b> vs SONIA ${op.sonia_pct.toFixed(3)}% ` +
+    `Curve as of <b>${fmtDate(op.curve_as_of)}</b> vs SONIA ${op.sonia_pct.toFixed(3)}% ` +
     `(${fmtDate(op.sonia_as_of)}) &middot; two-state &plusmn;${op.assumed_move_bp}bp assumption.`;
   const rowsEl = document.getElementById('ois-rows');
   rowsEl.innerHTML = '';
@@ -1874,7 +1444,7 @@ function drawStep(svgId, series, color, stepAfter) {
   const y = v => PAD_T + (H - PAD_T - PAD_B) * (1 - v / vMax);
   [0, vMax].forEach(v => {
     svg.appendChild(svgNode('text', {
-      x: 2, y: y(v) + 3, fill: '#6b7280', 'font-size': 9, 'font-family': 'system-ui, sans-serif',
+      x: 2, y: y(v) + 3, fill: 'var(--ink-2)', 'font-size': 9,
     })).textContent = v + '%';
   });
   const pts = [];
@@ -1889,8 +1459,8 @@ function drawStep(svgId, series, color, stepAfter) {
   // end year labels
   [series[0], series[series.length - 1]].forEach((s, i) => {
     svg.appendChild(svgNode('text', {
-      x: i === 0 ? PAD_L : W - PAD_R, y: H - 4, fill: '#6b7280',
-      'font-size': 9, 'font-family': 'system-ui, sans-serif',
+      x: i === 0 ? PAD_L : W - PAD_R, y: H - 4, fill: 'var(--ink-2)',
+      'font-size': 9,
       'text-anchor': i === 0 ? 'start' : 'end',
     })).textContent = s[0].slice(0, 4);
   });
@@ -1911,7 +1481,7 @@ function drawSparkline(svgId, series, color) {
   const y = v => PAD_T + (H - PAD_T - PAD_B) * (1 - (v - vMin) / (vMax - vMin));
   [{ v: Math.max(...vals), a: 'start' }, { v: Math.min(...vals), a: 'start' }].forEach(o => {
     svg.appendChild(svgNode('text', {
-      x: 2, y: y(o.v) + 3, fill: '#6b7280', 'font-size': 9, 'font-family': 'system-ui, sans-serif',
+      x: 2, y: y(o.v) + 3, fill: 'var(--ink-2)', 'font-size': 9,
     })).textContent = o.v.toFixed(1);
   });
   const pts = series.map(s => `${x(s[0]).toFixed(1)},${y(s[1]).toFixed(1)}`).join(' ');
@@ -1924,8 +1494,8 @@ function drawSparkline(svgId, series, color) {
   }));
   [series[0], lastS].forEach((s, i) => {
     svg.appendChild(svgNode('text', {
-      x: i === 0 ? PAD_L : W - PAD_R, y: H - 4, fill: '#6b7280',
-      'font-size': 9, 'font-family': 'system-ui, sans-serif',
+      x: i === 0 ? PAD_L : W - PAD_R, y: H - 4, fill: 'var(--ink-2)',
+      'font-size': 9,
       'text-anchor': i === 0 ? 'start' : 'end',
     })).textContent = fmtDate(s[0], { month: 'short', year: 'numeric' });
   });
@@ -1948,7 +1518,7 @@ function renderMarkdown(md) {
     }
     const h = block.match(/^(#{2,4})\s+(.*)$/);
     if (h && lines.length === 1) {
-      const lvl = h[1].length + 1; // ## -> h3, ### -> h4, #### -> h5
+      const lvl = h[1].length + 2; // ## -> h4 (under the episode's h3 title), ### -> h5
       return `<h${lvl}>${inline(h[2])}</h${lvl}>`;
     }
     return `<p>${inline(block.replace(/\n/g, ' '))}</p>`;
