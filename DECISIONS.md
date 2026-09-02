@@ -56,6 +56,7 @@ Changes apply forward only; nothing is retrofitted. Locked calls are never touch
 - 2026-09-02 — [presentation pass, stage two: the words](#2026-09-02--presentation-pass-stage-two-the-words)
 - 2026-09-02 — [design pass: paper theme, single-family type, call card as focal element, chart overlays, print stylesheet](#2026-09-02--design-pass-paper-theme-single-family-type-call-card-as-focal-element-chart-overlays-print-stylesheet)
 - 2026-09-02 — [presentation pass, stage four: QA, reader simulation, deploy](#2026-09-02--presentation-pass-stage-four-qa-reader-simulation-deploy)
+- 2026-09-02 — [presentation pass close-out: references verified, Lloyd gloss corrected, hierarchy fix, en-GB, print justification, process comments removed, post-hoc review recorded](#2026-09-02--presentation-pass-close-out-references-verified-lloyd-gloss-corrected-hierarchy-fix-en-gb-print-justification-process-comments-removed-post-hoc-review-recorded)
 
 ## 2026-07-05 — repo created
 - **Thesis:** does the tone of MPC communication carry information about the next
@@ -2164,14 +2165,14 @@ are untouched; `data/annotations.json` was rebuilt (site layer) and no other
 data file changed. 135 -> 155 tests, all green. Branch
 `presentation-pass-2026-09`, to be merged to `main` at the end of the pass.
 
-- **Approval gates bypassed on the maintainer's instruction.** The brief
+- **Approval gates bypassed on the author's instruction.** The brief
   marks five points "⏸ APPROVAL" (draft prose, contribution paragraph,
   related-work list, design plan, and the six placeholder replacements).
-  Jake's message of 2 September - *"bypass every APPROVAL and complete this
+  The author's message of 2 September - *"bypass every APPROVAL and complete this
   task as I go afk"* - lifted them for this pass. Every piece of prose
   written under that instruction is marked in its stage's entry as **awaiting
   the author's post-hoc review**, and the acceptance checklist in the brief
-  remains theirs to sign.
+  remains the author's to sign.
 - **Stage 0 found the deployment healthy and the generator clean.** On a clean
   checkout of `main` (`4e2000c`): 135/135 green; `build_fallbacks` and
   `build_og_image` re-run produced a zero diff; and the live Pages site was
@@ -2357,8 +2358,8 @@ Stage 2 of the September presentation pass. Presentation only. **No model,
 no specification and no recomputation**; nothing under `data/predictions/`
 and no science-layer file touched; `data/annotations.json` unchanged since
 stage one. 155 -> 166 tests, all green. Every piece of prose below was
-written under the maintainer's 2 September instruction to bypass the
-approval gates and is **awaiting their post-hoc review**; each is recorded
+written under the author's 2 September instruction to bypass the
+approval gates and is **awaiting the author's post-hoc review**; each is recorded
 verbatim here so the review can be done against this entry rather than by
 diffing the page.
 
@@ -2483,7 +2484,7 @@ diffing the page.
   Mariano, so their venues and titles are unverified *from this repository*,
   which is the brief's test. A one-line note on both pages says so. **The
   markers are on the live page deliberately** - the brief asked for them
-  until the maintainer supplies the verified set - and they are the one
+  until the author supplies the verified set - and they are the one
   thing in this pass that reads as unfinished; listed first in the handover.
 - **Status line replaces the "Beta · pre-registered" badge, on both pages.**
   Format: *"1 locked call · next lock 15 September 2026 · 95 documents ·
@@ -2541,8 +2542,8 @@ no specification and no recomputation**; nothing under `data/predictions/`
 and no science-layer file touched. 166 -> 169 tests, all green (three new,
 in `pipeline/tests/test_contrast.py`). The design plan below was written
 before any CSS and critiqued against the brief's list of what to move away
-from; the approval gate was passed on the maintainer's instruction of
-2 September and the plan is theirs to overturn.
+from; the approval gate was passed on the author's instruction of
+2 September and the plan is the author's to overturn.
 
 ### The plan, as written before building
 
@@ -2854,7 +2855,7 @@ this entry.
   - **Fixed from these:** the status line's "1 locked call" now links to the
     call card on both pages, so the third reader is one click from the call
     wherever they land. **Logged, not fixed:** the [VERIFY] markers, which
-    only the maintainer can clear.
+    only the author can clear.
 - **Keyboard walk-through** (Chromium): skip link, theme toggle, the six
   links of the summary and verification box, the two chart checkboxes, the
   chart itself, each disclosure's summary, the scrolling table regions, the
@@ -2872,11 +2873,11 @@ this entry.
   the Brier scores; negation-handling robustness; alternative-lexicon
   robustness; and a refresh of `data/inference_v1.json`'s `notes` field,
   which still describes the pre-July sample sizes.
-- **For the maintainer, in order:** (1) the six [VERIFY] entries in Related
+- **For the author, in order:** (1) the six [VERIFY] entries in Related
   work / References, against the sources; (2) the prose written under the
   bypassed approval gates - the stage-two entry carries all of it verbatim;
   (3) the design plan in the stage-three entry; (4) the acceptance checklist
-  in the brief, which is theirs to sign.
+  in the brief, which is the author's to sign.
 - **Deploy check, 2 September 2026, 11:10 BST.** `main` fast-forwarded to
   `da5c5c3` (the stage-four stamp commit) and pushed. GitHub Pages reported
   `built da5c5c3` on the third ten-second poll; the `tests` workflow for the
@@ -2888,3 +2889,222 @@ this entry.
   that returned 404 before the push returns 200. This bullet is itself
   pushed in a further stamp commit, which the same comparison will follow;
   it is not re-recorded here.
+
+## 2026-09-02 — presentation pass close-out: references verified, Lloyd gloss corrected, hierarchy fix, en-GB, print justification, process comments removed, post-hoc review recorded
+
+The close of the September presentation pass. Presentation only. **No model,
+no specification and no recomputation**; nothing under `data/predictions/`,
+no science-layer file and no science output touched. 169 -> 179 tests, all
+green. The science layer reopens for the model batch after this entry; no
+model-layer work was begun in this session.
+
+- **The author has reviewed and approved the stage-two prose, today.** The
+  six placeholder replacements, the contribution paragraph, "Why this
+  lexicon" and the two limitations - all recorded verbatim in the stage-two
+  entry of 2026-09-02 - stand as written. This is the post-hoc review that
+  entry said was outstanding, and it closes the only open item the pass
+  carried into production.
+- **The author, not "the maintainer".** The 2 September entries and the code
+  comments written that day referred to the author in the third person and,
+  where a pronoun was needed, in the singular they. Both are replaced with
+  "the author" throughout **today's entries and comments only**; earlier
+  entries are untouched, as always.
+
+### References: seven entries, each checked against a primary source
+
+The [VERIFY] markers are gone, and with them the note on both pages that
+said which entries were unchecked, the `.verify` span, its CSS rule and its
+`title` attribute. `RELATED_WORK` in `pipeline/build_fallbacks.py` now
+carries a `venue` and a `url` per entry, and the renderer puts the link on
+the venue. As filed, in this order:
+
+1. Apel, M. and Blix Grimaldi, M. (2012). The Information Content of Central
+   Bank Minutes. *Sveriges Riksbank Working Paper Series No. 261.* -
+   the dictionary this index implements verbatim, from a retrieved copy of
+   the paper.
+2. Gerlach-Kristen, P. (2004). Is the MPC's Voting Record Informative about
+   Future UK Monetary Policy? *Scandinavian Journal of Economics, 106(2),
+   299-313.* <https://www.jstor.org/stable/3440935> - source of the
+   vote-skew construction (via Apel and Blix Grimaldi 2012, p.13); finds
+   skew predicts rate changes even controlling for market expectations over
+   1997-2003, a result this project's 2019-2026 ladder does not reproduce.
+3. Hansen, S. and McMahon, M. (2016). Shocking language: Understanding the
+   macroeconomic effects of central bank communication. *Journal of
+   International Economics, 99(S1), S114-S133.*
+   <https://doi.org/10.1016/j.jinteco.2015.12.008> - FOMC communication as
+   text, its market and real effects measured in a FAVAR.
+4. Bholat, D., Hansen, S., Santos, P. and Schonhardt-Bailey, C. (2015). Text
+   mining for central banks. *Centre for Central Banking Studies Handbook
+   No. 33, Bank of England.*
+   <https://www.bankofengland.co.uk/-/media/boe/files/ccbs/resources/text-mining-for-central-banks.pdf>
+   - the Bank's own primer, dictionary methods included.
+5. Lloyd, S. P. (2018). Overnight index swap market-based measures of
+   monetary policy expectations. *Bank of England Staff Working Paper
+   No. 709.*
+   <https://www.bankofengland.co.uk/working-paper/2018/overnight-index-swap-market-based-measures-of-monetary-policy-expectations>
+   - evidence that UK OIS rates at one to 18 months track expected policy
+   rates closely, which is what makes L1 a fair benchmark; the residual
+   premium is the first limitation.
+6. Gneiting, T. and Raftery, A. E. (2007). Strictly Proper Scoring Rules,
+   Prediction, and Estimation. *Journal of the American Statistical
+   Association, 102(477), 359-378.*
+   <https://doi.org/10.1198/016214506000001437> - Brier and log score as
+   strictly proper rules.
+7. Diebold, F. X. and Mariano, R. S. (1995). Comparing Predictive Accuracy.
+   *Journal of Business & Economic Statistics, 13(3), 253-263.*
+   <https://doi.org/10.1080/07350015.1995.10524599> - the test on the loss
+   differential scheduled for the September cycle.
+
+- **CORRECTION: the Lloyd (2018) gloss stated the opposite of the paper's
+  finding.** It read *"why OIS forwards carry premia as well as
+  expectations, the risk-premia limitation"* - filing the paper as evidence
+  **for** premia. The paper's finding is the other way round: UK OIS rates
+  at horizons of one to 18 months track expected policy rates closely. That
+  is a stronger result for this project, not a weaker one, because it is
+  what makes L1 a fair benchmark rather than a contaminated one; the
+  residual premium is what the first limitation is about. The gloss now says
+  so. **The limitation itself is unchanged and still stands** - the
+  methodology page's "Risk premia in forwards" entry is a statement about
+  the residual, and nothing in it depended on the miscast gloss. Recorded
+  explicitly because a citation that says the opposite of its source is
+  worse than no citation: it lends the source's authority to a claim the
+  source does not make, and it survived a stage of review because the
+  sentence read plausibly.
+- **Apel and Blix Grimaldi carries no link, deliberately.** Its citation is
+  the `citation` field of `pipeline/score/lexicon/abg_2012.json` verbatim,
+  and the riksbank.se path that copy was retrieved from (recorded in the
+  2026-07-11 baseline-lexicon entry, reached via S-WoPEc) is not a stable
+  public URL. A dead link is worse than none.
+- **External link check, run by hand on 2026-09-02.** The six new venue URLs
+  join the list automatically, because the checker reads the hrefs off the
+  pages rather than keeping its own list. All twenty URLs reached: **200**
+  for the JSTOR record, the Journal of International Economics DOI, the
+  Bank's text-mining handbook PDF, the Bank's Staff Working Paper 709 page,
+  the lock tag and repository, DECISIONS.md and README.md on GitHub, the
+  live site, methodology page, `#limitations` anchor and og-image, the
+  Bank's July 2026 minutes page, the two Bank news releases, and the Actions
+  badge and workflow. **403 for the two Taylor & Francis DOIs** (Gneiting
+  and Raftery; Diebold and Mariano). Checked before accepting: `doi.org`
+  answers both with a 302 to `tandfonline.com`, and Crossref returns the
+  exact title, journal, volume, issue, pages and year filed above for each -
+  so the identifiers are live and the metadata is confirmed; what refuses is
+  the publisher's front door, to a scripted request. The checker now
+  distinguishes the two cases: a 403 or 429 is reported as *reached;
+  publisher refused the robot*, with the redirect target named, and does not
+  fail the run, while a 404 still does. **Reaching a page and being refused
+  is not the same as a broken link, and the tool should not say it is.**
+
+### Hierarchy: three blocks out of secondary ink
+
+- **`.fine.substantive { color: var(--ink); }`**, size unchanged, applied to
+  exactly three blocks on index.html: "Why the sample sizes differ", "Not
+  yet tested: whether the skill differential is distinguishable from zero"
+  and "No standard errors are published". They are argument, not apparatus,
+  and were being read as footnotes because they were set in the same
+  `--ink-2` as one. Nothing else changed colour and `--ink-2` is untouched.
+- **Applied in the markup, not in a generator template, and pinned by a
+  test.** The brief asked for the template; there is no template to change.
+  None of the three blocks is a generated region - two were written in stage
+  two and one in July, all as static markup with `fig` regions inside them -
+  so the class can only go where the blocks are.
+  `pipeline/tests/test_substantive_blocks.py` makes that safe rather than
+  incidental: it fails if one of the three loses the class, **if a fourth
+  gains it**, if the modifier ever changes the font size, or if
+  methodology.html starts using it. A modifier that spreads is a modifier
+  that means nothing.
+- **`--rule` darkened in the light theme, `#d8d3cb` -> `#c9c3b9`.** The dark
+  theme's rule is unchanged. Contrast script output after the change, both
+  themes, every pair used:
+
+```
+light
+  16.64:1  (floor 4.5)  --ink on --paper       body text
+   7.38:1  (floor 4.5)  --ink-2 on --paper     secondary text: captions, fine print, axis labels
+   5.72:1  (floor 4.5)  --accent on --paper    the Locked badge; the lock marker's legend
+  15.15:1  (floor 4.5)  --ink on --stamp       call card text
+   6.72:1  (floor 4.5)  --ink-2 on --stamp     call card secondary text
+   5.21:1  (floor 4.5)  --accent on --stamp    call card badge, point call, lead probability
+   6.22:1  (floor 4.5)  --hawk on --paper      hawkish reading, hike legend
+   6.43:1  (floor 4.5)  --dove on --paper      dovish reading, cut legend
+   4.87:1  (floor 3.0)  --rate on --paper      Bank Rate axis labels
+   6.38:1  (floor 3.0)  --gilt on --paper      gilt sparkline
+   6.22:1  (floor 3.0)  --paper on --hawk      labels inside the hike segment
+   6.43:1  (floor 3.0)  --paper on --dove      labels inside the cut segment
+   9.83:1  (floor 3.0)  --ink on --rule        labels inside the hold segment
+dark
+  14.78 / 7.99 / 8.53 / 13.75 / 7.43 / 7.93 / 6.24 / 8.00 / 8.77 / 7.81 / 6.24 / 8.00 / 9.62
+```
+
+  The only pair the change touches is `--ink` on `--rule`, 11.56 -> **9.83**,
+  still more than three times its floor. The rule is a hairline, not a text
+  ground, so the pair is checked for the one place a label sits on it: the
+  hold segment of the OIS bar.
+
+### Language and print
+
+- **`<html lang="en">` -> `<html lang="en-GB">`** on both pages. No
+  generator emits the tag, so there was no template to follow.
+- **Justified with hyphenation, in `@media print` only**, on `.prose`,
+  `.ep-body p`, `.call-rationale-body`, `.contribution` and
+  `.results-framing`. The screen stays ragged-right.
+- **Checked in the regenerated PDFs at A4 and Letter, and kept.** The longest
+  hyphen ladder anywhere in the four files is **one line** - counted by
+  extracting the text layer and looking for consecutive lines ending in a
+  hyphen, then confirmed by eye on the episode pages, where the justified
+  measure is longest. No rivers: the July episode's argument pages set
+  evenly, and the contribution paragraph on page one is the best-set block
+  on the page. Nothing was dropped.
+- **Consequence, stated because it is visible:** none of those five classes
+  appears on methodology.html, whose body paragraphs are plain `<p>` inside
+  `.section`. That page therefore prints ragged-right throughout, and the
+  two PDFs are set differently. The class list is the one the brief
+  specified and was not widened.
+
+### Process comments removed
+
+Every comment recording how the prose came to be written is gone from both
+pages, and a test keeps it that way. Removed:
+
+- **index.html**, above the Summary: *"Prose written under the maintainer's
+  2 September 2026 instruction to bypass the approval gate; awaiting their
+  post-hoc review (DECISIONS.md 2026-09-02, Stage 2)."*
+- **methodology.html**, above "Why this lexicon": *"Written under the
+  maintainer's 2 September 2026 instruction to bypass the approval gate;
+  awaiting their post-hoc review (DECISIONS.md 2026-09-02)."*
+- **index.html**, the visible note under Related work, and **methodology.html**,
+  the same note under References: *"Entries marked [VERIFY] have not yet been
+  checked against the source from this repository; nothing in them has been
+  added from memory."* Both now read *"Each entry was checked against a
+  primary source."*
+- **The seven `[VERIFY]` spans**, their `title="not yet checked against the
+  source"`, the `.verify` CSS rule and its entry in the small-caps selector
+  list - dead once the markers went.
+- **`pipeline/build_fallbacks.py`**, the `RELATED_WORK` header comment
+  saying the entries were unverified and that the author would supply the
+  verified set; replaced with what is true now.
+
+`pipeline/tests/test_no_process_comments.py` (7 tests) fails if "approval
+gate", "bypass", "post-hoc", "awaiting review" or "[verify]" appears - case
+insensitively - on either page, the README, the stylesheet, the theme
+script, the published episodes or their source markdown. The record of how
+the pass was run stays here, in the log, which is where a reader who wants
+it will look.
+
+### QA and close
+
+- **179/179 tests green**, including the census over three surfaces, the
+  no-draft-marker guard, the new no-process-comment and substantive-block
+  guards, the static/JavaScript parity test, the internal link check, and
+  the contrast floor in both themes.
+- **Captures regenerated and looked at**: both pages at 380, 768 and 1280px
+  in both themes, the no-JavaScript render, and A4 and Letter PDFs, under
+  `qa/closeout/`.
+- **Two spacing defects in the new reference list were found by looking at
+  the captures and fixed**: the one-line intro note butted against the first
+  citation, because `.fine` carries a top margin and no bottom one (the list
+  now has its own top margin); and each gloss wrapped short of the citation
+  above it, because `.refs dd` capped its width at 68**ch** measured in its
+  own smaller size, which is a narrower column than the `dt`. The cap is
+  gone from `.refs dd`; the glossary keeps its own.
+- **`git diff --stat main`**: no science module, no locked file, no science
+  output. Deploy check below.

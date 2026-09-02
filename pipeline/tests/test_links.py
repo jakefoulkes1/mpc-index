@@ -103,6 +103,14 @@ def test_the_tag_and_source_document_are_linked():
     assert latest in urls
 
 
+# A publisher that refuses a scripted request has still been reached; a link
+# that 404s has not. 403 and 429 are therefore reported and not counted as
+# failures - both DOIs in the reference list redirect to a publisher that
+# blocks non-browser agents, while resolving correctly at doi.org itself.
+# See DECISIONS.md, 2026-09-02 (close-out).
+REACHED_BUT_REFUSED = (403, 429)
+
+
 def check_external() -> int:
     """Fetch every external URL and print its status. Network; manual only.
 
@@ -114,12 +122,21 @@ def check_external() -> int:
 
     worst = 0
     for url in external_urls():
+        note = ""
         try:
             code = requests.get(url, headers={"User-Agent": "mpc-index link check"}, timeout=20).status_code
+            if code in REACHED_BUT_REFUSED:
+                # Did the redirect happen at all? For a DOI, the registry's own
+                # 302 is what says the identifier is live.
+                first = requests.get(url, allow_redirects=False, timeout=20)
+                if first.status_code in (301, 302, 303, 307, 308):
+                    note = f"  (reached; publisher refused the robot, resolves to {first.headers.get('Location', '?')})"
+                else:
+                    note = "  (reached; refused the robot)"
         except Exception as e:  # noqa: BLE001 - report, don't raise
             code = f"error: {e}"
-        print(f"{code}\t{url}")
-        if not isinstance(code, int) or code >= 400:
+        print(f"{code}\t{url}{note}")
+        if not isinstance(code, int) or (code >= 400 and code not in REACHED_BUT_REFUSED):
             worst = 1
     return worst
 

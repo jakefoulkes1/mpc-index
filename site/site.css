@@ -19,7 +19,7 @@
   --stamp: #f5f0e6;      /* the call card's own sheet, and nothing else */
   --ink: #1c1b19;
   --ink-2: #57534d;      /* secondary text: captions, fine print, axis labels */
-  --rule: #d8d3cb;       /* hairlines */
+  --rule: #c9c3b9;       /* hairlines */
   --accent: #8a5a12;     /* dark ochre: the call card, the Locked badge, the lock marker */
   --hawk: #a8382a; --dove: #2f5d9b; --rate: #3b7a68; --gilt: #6b4d9e;
 
@@ -71,7 +71,7 @@ code { font-family: var(--mono); font-size: .86em; }
 table, .num, .score, .call-prob .n, .call-stamp time, .status-line, .big, .ois-chg, .oc-v, .call-index-line, .docline { font-variant-numeric: tabular-nums; }
 
 /* small labels: the serif's own small caps, never a sans */
-.label, .call-badge, .stamp-label, .call-prob .l, .call-rationale-h, .oc-l, .track-badge, th, .ctx-h, .context-badge, .m-label, .theme-toggle, .verify {
+.label, .call-badge, .stamp-label, .call-prob .l, .call-rationale-h, .oc-l, .track-badge, th, .ctx-h, .context-badge, .m-label, .theme-toggle {
   font-variant-caps: all-small-caps; letter-spacing: .05em; font-weight: 400;
 }
 
@@ -101,6 +101,11 @@ h3, .subhead { font: italic 400 var(--fs-md)/1.3 var(--serif); margin: var(--sp-
 .section > p, .prose, .plain-summary, .results-framing, .contribution, .call-rationale-body, .fine, .ep-body, .section li, .miss-note, footer p { max-width: var(--measure); }
 .plain-summary { margin: 0 0 var(--sp-4); }
 .fine { font-size: var(--fs-sm); color: var(--ink-2); line-height: 1.55; margin: var(--sp-3) 0 0; }
+/* Three blocks are argument, not apparatus - why the sample sizes differ, and
+   the two tests not yet run - so they carry the body ink at the fine size.
+   Applied to exactly those three and pinned by
+   pipeline/tests/test_substantive_blocks.py. (DECISIONS.md 2026-09-02.) */
+.fine.substantive { color: var(--ink); }
 .fine code { color: var(--ink); }
 .ref { font-size: var(--fs-xs); color: var(--ink-2); }
 .divider { border: 0; border-top: 1px solid var(--rule); margin: var(--sp-5) 0; }
@@ -248,11 +253,15 @@ tr.kind-dryrun, tr.kind-rehearsal, tr.kind-pending { color: var(--ink-2); }
 
 /* ---------- glossary, related work ---------- */
 .glossary-list, .refs { margin: 0; font-size: var(--fs-sm); }
+/* the list follows a one-line note, so it needs the gap the note has no room for */
+.refs { margin-top: var(--sp-4); }
 .glossary-list dt { font-weight: 600; margin-top: var(--sp-3); }
 .refs dt { margin-top: var(--sp-3); }
 .glossary-list dt:first-child, .refs dt:first-child { margin-top: 0; }
-.glossary-list dd, .refs dd { margin: 2px 0 0; color: var(--ink-2); max-width: var(--measure); }
-.verify { color: var(--ink-2); }
+/* a gloss shares its citation's column: capping it in ch at the smaller size
+   wrapped it short of the line above and read as a mistake */
+.glossary-list dd, .refs dd { margin: 2px 0 0; color: var(--ink-2); }
+.glossary-list dd { max-width: var(--measure); }
 
 /* ---------- episodes ---------- */
 .episode { padding: var(--sp-4) 0; border-top: 1px solid var(--rule); }
@@ -326,6 +335,11 @@ footer strong { color: var(--ink); }
   .call-card { background: var(--stamp) !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
   .ois-seg, .call-probbar span, .box { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
   a { text-decoration: none; }
+  /* Justified with hyphenation on paper only; the screen stays ragged-right.
+     Checked in the A4 and Letter PDFs for rivers and hyphen ladders. */
+  .prose, .ep-body p, .call-rationale-body, .contribution, .results-framing {
+    text-align: justify; hyphens: auto;
+  }
   a[href^="http"]::after { content: " (" attr(href) ")"; font-size: .82em; color: var(--ink-2); word-break: break-all; }
   /* the commit stamps identify their commit by hash; the URL adds nothing on paper */
   .status-line a::after, #build-note a::after, footer p:last-child a::after { content: none; }

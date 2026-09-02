@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en-GB">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -169,9 +169,7 @@
     <p class="plain-summary">Each document is scored with a published 2012 dictionary of hawkish
     and dovish word pairs, producing one number on a 0&ndash;2 scale where 1.0 is neutral.</p>
 
-    <!-- Why this lexicon: reasoning from the 2026-07-11 baseline-lexicon entry.
-         Written under the maintainer's 2 September 2026 instruction to bypass the
-         approval gate; awaiting their post-hoc review (DECISIONS.md 2026-09-02). -->
+    <!-- Why this lexicon: reasoning from the 2026-07-11 baseline-lexicon entry. -->
     <p><strong>Why this lexicon.</strong> A published, unmodified dictionary was chosen over a
     bespoke or fitted one for three reasons. It can be falsified: the term lists were fixed by
     other authors before this corpus was seen. Nothing in it is fitted in-sample, so a null
@@ -420,23 +418,22 @@
        pipeline/build_fallbacks.py from RELATED_WORK. -->
   <section class="section" id="references">
     <h2>References</h2>
-    <p>Entries marked [VERIFY] have not yet been checked against the source from this
-    repository; nothing in them has been added from memory.</p>
+    <p>Each entry was checked against a primary source.</p>
     <!-- fallback:references -->
     <dl class="refs">
-      <dt>Apel, Mikael and Marianna Blix Grimaldi (2012), "The Information Content of Central Bank Minutes", Sveriges Riksbank Working Paper Series No. 261, April 2012.</dt>
+      <dt>Apel, M. and Blix Grimaldi, M. (2012). The Information Content of Central Bank Minutes. Sveriges Riksbank Working Paper Series No. 261.</dt>
       <dd>the dictionary this index implements verbatim, from a retrieved copy of the paper</dd>
-      <dt>Gerlach-Kristen, P. (2004). On whether the MPC's voting record is informative about future UK monetary policy. Scandinavian Journal of Economics. <span class="verify" title="not yet checked against the source">[VERIFY]</span></dt>
-      <dd>source of the vote-skew construction, cited by Apel and Blix Grimaldi (2012, p.13)</dd>
-      <dt>Hansen, S. and McMahon, M. (2016). Shocking language. Journal of International Economics. <span class="verify" title="not yet checked against the source">[VERIFY]</span></dt>
-      <dd>central bank communication treated as text and measured for its effects</dd>
-      <dt>Bholat, D., Hansen, S., Santos, P. and Schonhardt-Bailey, C. (2015). Text Mining for Central Banks. Bank of England, CCBS Handbook No. 33. <span class="verify" title="not yet checked against the source">[VERIFY]</span></dt>
-      <dd>the Bank's own handbook on text methods</dd>
-      <dt>Lloyd, S. P. (2018). OIS-based measures of monetary policy expectations. Bank of England Staff Working Paper No. 709. <span class="verify" title="not yet checked against the source">[VERIFY]</span></dt>
-      <dd>why OIS forwards carry premia as well as expectations, the risk-premia limitation</dd>
-      <dt>Gneiting, T. and Raftery, A. E. (2007). Strictly proper scoring rules, prediction, and estimation. Journal of the American Statistical Association. <span class="verify" title="not yet checked against the source">[VERIFY]</span></dt>
-      <dd>the Brier and log scores used to score every call are strictly proper</dd>
-      <dt>Diebold, F. X. and Mariano, R. S. (1995). Comparing predictive accuracy. Journal of Business &amp; Economic Statistics. <span class="verify" title="not yet checked against the source">[VERIFY]</span></dt>
+      <dt>Gerlach-Kristen, P. (2004). Is the MPC's Voting Record Informative about Future UK Monetary Policy? <a href="https://www.jstor.org/stable/3440935" rel="noopener">Scandinavian Journal of Economics, 106(2), 299&ndash;313</a>.</dt>
+      <dd>source of the vote-skew construction (via Apel and Blix Grimaldi 2012, p.13); finds skew predicts rate changes even controlling for market expectations over 1997&ndash;2003, a result this project's 2019&ndash;2026 ladder does not reproduce</dd>
+      <dt>Hansen, S. and McMahon, M. (2016). Shocking language: Understanding the macroeconomic effects of central bank communication. <a href="https://doi.org/10.1016/j.jinteco.2015.12.008" rel="noopener">Journal of International Economics, 99(S1), S114&ndash;S133</a>.</dt>
+      <dd>FOMC communication as text, its market and real effects measured in a FAVAR</dd>
+      <dt>Bholat, D., Hansen, S., Santos, P. and Schonhardt-Bailey, C. (2015). Text mining for central banks. <a href="https://www.bankofengland.co.uk/-/media/boe/files/ccbs/resources/text-mining-for-central-banks.pdf" rel="noopener">Centre for Central Banking Studies Handbook No. 33, Bank of England</a>.</dt>
+      <dd>the Bank's own primer, dictionary methods included</dd>
+      <dt>Lloyd, S. P. (2018). Overnight index swap market-based measures of monetary policy expectations. <a href="https://www.bankofengland.co.uk/working-paper/2018/overnight-index-swap-market-based-measures-of-monetary-policy-expectations" rel="noopener">Bank of England Staff Working Paper No. 709</a>.</dt>
+      <dd>evidence that UK OIS rates at one to 18 months track expected policy rates closely, which is what makes L1 a fair benchmark; the residual premium is the first limitation</dd>
+      <dt>Gneiting, T. and Raftery, A. E. (2007). Strictly Proper Scoring Rules, Prediction, and Estimation. <a href="https://doi.org/10.1198/016214506000001437" rel="noopener">Journal of the American Statistical Association, 102(477), 359&ndash;378</a>.</dt>
+      <dd>Brier and log score as strictly proper rules</dd>
+      <dt>Diebold, F. X. and Mariano, R. S. (1995). Comparing Predictive Accuracy. <a href="https://doi.org/10.1080/07350015.1995.10524599" rel="noopener">Journal of Business &amp; Economic Statistics, 13(3), 253&ndash;263</a>.</dt>
       <dd>the test on the loss differential scheduled for the September cycle</dd>
     </dl>
     <!-- /fallback:references -->

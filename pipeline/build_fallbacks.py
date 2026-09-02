@@ -87,54 +87,66 @@ CONTEXT_NOTE = (
 
 
 # Related work, rendered on index.html (Related work) and methodology.html
-# (References) from this one list. Author-year-title-venue as supplied in the
-# September 2026 brief; "verify" marks an entry whose details have not been
-# checked against the source from this repository - nothing has been added
-# from memory, and no volume, page or DOI is stated. The maintainer supplies
-# the verified set. (DECISIONS.md 2026-09-02, Stage 2.)
+# (References) from this one list. Author-year-title-venue, the link on the
+# venue, and a one-clause gloss. Every entry was checked against a primary
+# source by the author and filed on 2026-09-02; nothing here is written from
+# memory. Apel and Blix Grimaldi carries no link: the citation is the
+# `citation` field of pipeline/score/lexicon/abg_2012.json verbatim, and the
+# riksbank.se path that copy came from is not a stable public URL.
+# (DECISIONS.md 2026-09-02, close-out.)
 RELATED_WORK = [
     {
         # Verbatim from pipeline/score/lexicon/abg_2012.json's `citation` field.
-        "cite": 'Apel, Mikael and Marianna Blix Grimaldi (2012), "The Information Content of '
-                'Central Bank Minutes", Sveriges Riksbank Working Paper Series No. 261, April 2012.',
+        "cite": "Apel, M. and Blix Grimaldi, M. (2012). The Information Content of Central "
+                "Bank Minutes.",
+        "venue": "Sveriges Riksbank Working Paper Series No. 261",
+        "url": None,
         "note": "the dictionary this index implements verbatim, from a retrieved copy of the paper",
-        "verify": False,
     },
     {
-        "cite": "Gerlach-Kristen, P. (2004). On whether the MPC's voting record is informative "
-                "about future UK monetary policy. Scandinavian Journal of Economics.",
-        "note": "source of the vote-skew construction, cited by Apel and Blix Grimaldi (2012, p.13)",
-        "verify": True,
+        "cite": "Gerlach-Kristen, P. (2004). Is the MPC's Voting Record Informative about "
+                "Future UK Monetary Policy?",
+        "venue": "Scandinavian Journal of Economics, 106(2), 299&ndash;313",
+        "url": "https://www.jstor.org/stable/3440935",
+        "note": "source of the vote-skew construction (via Apel and Blix Grimaldi 2012, p.13); "
+                "finds skew predicts rate changes even controlling for market expectations over "
+                "1997&ndash;2003, a result this project's 2019&ndash;2026 ladder does not reproduce",
     },
     {
-        "cite": "Hansen, S. and McMahon, M. (2016). Shocking language. Journal of International "
-                "Economics.",
-        "note": "central bank communication treated as text and measured for its effects",
-        "verify": True,
+        "cite": "Hansen, S. and McMahon, M. (2016). Shocking language: Understanding the "
+                "macroeconomic effects of central bank communication.",
+        "venue": "Journal of International Economics, 99(S1), S114&ndash;S133",
+        "url": "https://doi.org/10.1016/j.jinteco.2015.12.008",
+        "note": "FOMC communication as text, its market and real effects measured in a FAVAR",
     },
     {
-        "cite": "Bholat, D., Hansen, S., Santos, P. and Schonhardt-Bailey, C. (2015). Text Mining "
-                "for Central Banks. Bank of England, CCBS Handbook No. 33.",
-        "note": "the Bank's own handbook on text methods",
-        "verify": True,
+        "cite": "Bholat, D., Hansen, S., Santos, P. and Schonhardt-Bailey, C. (2015). Text "
+                "mining for central banks.",
+        "venue": "Centre for Central Banking Studies Handbook No. 33, Bank of England",
+        "url": "https://www.bankofengland.co.uk/-/media/boe/files/ccbs/resources/text-mining-for-central-banks.pdf",
+        "note": "the Bank's own primer, dictionary methods included",
     },
     {
-        "cite": "Lloyd, S. P. (2018). OIS-based measures of monetary policy expectations. Bank of "
-                "England Staff Working Paper No. 709.",
-        "note": "why OIS forwards carry premia as well as expectations, the risk-premia limitation",
-        "verify": True,
+        "cite": "Lloyd, S. P. (2018). Overnight index swap market-based measures of monetary "
+                "policy expectations.",
+        "venue": "Bank of England Staff Working Paper No. 709",
+        "url": "https://www.bankofengland.co.uk/working-paper/2018/overnight-index-swap-market-based-measures-of-monetary-policy-expectations",
+        "note": "evidence that UK OIS rates at one to 18 months track expected policy rates "
+                "closely, which is what makes L1 a fair benchmark; the residual premium is the "
+                "first limitation",
     },
     {
-        "cite": "Gneiting, T. and Raftery, A. E. (2007). Strictly proper scoring rules, prediction, "
-                "and estimation. Journal of the American Statistical Association.",
-        "note": "the Brier and log scores used to score every call are strictly proper",
-        "verify": True,
+        "cite": "Gneiting, T. and Raftery, A. E. (2007). Strictly Proper Scoring Rules, "
+                "Prediction, and Estimation.",
+        "venue": "Journal of the American Statistical Association, 102(477), 359&ndash;378",
+        "url": "https://doi.org/10.1198/016214506000001437",
+        "note": "Brier and log score as strictly proper rules",
     },
     {
-        "cite": "Diebold, F. X. and Mariano, R. S. (1995). Comparing predictive accuracy. Journal of "
-                "Business & Economic Statistics.",
+        "cite": "Diebold, F. X. and Mariano, R. S. (1995). Comparing Predictive Accuracy.",
+        "venue": "Journal of Business &amp; Economic Statistics, 13(3), 253&ndash;263",
+        "url": "https://doi.org/10.1080/07350015.1995.10524599",
         "note": "the test on the loss differential scheduled for the September cycle",
-        "verify": True,
     },
 ]
 
@@ -146,9 +158,10 @@ def load(rel: str):
 def related_work_html() -> str:
     items = []
     for r in RELATED_WORK:
-        flag = ' <span class="verify" title="not yet checked against the source">[VERIFY]</span>' if r["verify"] else ""
-        cite = r["cite"].replace("&", "&amp;")
-        items.append(f'      <dt>{cite}{flag}</dt>\n      <dd>{r["note"]}</dd>')
+        venue = (
+            f'<a href="{r["url"]}" rel="noopener">{r["venue"]}</a>' if r["url"] else r["venue"]
+        )
+        items.append(f'      <dt>{r["cite"]} {venue}.</dt>\n      <dd>{r["note"]}</dd>')
     return '\n    <dl class="refs">\n' + "\n".join(items) + "\n    </dl>\n    "
 
 
