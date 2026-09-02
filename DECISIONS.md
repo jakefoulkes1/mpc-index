@@ -2171,7 +2171,7 @@ data file changed. 135 -> 155 tests, all green. Branch
   task as I go afk"* - lifted them for this pass. Every piece of prose
   written under that instruction is marked in its stage's entry as **awaiting
   the author's post-hoc review**, and the acceptance checklist in the brief
-  remains his to sign.
+  remains theirs to sign.
 - **Stage 0 found the deployment healthy and the generator clean.** On a clean
   checkout of `main` (`4e2000c`): 135/135 green; `build_fallbacks` and
   `build_og_image` re-run produced a zero diff; and the live Pages site was
@@ -2358,7 +2358,7 @@ no specification and no recomputation**; nothing under `data/predictions/`
 and no science-layer file touched; `data/annotations.json` unchanged since
 stage one. 155 -> 166 tests, all green. Every piece of prose below was
 written under the maintainer's 2 September instruction to bypass the
-approval gates and is **awaiting his post-hoc review**; each is recorded
+approval gates and is **awaiting their post-hoc review**; each is recorded
 verbatim here so the review can be done against this entry rather than by
 diffing the page.
 
@@ -2542,7 +2542,7 @@ and no science-layer file touched. 166 -> 169 tests, all green (three new,
 in `pipeline/tests/test_contrast.py`). The design plan below was written
 before any CSS and critiqued against the brief's list of what to move away
 from; the approval gate was passed on the maintainer's instruction of
-2 September and the plan is his to overturn.
+2 September and the plan is theirs to overturn.
 
 ### The plan, as written before building
 
@@ -2876,7 +2876,7 @@ this entry.
   work / References, against the sources; (2) the prose written under the
   bypassed approval gates - the stage-two entry carries all of it verbatim;
   (3) the design plan in the stage-three entry; (4) the acceptance checklist
-  in the brief, which is his to sign.
+  in the brief, which is theirs to sign.
 - **Deploy check, 2 September 2026, 11:10 BST.** `main` fast-forwarded to
   `da5c5c3` (the stage-four stamp commit) and pushed. GitHub Pages reported
   `built da5c5c3` on the third ten-second poll; the `tests` workflow for the
