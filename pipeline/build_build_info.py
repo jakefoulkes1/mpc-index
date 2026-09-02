@@ -76,13 +76,27 @@ def stamp_html(info: dict) -> str:
     )
 
 
-def rewrite_stamps(info: dict) -> list[str]:
-    """Replace the sentence inside each page's fallback:buildinfo region.
+def stamp_short(info: dict) -> str:
+    """The masthead status line's build stamp: "site built 2 September 2026
+    (e50ee92)", linked to the commit. Same source as the footer sentence."""
+    d = datetime.fromisoformat(info["last_commit_iso"])
+    shown = f"{d.day} {d.strftime('%B')} {d.year}"
+    return (
+        f'site built {shown} (<a href="{COMMIT_URL}{info["last_commit_sha"]}"'
+        f'><code>{info["last_commit_short_sha"]}</code></a>)'
+    )
 
-    Only the text between the markers is touched - the surrounding markup,
-    including index.html's #build-note span, is left exactly as it is.
+
+def rewrite_stamps(info: dict) -> list[str]:
+    """Replace the text inside each page's fallback:buildinfo region (the
+    footer sentence) and fallback:buildstamp region (the status line's
+    short form). Only the text between the markers is touched - the
+    surrounding markup, including index.html's #build-note span, is left
+    exactly as it is. pipeline/build_fallbacks.py writes the same two
+    strings from the same JSON, so either script leaves them current.
     """
     sentence = stamp_html(info)
+    short = stamp_short(info)
     touched = []
     for page in PAGES:
         html = page.read_text()
@@ -96,6 +110,15 @@ def rewrite_stamps(info: dict) -> list[str]:
         if n != 1:
             raise ValueError(
                 f"{page.name}: expected exactly 1 fallback:buildinfo stamp, found {n}"
+            )
+        pattern = re.compile(
+            r"(<!--\s*fallback:buildstamp\b.*?-->)(.*?)(<!--\s*/fallback:buildstamp\s*-->)",
+            re.S,
+        )
+        new, n = pattern.subn(lambda m: m.group(1) + short + m.group(3), new)
+        if n != 1:
+            raise ValueError(
+                f"{page.name}: expected exactly 1 fallback:buildstamp region, found {n}"
             )
         if new != html:
             page.write_text(new)

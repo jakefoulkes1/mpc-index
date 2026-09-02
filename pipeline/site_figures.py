@@ -286,6 +286,7 @@ def figures() -> dict[str, str]:
         "lock_stamp_utc": gb_stamp_utc(lock["lock_timestamp"]),
         "lock_meeting": gb_date(lock["meeting_announcement"]),
         "lock_tag": Path(pred_path).stem,
+        "lock_month": gb_month(lock["meeting_announcement"]),
         # ---- the record and the calendar ----
         "lock_count": str(len(locked)),
         "next_meeting": gb_date(next_meeting),

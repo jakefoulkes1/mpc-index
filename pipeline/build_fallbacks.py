@@ -32,6 +32,7 @@ import json
 import re
 from pathlib import Path
 
+from pipeline.build_build_info import stamp_html, stamp_short
 from pipeline.site_figures import (
     AUTHOR,
     figures,
@@ -85,8 +86,93 @@ CONTEXT_NOTE = (
 )
 
 
+# Related work, rendered on index.html (Related work) and methodology.html
+# (References) from this one list. Author-year-title-venue as supplied in the
+# September 2026 brief; "verify" marks an entry whose details have not been
+# checked against the source from this repository - nothing has been added
+# from memory, and no volume, page or DOI is stated. The maintainer supplies
+# the verified set. (DECISIONS.md 2026-09-02, Stage 2.)
+RELATED_WORK = [
+    {
+        # Verbatim from pipeline/score/lexicon/abg_2012.json's `citation` field.
+        "cite": 'Apel, Mikael and Marianna Blix Grimaldi (2012), "The Information Content of '
+                'Central Bank Minutes", Sveriges Riksbank Working Paper Series No. 261, April 2012.',
+        "note": "the dictionary this index implements verbatim, from a retrieved copy of the paper",
+        "verify": False,
+    },
+    {
+        "cite": "Gerlach-Kristen, P. (2004). On whether the MPC's voting record is informative "
+                "about future UK monetary policy. Scandinavian Journal of Economics.",
+        "note": "source of the vote-skew construction, cited by Apel and Blix Grimaldi (2012, p.13)",
+        "verify": True,
+    },
+    {
+        "cite": "Hansen, S. and McMahon, M. (2016). Shocking language. Journal of International "
+                "Economics.",
+        "note": "central bank communication treated as text and measured for its effects",
+        "verify": True,
+    },
+    {
+        "cite": "Bholat, D., Hansen, S., Santos, P. and Schonhardt-Bailey, C. (2015). Text Mining "
+                "for Central Banks. Bank of England, CCBS Handbook No. 33.",
+        "note": "the Bank's own handbook on text methods",
+        "verify": True,
+    },
+    {
+        "cite": "Lloyd, S. P. (2018). OIS-based measures of monetary policy expectations. Bank of "
+                "England Staff Working Paper No. 709.",
+        "note": "why OIS forwards carry premia as well as expectations, the risk-premia limitation",
+        "verify": True,
+    },
+    {
+        "cite": "Gneiting, T. and Raftery, A. E. (2007). Strictly proper scoring rules, prediction, "
+                "and estimation. Journal of the American Statistical Association.",
+        "note": "the Brier and log scores used to score every call are strictly proper",
+        "verify": True,
+    },
+    {
+        "cite": "Diebold, F. X. and Mariano, R. S. (1995). Comparing predictive accuracy. Journal of "
+                "Business & Economic Statistics.",
+        "note": "the test on the loss differential scheduled for the September cycle",
+        "verify": True,
+    },
+]
+
+
 def load(rel: str):
     return json.loads((ROOT / rel).read_text())
+
+
+def related_work_html() -> str:
+    items = []
+    for r in RELATED_WORK:
+        flag = ' <span class="verify" title="not yet checked against the source">[VERIFY]</span>' if r["verify"] else ""
+        cite = r["cite"].replace("&", "&amp;")
+        items.append(f'      <dt>{cite}{flag}</dt>\n      <dd>{r["note"]}</dd>')
+    return '\n    <dl class="refs">\n' + "\n".join(items) + "\n    </dl>\n    "
+
+
+def build_related_work(html: str, where: str) -> str:
+    name = "relatedwork" if where == "index.html" else "references"
+    return replace_region(html, name, related_work_html(), where=where)
+
+
+def build_status(html: str, where: str) -> str:
+    """The masthead status line: counts from the record and the corpus, the
+    next lock from the calendar, and the build stamp from build_info.json.
+    Replaces the "Beta" badge (DECISIONS.md 2026-09-02, Stage 2)."""
+    f = figures()
+    n = int(f["lock_count"])
+    calls = f"{n} locked call{'' if n == 1 else 's'}"
+    body = (
+        f'{calls} <span class="sep" aria-hidden="true">&middot;</span> '
+        f'next lock {f["next_lock_date"]} <span class="sep" aria-hidden="true">&middot;</span> '
+        f'{f["corpus_n"]} documents'
+    )
+    html = replace_region(html, "status", body, where=where)
+    info = load("data/build_info.json")
+    html = replace_region(html, "buildstamp", stamp_short(info), where=where)
+    return html
 
 
 def replace_region(text: str, name: str, body: str, kind: str = "fallback", where: str = "index.html") -> str:
@@ -261,6 +347,19 @@ def build_track(html: str) -> str:
             f'<td>{pct(m0["p_cut"])}</td><td>{pct(m0["p_hold"])}</td><td>{pct(m0["p_hike"])}</td>'
             f'<td>{r["outcome"] or "&mdash;"}</td><td>{brier}</td></tr>'
         )
+    # The next meeting in the Bank's calendar after the newest locked call,
+    # as a pending row: lock date, no call, no probabilities, no score. It
+    # shows the mechanism's cadence, and it moves on by itself once a
+    # lock-* file for that meeting exists (prediction_file() picks the
+    # newest). renderTrackRecord() keeps this row when it rebuilds the table.
+    f = figures()
+    rows.append(
+        f'            <tr class="kind-pending"><td>{f["next_meeting"]}</td>'
+        f'<td><span class="track-badge pending">Pending</span> '
+        f'<span class="track-lockdate">locks {f["next_lock_date"]}</span></td>'
+        f'<td>&mdash;</td><td>&mdash;</td><td>&mdash;</td><td>&mdash;</td>'
+        f'<td>&mdash;</td><td>&mdash;</td></tr>'
+    )
     body = '\n          <tbody id="track-tbody">\n' + "\n".join(rows) + "\n          </tbody>\n        "
     return replace_region(html, "track", body)
 
@@ -354,12 +453,10 @@ def build_call(html: str) -> str:
          says which one a reader is looking at. -->
     <p class="call-asat" id="call-asat">Figures as at the lock date ({lock_day}).</p>
 
-    <!-- 10. The same "In plain English" device the Results section uses. -->
-    <!-- DRAFT: JF to revise -->
-    <p class="plain-summary" id="call-plain"><em>In plain English: this is the call itself
-    &mdash; written down and timestamped before the announcement, so it cannot be quietly
-    revised afterwards. The percentages beneath are the market's, not mine; the point call
-    and the reasoning are mine.</em></p>
+    <!-- The same "In plain English" device the Results section uses. -->
+    <p class="plain-summary" id="call-plain"><em>In plain English: this is the call, written
+    down and tagged before the announcement so it cannot be revised afterwards. The
+    percentages are the market's; the point call and the reasoning are mine.</em></p>
 
     <div class="call-probs" id="call-probs">{prob_divs}</div>
     <div class="call-probbar" id="call-probbar" aria-hidden="true">{bar_segs}</div>
@@ -368,7 +465,6 @@ def build_call(html: str) -> str:
     <div class="call-rationale" id="call-rationale">
       <p class="call-rationale-h" id="call-rationale-h">Point call <span class="pt-call">{lock["point_call"]}</span></p>
       <p class="call-rationale-body" id="call-rationale-body">{rationale}</p>
-      <p class="call-rationale-attrib" id="call-rationale-attrib">Written by hand before the announcement, and never edited afterwards.</p>
     </div>
     <p class="fine" id="call-fine" style="display:none"></p>
 
@@ -618,6 +714,8 @@ def main() -> None:
         html = fn(html)
     html = build_meta(html, "index.html")
     html = build_byline(html, "index.html")
+    html = build_status(html, "index.html")
+    html = build_related_work(html, "index.html")
     html = write_figures(html, "index.html")
     index_path.write_text(html)
 
@@ -625,6 +723,8 @@ def main() -> None:
     meth = meth_path.read_text()
     meth = build_meta(meth, "methodology.html")
     meth = build_byline(meth, "methodology.html")
+    meth = build_status(meth, "methodology.html")
+    meth = build_related_work(meth, "methodology.html")
     meth_path.write_text(write_figures(meth, "methodology.html"))
 
     readme_path = ROOT / "README.md"
@@ -633,7 +733,8 @@ def main() -> None:
 
     print(
         "regenerated index.html blocks: verify, call, latest, chart, context, "
-        "ladder, spec3, track, episodes, gennote, meta, byline; methodology.html: meta, byline; "
+        "ladder, spec3, track, episodes, gennote, meta, byline, status, related work; "
+        "methodology.html: meta, byline, status, references; "
         "README.md: ladder table, spec3, lock line, byline"
     )
 

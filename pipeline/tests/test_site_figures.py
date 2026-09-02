@@ -101,7 +101,6 @@ NOT_A_FIGURE = [
      "when the ordered-logit fallbacks stopped, a historical fact about the sample"),
     ("clip(|implied change| / , 0, 1)", "the clip's bounds, which are definitional"),
     ("-log(0) for a confidently wrong call", "the value the probability floor exists to avoid"),
-    ("it fades after 2023", "the plain-English gloss on the fragility window"),
     ("the August 2015 regime change", "the Bank's own change of publication regime"),
     ("Meetings were monthly from 2015 until the autumn of 2016 , not 2017",
      "a documented fact about the Bank's meeting schedule"),

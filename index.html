@@ -394,6 +394,20 @@
   .track-badge.locked { background: var(--accent); color: var(--bg); }
   .track-badge.dryrun, .track-badge.rehearsal { background: var(--accent-dim); color: #ffe9b3; }
 
+  /* ---------- status line, contribution, references, pending row ---------- */
+  .status-line { font: var(--fs-sm)/1.6 var(--sans); color: var(--muted); margin: var(--sp-3) 0 0; }
+  .status-line .sep { color: var(--faint); margin: 0 2px; }
+  .status-line a { color: var(--muted); }
+  .contribution { margin: var(--sp-4) 0 0; padding-top: var(--sp-3); border-top: 1px solid var(--line); }
+  .refs { margin: 0; font: var(--fs-ui)/var(--lh-body) var(--sans); color: var(--muted); }
+  .refs dt { color: var(--text); margin-top: var(--sp-3); }
+  .refs dt:first-child { margin-top: 0; }
+  .refs dd { margin: 2px 0 0; }
+  .verify { color: var(--accent); font-size: var(--fs-label); }
+  #track-table tr.kind-pending { color: var(--faint); }
+  .track-badge.pending { border: 1px solid var(--line); color: var(--faint); }
+  .track-lockdate { font-size: var(--fs-label); color: var(--faint); margin-left: 6px; }
+
   /* ---------- methodology + footer ---------- */
   .methodology {
     display: flex; flex-wrap: wrap; gap: 10px 22px; align-items: baseline;
@@ -523,54 +537,50 @@
 <a class="skip-link" href="#main">Skip to content</a>
 <div class="wrap">
   <header class="masthead">
-    <span class="beta">Beta &middot; pre-registered</span>
     <h1>MPC Communication Index</h1>
     <p class="thesis">Does the tone of Bank of England communication carry information
-    about the next rate decision beyond what markets already price? Every call is locked
-    before the announcement, timestamped, and scored &mdash; including the misses.</p>
+    about the next rate decision beyond what markets already price?</p>
+    <!-- Status line, generated: counts and the next lock date by
+         pipeline/build_fallbacks.py, the build stamp by
+         pipeline/build_build_info.py (the same source as the footer). -->
+    <p class="status-line" id="status-line"><!-- fallback:status -->1 locked call <span class="sep" aria-hidden="true">&middot;</span> next lock 15 September 2026 <span class="sep" aria-hidden="true">&middot;</span> 95 documents<!-- /fallback:status --> <span class="sep" aria-hidden="true">&middot;</span> <span id="build-stamp"><!-- fallback:buildstamp -->site built 2 September 2026 (<a href="https://github.com/jakefoulkes1/mpc-index/commit/cd0243133b07f4793ead58ae7e5c0a51fcae6355"><code>cd02431</code></a>)<!-- /fallback:buildstamp --></span></p>
   </header>
 
   <main id="main">
 
-  <!-- 11. Three-line summary: what was tested, what was found, what remains
-       uncertain. First thing on the page, deliberately. -->
-  <!-- DRAFT: JF to revise -->
+  <!-- Summary: question, answer, limits, and what is new. First thing on
+       the page, deliberately. Every figure is a generated region.
+       Prose written under the maintainer's 2 September 2026 instruction to
+       bypass the approval gate; awaiting his post-hoc review (DECISIONS.md
+       2026-09-02, Stage 2). -->
   <section class="card" id="summary" aria-labelledby="summary-h">
     <h2 id="summary-h" class="visually-hidden">Summary</h2>
-    <p class="draft-note">Draft &mdash; JF to revise</p>
     <ul class="summary-list">
-      <li><strong>What was tested.</strong> Whether the hawkish/dovish tone of the Bank of
-      England's MPC minutes says anything about the next Bank Rate decision that the market
-      has not already priced &mdash; over <!-- fig:n_scheduled -->61<!-- /fig:n_scheduled -->
-      scheduled meetings from <!-- fig:eval_start -->1 January 2019<!-- /fig:eval_start -->,
-      with every call locked and timestamped before the announcement it is about.</li>
-      <li><strong>What was found.</strong> It does not. No model that adds the tone index beat
-      market pricing out of sample: the best of them, L3, scores
-      <!-- fig:l3_skill -->&minus;0.6712<!-- /fig:l3_skill --> against the market benchmark,
-      where zero would be a tie and positive would be an improvement. The null result is the
-      finding, not a failure to find one.</li>
-      <li><strong>What remains uncertain.</strong> A weaker test on the continuous surprise is
+      <li><strong>Question.</strong> Does the hawkish or dovish tone of the MPC's minutes,
+      scored with a published dictionary (Apel &amp; Blix Grimaldi, 2012), say anything about
+      the next Bank Rate decision that the OIS curve has not already priced? Tested on
+      <!-- fig:n_scheduled -->61<!-- /fig:n_scheduled --> scheduled meetings from
+      <!-- fig:eval_start -->1 January 2019<!-- /fig:eval_start -->, with every live call
+      locked and timestamped before the announcement.</li>
+      <li><strong>Answer.</strong> No. Every model that adds the tone index does worse than
+      market pricing out of sample; the best of them, L3, scores
+      <!-- fig:l3_skill -->&minus;0.6712<!-- /fig:l3_skill --> against the L1 benchmark, where
+      zero would be a tie. The null is the result.</li>
+      <li><strong>Limits.</strong> One weaker test on the size of the market surprise is
       nominally significant on the full sample (p&nbsp;=&nbsp;<!-- fig:spec3_p -->0.0310<!-- /fig:spec3_p -->)
-      and does not replicate after <!-- fig:frag_start -->1 September 2023<!-- /fig:frag_start -->
-      (p&nbsp;=&nbsp;<!-- fig:frag_p -->0.1221<!-- /fig:frag_p -->), and the index itself rests
-      on a median of <!-- fig:hits_median -->2<!-- /fig:hits_median --> dictionary matches per
-      document.</li>
+      and fails after <!-- fig:frag_start -->1 September 2023<!-- /fig:frag_start -->
+      (p&nbsp;=&nbsp;<!-- fig:frag_p -->0.1221<!-- /fig:frag_p -->); the index rests on a median
+      of <!-- fig:hits_median -->2<!-- /fig:hits_median --> dictionary hits per document; and
+      L3's negative skill has not been tested against zero.</li>
     </ul>
-  </section>
-
-  <!-- 0. What is this? -->
-  <section class="card" id="what-is-this">
-    <h2>What is this?</h2>
-    <p style="margin:0">This project tests whether the tone of the Bank of England's MPC minutes
-    says anything about the next Bank Rate decision that financial markets have not already
-    priced in. Every minutes document since
-    <!-- fig:corpus_start_month -->August 2015<!-- /fig:corpus_start_month --> is scored with a published
-    hawkish/dovish dictionary (Apel &amp; Blix Grimaldi, 2012), producing the communication
-    index charted below. The bar to clear is the market itself: probabilities implied by the
-    Bank of England's own OIS forward curve. Before each announcement a probabilistic call is
-    locked and timestamped; after the announcement it is scored, and misses stay on the record
-    permanently. A null result &mdash; the market already prices whatever the tone says &mdash;
-    is itself the finding.</p>
+    <p class="contribution">Three things here are new. The Apel and Blix Grimaldi dictionary
+    is applied to Bank of England minutes and tested against a market-implied benchmark rather
+    than against realised decisions alone, which is the comparison that decides whether tone
+    carries information anyone could act on. The calls are pre-registered: locked, git-tagged
+    and timestamped before each announcement, scored after it, with the misses kept on the
+    record. And the <!-- fig:lock_month -->July 2026<!-- /fig:lock_month --> episode found that
+    the vote turned on forward-risk language the lexicon does not measure, which motivates a
+    second series, to be pre-registered separately before it is run.</p>
   </section>
 
   <!-- 7. Verification, consolidated: the tag, the git command and the
@@ -618,12 +628,10 @@
          says which one a reader is looking at. -->
     <p class="call-asat" id="call-asat">Figures as at the lock date (28 July 2026).</p>
 
-    <!-- 10. The same "In plain English" device the Results section uses. -->
-    <!-- DRAFT: JF to revise -->
-    <p class="plain-summary" id="call-plain"><em>In plain English: this is the call itself
-    &mdash; written down and timestamped before the announcement, so it cannot be quietly
-    revised afterwards. The percentages beneath are the market's, not mine; the point call
-    and the reasoning are mine.</em></p>
+    <!-- The same "In plain English" device the Results section uses. -->
+    <p class="plain-summary" id="call-plain"><em>In plain English: this is the call, written
+    down and tagged before the announcement so it cannot be revised afterwards. The
+    percentages are the market's; the point call and the reasoning are mine.</em></p>
 
     <div class="call-probs" id="call-probs"><div class="call-prob"><span class="n">0%</span><span class="l">cut</span></div><div class="call-prob is-lead"><span class="n">96%</span><span class="l">hold</span></div><div class="call-prob"><span class="n">4%</span><span class="l">hike</span></div></div>
     <div class="call-probbar" id="call-probbar" aria-hidden="true"><span class="seg-cut" style="width:0.0%"></span><span class="seg-hold" style="width:96.1%"></span><span class="seg-hike" style="width:3.9%"></span></div>
@@ -632,7 +640,6 @@
     <div class="call-rationale" id="call-rationale">
       <p class="call-rationale-h" id="call-rationale-h">Point call <span class="pt-call">hold</span></p>
       <p class="call-rationale-body" id="call-rationale-body">Hold at 3.75%. The communication index is recorded as context and does not enter the call: L3 scores &minus;0.6729 against the market-only benchmark and Spec 2 returns p = 0.4918, so there is no warrant on this project's own evidence for letting tone override L1. p(hike) is shaded modestly below m0's 3.86% for two regime-specific reasons. First, with the short curve steeply upward-sloping (near 4.25% priced within six months) a forward read, at meeting plus three days, interpolated across whole-month buckets, absorbs September's expectations along with July's and overstates the probability attaching to this meeting. Second, the fiscal repricing of 20 July, which carried the ten-year gilt to 5.04%, is a risk premium rather than an expectation of Bank Rate &mdash; the contamination this methodology's first limitation anticipates. Both claims are testable against the September lock, when the near-month slope will differ. The macro flow since 18 June runs against the two dissenters on nearly every measure they invoked. Headline CPI fell to 2.6% against a 2.7% consensus, its lowest in fifteen months; services eased to 3.6%; regular pay growth slowed to 3.4%, joint-slowest since October 2020; input producer prices decelerated to 7.3% from 9.3% as Brent retraced. Greene and Pill dissented on an energy shock now unwinding. The counter-observation, recorded rather than passed over, is services producer price inflation at 4.3% in Q2, up from 3.2%.</p>
-      <p class="call-rationale-attrib" id="call-rationale-attrib">Written by hand before the announcement, and never edited afterwards.</p>
     </div>
     <p class="fine" id="call-fine" style="display:none"></p>
 
@@ -703,11 +710,10 @@
     <div id="context-status" class="fine" style="display:none"></div>
     <div id="context-content">
 
-      <!-- 10. The same "In plain English" device the Results section uses. -->
-      <!-- DRAFT: JF to revise -->
-      <p class="plain-summary" id="context-caption"><em>In plain English: this is what the rate
-      market and the gilt curve looked like around the latest reading. It is background only
-      &mdash; none of it feeds the index, the benchmark or any locked call.</em></p>
+      <!-- The same "In plain English" device the Results section uses. -->
+      <p class="plain-summary" id="context-caption"><em>In plain English: where the rate market
+      and the gilt curve stood around the latest reading. Background only; nothing here feeds
+      the index, the benchmark or a locked call.</em></p>
 
       <details class="disclosure">
         <summary><span class="caret" aria-hidden="true"></span>More detail</summary>
@@ -763,9 +769,9 @@
     <h3 class="subhead">Benchmark ladder <span class="count" id="ladder-schema">(ladder-v1)</span></h3>
     <div id="ladder-status" style="display:none"></div>
     <div id="ladder-content">
-      <p class="plain-summary" id="ladder-caption"><em>In plain English: the market's own pricing (L1)
-      called these decisions best &mdash; every model that adds the tone index scored worse,
-      not better.</em></p>
+      <p class="plain-summary" id="ladder-caption"><em>In plain English: the market's own pricing
+      (L1) called these decisions best. Every model that adds the tone index did worse, not
+      better.</em></p>
       <p class="results-framing">
         This table pits five forecasters against one another over every scheduled MPC
         decision since <!-- fig:eval_start -->1 January 2019<!-- /fig:eval_start -->, each
@@ -833,11 +839,16 @@
           <p class="fine" id="ladder-meta" style="margin-top:0">Scheduled meetings only, evaluated from 1 January 2019 onwards (n&nbsp;=&nbsp;61); 2 special meetings reported separately, not blended in; log-score probability floor 1e&minus;9.</p>
           <!-- /fallback:laddermeta -->
           <p class="fine">
-            <strong>Standing caveat: the market benchmark (L1) is the bar.</strong> L2&ndash;L4
-            must show genuine skill above L1 to be worth anything &mdash; matching or beating
-            L0 (always-hold) is not the test, since L1 already does that easily. See
-            the methodology log for every modelling choice and the full per-meeting breakdown in
+            Every modelling choice is in the <a href="methodology.html#evaluation">methodology</a>
+            and the decisions log; the full per-meeting breakdown is in
             <code>data/ladder_v1.json</code>.
+          </p>
+          <p class="fine">
+            <strong>Not yet tested: whether the skill differential is distinguishable from
+            zero.</strong> Skill against L1 is a point value on
+            <!-- fig:n_scheduled -->61<!-- /fig:n_scheduled --> meetings; a Diebold&ndash;Mariano
+            test on the Brier loss differential (L1 against L2, L3 and L4) is scheduled for the
+            September cycle. See <a href="methodology.html#limitations">Limitations</a>.
           </p>
         </div>
       </details>
@@ -848,9 +859,10 @@
     <!-- The plain-English summary is static and always visible: it is a
          sentence, not a figure, so it should survive a failed fetch. Only
          the numeric line below it waits on data/inference_v1.json. -->
-    <p class="plain-summary" id="spec3-caption"><em>In plain English: one test
-    finds a weak link between the previous minutes' tone and how the decision surprised the
-    market, but it fades after 2023 and a stricter test finds nothing.</em></p>
+    <p class="plain-summary" id="spec3-caption"><em>In plain English: one test finds a weak
+    link between the previous minutes' tone and the size of the market's surprise. It does not
+    hold after <!-- fig:frag_start -->1 September 2023<!-- /fig:frag_start -->, and a stricter
+    test finds nothing.</em></p>
     <div id="inference-status" style="display:none"></div>
     <div id="inference-content">
       <details class="disclosure">
@@ -860,6 +872,10 @@
              renderInference() on success, asserted by test_static_fallback.py. -->
           <p id="spec3-line" class="prose" style="margin:0">Regressing each meeting's market surprise on the <em>previous</em> meeting's index (OLS, Newey&ndash;West standard errors, 4 lags, n=92 scheduled meetings): coefficient <strong>&minus;2.15</strong> (t = &minus;2.16, <strong>p = 0.0310</strong>). On the post-hiking-cycle subsample (from 1 September 2023, n=24) the result does not replicate: coefficient &minus;3.35 (t = &minus;1.55, p = 0.1221). Spec 2, an ordered-logit likelihood-ratio test on the discrete decision, finds nothing: LR = 0.4778, p = 0.4894. Coefficients and t-statistics are rounded to 2 decimal places and p-values to 4; full precision is in <code>data/inference_v1.json</code>.</p>
         <!-- /fallback:spec3 -->
+          <p class="fine"><strong>No standard errors are published.</strong>
+          <code>data/inference_v1.json</code> carries each coefficient's estimate, t-statistic
+          and p-value but not its standard error; adding it is a science-layer change deferred
+          to the next cycle. See <a href="methodology.html#limitations">Limitations</a>.</p>
         </div>
       </details>
     </div>
@@ -926,19 +942,18 @@
                static state is the record itself, not a control that does nothing. -->
           <tbody id="track-tbody">
             <tr class="kind-locked"><td>30 July 2026</td><td><span class="track-badge locked">Locked</span></td><td>hold</td><td>0%</td><td>96%</td><td>4%</td><td>hold</td><td>0.0030</td></tr>
+            <tr class="kind-pending"><td>17 September 2026</td><td><span class="track-badge pending">Pending</span> <span class="track-lockdate">locks 15 September 2026</span></td><td>&mdash;</td><td>&mdash;</td><td>&mdash;</td><td>&mdash;</td><td>&mdash;</td><td>&mdash;</td></tr>
           </tbody>
         <!-- /fallback:track -->
         </table>
       </div>
       <p class="fine" id="track-empty-note" style="display:none"></p>
 
-      <!-- 5. The July miss, stated next to the record it belongs to. -->
-      <!-- DRAFT: JF to revise -->
+      <!-- The July miss, stated next to the record it belongs to. -->
       <p class="miss-note" id="july-miss">
-      <span class="draft-note">Draft &mdash; JF to revise</span><br>
-      <strong>July: right on the decision, wrong on the vote split.</strong> The locked call
-      &mdash; hold &mdash; was correct and is scored above. The ancillary call, that the hawkish
-      minority would stay at two, was wrong: it went to three.
+      <strong>July: right on the decision, wrong on the vote.</strong> The locked call, hold,
+      was correct and is scored above. The unscored side-call, that the hawkish minority would
+      stay at two, was wrong: it went to three.
       <a href="#episode-2026-07-30">Read the episode, &ldquo;The minority grew&rdquo;</a>.</p>
     </div>
   </section>
@@ -957,6 +972,33 @@
       <article class="episode" id="episode-2026-07-30"><h3>The minority grew</h3><p class="ep-date">30 July 2026</p><div class="ep-body"><p>The July call scored cleanly. Bank Rate held at 3.75% on 30 July; the locked probabilities returned a Brier of 0.003; nothing in the record moved between lock and score but the outcome field and the scores that follow from it. That is the mechanism working exactly as designed, and it is not what this note is about. The interesting thing about July is not the call. It is the part of the reading that failed while the call succeeded.</p><h3>1. What happened</h3><p>At the meeting ending 29 July, announced on the 30th, the MPC voted six to three to maintain Bank Rate at 3.75%. Megan Greene, Catherine Mann and Huw Pill preferred an immediate quarter-point rise to 4.00%. It was the fifth consecutive meeting at 3.75% and the third consecutive meeting at which the hawkish minority has grown: 8–1 in April, 7–2 in June, 6–3 in July. The run begins from a unanimous 9–0 in March — the Committee's first undivided decision in four and a half years — which makes the sequence cleaner still: one dissent added at each of three successive meetings from a base of none.</p><p>The accompanying Monetary Policy Report carried a central projection of CPI peaking near 3.2% in the fourth quarter. At the press conference Bailey moved directly to damp the hawkish reading, telling reporters not to leave the room thinking the Bank was edging towards a hike. On the day, then, the vote record and the Governor's communication pointed in opposite directions, and the Governor was managing that divergence deliberately.</p><h3>2. What I called</h3><p>Hold at 3.75%. Correct. The probabilities were locked on 28 July under the announcement-minus-two convention, with p(hike) shaded modestly below the market-implied 3.86% for the two documented regime-specific reasons: a forward read at meeting-plus-three, interpolated across whole-month buckets on a steeply upward-sloping short curve, absorbs September's expectations into July's; and the fiscal repricing of 20 July that carried the ten-year gilt to 5.04% is a risk premium rather than an expectation of Bank Rate. Both remain testable against the September lock, when the near-month slope will differ. The communication index was recorded as context and kept out of the call, on the standing ground that L3 scores −0.6729 against the market-only benchmark and Spec 2 returns p = 0.4918. [Figures as at the 28 July lock. The ladder was re-run on 10 August after the July minutes were ingested and now reads −0.6712 / 0.4894 — Ed., September 2026.] There is no warrant on this project's own evidence for letting tone override L1, and July gave none.</p><p>The ancillary vote-split call — unscored — was that the minority would hold at two. It went to three. Mann moved. She was named in the lock-day rationale as the member most likely to reason her way towards an activist hike while continuing to vote for a hold. I had identified the right person and drawn precisely the wrong conclusion about her.</p><h3>3. Why I was wrong</h3><p>The argument was that the macro flow since 18 June ran against the two dissenters on nearly every measure they had invoked. Headline CPI fell to 2.6% against a 2.7% consensus, its lowest in fifteen months; services eased to 3.6%; regular pay growth slowed to 3.4%, joint-slowest since October 2020; input producer prices decelerated to 7.3% from 9.3% as Brent retraced. Greene and Pill, on that reading, had dissented on an energy shock that was already unwinding.</p><p>The flow did run against them. Every one of those figures held. They dissented anyway, and a third member joined them.</p><p>So the error is not in the data. It is in the assumption that connected the data to the votes. I had read the June dissents as claims about realised inflation — that prices were running hotter than the majority allowed — and inferred that a run of disinflationary prints would erode the claim and, with it, the dissent. That is not what the dissenters were saying, and July made it explicit. Their stated reasons, taken together:</p><ul><li>Greene argued that moving early reduces the probability that second-round effects take hold at all.</li><li>Mann named the decisive change as diplomatic and geopolitical — the collapse of the US–Iran memorandum, the widening of the conflict, the energy volatility that followed — and not any price series.</li><li>Pill argued for raising now precisely in order to cut through the noise in commodity and asset prices, as an unambiguous signal of willingness to act on upside risk.</li></ul><p>Not one of the three is an argument from realised inflation. Pill's is the sharpest against me: he treats the incoming data as noise to be seen through. My reasoning assigned decisive weight to a series that the decisive voters had explicitly set aside.</p><p>Bailey's own framing is the gap in a sentence. Inflation has fallen faster than expected, to 2.6%; the Bank's central projection has it peaking near 3.2% in Q4. Both are true at once. A committee looking backwards sees disinflation; a committee looking forwards sees a peak still ahead of it. The minority is not disputing the first fact. It is pricing the second. They are not reasoning from realised disinflation. They are reasoning from forward risk.</p><h3>4. What it changes</h3><p>Two things, of different orders.</p><p>The smaller is a correction to how I read the Committee. It is not divided about the object of concern. Bailey, Breeden, Lombardelli, Ramsden, Taylor and Dhingra all framed the hold in terms of second-round effects, insurance, or the conditions under which they would tighten; Ramsden said outright that crystallised upside risk could warrant a hike and that subsiding risk would have him considering a resumption of cuts. Everyone is watching the same thing. What separates the six from the three is the evidentiary threshold for acting on it before it appears. Greene would move pre-emptively; Ramsden would move on confirmation. On a hawk–dove scale those two positions read as near-neighbours. In vote space they are opposite.</p><p>The larger is that this may be a problem with what the index measures rather than with how I read its output. A lexicon keyed to realised-inflation language is not mis-calibrated here; it is oriented along the wrong axis. It cannot see the dimension the July vote actually turned on, and its failure mode is worse than silence: it will score July's disinflationary language as dovish at exactly the meeting where the hawkish minority grew. The index and the vote record will diverge systematically, and the divergence will present as noise rather than as the finding it is.</p><p>That points to a second series rather than a rescaling of the first — a risk-management measure counting conditionality, pre-emption, insurance, second-round effects, signalling and tail risk, scored separately from realised-inflation tone. The testable proposition is that the gap between the two carries the vote information: that in July the realised-inflation series fell while the risk-management series rose, and that the divergence, not the level of either, is what tracks dissent counts.</p><p>One discipline note, because it is the whole point of the exercise. None of this touches the July record, and none of it may be fitted to July. If a second series is built, it must be specified and pre-registered before the September lock and run over the full sample from January 2019 under the same expanding-window protocol as everything else. Otherwise the fix is in-sample, and the negative result it claims to overturn is merely reproduced with extra steps.</p><p>The last change I am persuaded of is procedural. The vote split should be pre-registered as a scored distribution from September rather than carried as an unscored ancillary. July's miss cost nothing in the ledger — which is precisely the problem. A reading that can be wrong without penalty is not doing the work the rest of the project does.</p></div></article>
     </div>
     <!-- /fallback:episodes -->
+  </section>
+
+  <!-- Related work: one list, shared with methodology.html's References and
+       generated by pipeline/build_fallbacks.py from RELATED_WORK. -->
+  <section class="card" id="related-work">
+    <h2>Related work</h2>
+    <p class="fine" style="margin-top:-6px">Where this sits. Entries marked [VERIFY] have not
+    yet been checked against the source from this repository; nothing in them has been added
+    from memory.</p>
+    <!-- fallback:relatedwork -->
+    <dl class="refs">
+      <dt>Apel, Mikael and Marianna Blix Grimaldi (2012), "The Information Content of Central Bank Minutes", Sveriges Riksbank Working Paper Series No. 261, April 2012.</dt>
+      <dd>the dictionary this index implements verbatim, from a retrieved copy of the paper</dd>
+      <dt>Gerlach-Kristen, P. (2004). On whether the MPC's voting record is informative about future UK monetary policy. Scandinavian Journal of Economics. <span class="verify" title="not yet checked against the source">[VERIFY]</span></dt>
+      <dd>source of the vote-skew construction, cited by Apel and Blix Grimaldi (2012, p.13)</dd>
+      <dt>Hansen, S. and McMahon, M. (2016). Shocking language. Journal of International Economics. <span class="verify" title="not yet checked against the source">[VERIFY]</span></dt>
+      <dd>central bank communication treated as text and measured for its effects</dd>
+      <dt>Bholat, D., Hansen, S., Santos, P. and Schonhardt-Bailey, C. (2015). Text Mining for Central Banks. Bank of England, CCBS Handbook No. 33. <span class="verify" title="not yet checked against the source">[VERIFY]</span></dt>
+      <dd>the Bank's own handbook on text methods</dd>
+      <dt>Lloyd, S. P. (2018). OIS-based measures of monetary policy expectations. Bank of England Staff Working Paper No. 709. <span class="verify" title="not yet checked against the source">[VERIFY]</span></dt>
+      <dd>why OIS forwards carry premia as well as expectations, the risk-premia limitation</dd>
+      <dt>Gneiting, T. and Raftery, A. E. (2007). Strictly proper scoring rules, prediction, and estimation. Journal of the American Statistical Association. <span class="verify" title="not yet checked against the source">[VERIFY]</span></dt>
+      <dd>the Brier and log scores used to score every call are strictly proper</dd>
+      <dt>Diebold, F. X. and Mariano, R. S. (1995). Comparing predictive accuracy. Journal of Business &amp; Economic Statistics. <span class="verify" title="not yet checked against the source">[VERIFY]</span></dt>
+      <dd>the test on the loss differential scheduled for the September cycle</dd>
+    </dl>
+    <!-- /fallback:relatedwork -->
   </section>
 
   </main>
@@ -1216,16 +1258,23 @@ fetchJSON('data/build_info.json')
   .catch(err => { console.warn('build_info.json unavailable:', err.message); });
 
 function renderBuildInfo(b) {
+  if (!b.last_commit_iso) return;
+  const link = `<a href="${REPO_URL}/commit/${b.last_commit_sha}" rel="noopener">` +
+    `<code>${b.last_commit_short_sha}</code></a>`;
   const el = document.getElementById('build-note');
-  if (!el || !b.last_commit_iso) return;
-  el.innerHTML =
-    `Site last updated ${fmtDate(b.last_commit_iso)} (` +
-    `<a href="${REPO_URL}/commit/${b.last_commit_sha}" rel="noopener">` +
-    `<code>${b.last_commit_short_sha}</code></a>).`;
+  if (el) el.innerHTML = `Site last updated ${fmtDate(b.last_commit_iso)} (${link}).`;
+  // Same source, shorter form, in the masthead status line (mirrors
+  // stamp_short() in pipeline/build_build_info.py).
+  const stamp = document.getElementById('build-stamp');
+  if (stamp) stamp.innerHTML = `site built ${fmtDate(b.last_commit_iso)} (${link})`;
 }
 
 function renderTrackRecord(d) {
   const tbody = document.getElementById('track-tbody');
+  // The pending row (the next meeting in the Bank's calendar) is generated
+  // into the static table by build_fallbacks.py and is not in
+  // track_record.json; keep it, so the static and scripted tables agree.
+  const pending = Array.from(tbody.querySelectorAll('tr.kind-pending'));
   tbody.innerHTML = '';
   const pct = fmtPct;
   const badgeLabel = { locked: 'Locked', dryrun: 'Dry run', rehearsal: 'Rehearsal', other: 'Other' };
@@ -1246,6 +1295,7 @@ function renderTrackRecord(d) {
       `<td>${r.brier_m0 === null || r.brier_m0 === undefined ? '&mdash;' : fmtScore(r.brier_m0)}</td>`;
     tbody.appendChild(tr);
   });
+  pending.forEach(tr => tbody.appendChild(tr));
 
   // Locked calls are the record and are always visible. Rehearsals and dry
   // runs are working material: hidden by default, one click away, and never
@@ -1256,7 +1306,7 @@ function renderTrackRecord(d) {
   const applyFilter = () => {
     const show = toggle.checked;
     tbody.querySelectorAll('tr').forEach(tr => {
-      if (!tr.classList.contains('kind-locked')) {
+      if (!tr.classList.contains('kind-locked') && !tr.classList.contains('kind-pending')) {
         tr.style.display = show ? '' : 'none';
       }
     });
@@ -1376,8 +1426,6 @@ function renderCallCard(p) {
     document.getElementById('call-rationale-h').innerHTML =
       `Point call <span class="pt-call">${p.point_call}</span>`;
     document.getElementById('call-rationale-body').textContent = p.rationale;
-    document.getElementById('call-rationale-attrib').textContent =
-      'Written by hand before the announcement, and never edited afterwards.';
     document.getElementById('call-rationale').style.display = 'block';
     document.getElementById('call-fine').style.display = 'none';
   } else {

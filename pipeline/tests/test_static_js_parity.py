@@ -35,7 +35,7 @@ IDS = [
     "call-card", "content", "ladder-tbody", "ladder-meta", "ladder-schema",
     "spec3-line", "track-tbody", "ois-h", "ois-sub", "ois-rows",
     "rate-latest", "rate-asof", "gilt-h", "gilt-latest", "gilt-asof",
-    "context-note", "episodes-list", "build-note", "gen-note",
+    "context-note", "episodes-list", "build-note", "gen-note", "build-stamp",
 ]
 STATUS_IDS = [
     "call-status", "status", "chart-status", "context-status",

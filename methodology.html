@@ -131,6 +131,14 @@
     color: #ffe9b3; background: var(--accent-dim); display: inline-block;
     padding: 4px 8px; border-radius: 4px; margin: 0 0 14px;
   }
+  .status-line { font: var(--fs-sm)/1.6 var(--sans); color: var(--muted); margin: 0 0 var(--sp-4); }
+  .status-line .sep { color: var(--faint); margin: 0 2px; }
+  .status-line a { color: var(--muted); }
+  .refs { margin: 0; font: var(--fs-ui)/var(--lh-body) var(--sans); color: var(--muted); }
+  .refs dt { color: var(--text); margin-top: var(--sp-3); }
+  .refs dt:first-child { margin-top: 0; }
+  .refs dd { margin: 2px 0 0; }
+  .verify { color: var(--accent); font-size: var(--fs-label); }
   footer { font: var(--fs-sm)/var(--lh-body) var(--sans); color: var(--faint); margin-top: var(--sp-6); padding-top: var(--sp-5); border-top: 1px solid var(--line); }
   footer a { color: var(--muted); }
   footer .affiliation { color: var(--muted); }
@@ -157,6 +165,8 @@
   <p class="lede">How the index is built and evaluated. Every choice is also recorded, dated
   and forward-only, in the <a href="https://github.com/jakefoulkes1/mpc-index/blob/main/DECISIONS.md">decisions log</a>;
   dates in brackets below point at the governing entry.</p>
+  <!-- Status line: the same generated regions as index.html's masthead. -->
+  <p class="status-line" id="status-line"><!-- fallback:status -->1 locked call <span class="sep" aria-hidden="true">&middot;</span> next lock 15 September 2026 <span class="sep" aria-hidden="true">&middot;</span> 95 documents<!-- /fallback:status --> <span class="sep" aria-hidden="true">&middot;</span> <span id="build-stamp"><!-- fallback:buildstamp -->site built 2 September 2026 (<a href="https://github.com/jakefoulkes1/mpc-index/commit/cd0243133b07f4793ead58ae7e5c0a51fcae6355"><code>cd02431</code></a>)<!-- /fallback:buildstamp --></span></p>
 
   <nav class="toc" id="main" aria-label="Sections">
     <a href="#data">Data</a>
@@ -165,6 +175,7 @@
     <a href="#market-benchmark">Market benchmark</a>
     <a href="#evaluation">Evaluation</a>
     <a href="#limitations">Limitations</a>
+    <a href="#references">References</a>
   </nav>
 
   <section class="card" id="data">
@@ -268,6 +279,22 @@
     <h2>Index construction</h2>
     <p class="plain-summary">Each document is scored with a published 2012 dictionary of hawkish
     and dovish word pairs, producing one number on a 0&ndash;2 scale where 1.0 is neutral.</p>
+
+    <!-- Why this lexicon: reasoning from the 2026-07-11 baseline-lexicon entry.
+         Written under the maintainer's 2 September 2026 instruction to bypass the
+         approval gate; awaiting his post-hoc review (DECISIONS.md 2026-09-02). -->
+    <p><strong>Why this lexicon.</strong> A published, unmodified dictionary was chosen over a
+    bespoke or fitted one for three reasons. It can be falsified: the term lists were fixed by
+    other authors before this corpus was seen. Nothing in it is fitted in-sample, so a null
+    result cannot be blamed on over-fitting and a positive one could not have been manufactured.
+    And it can be replicated against the paper, whose term lists and page references are stored
+    verbatim. The cost is known: the lists are the paper's 2012 vintage; a match such as
+    &ldquo;higher inflation&rdquo; records the topic discussed rather than the stance taken; and
+    hits are sparse, a median of <!-- fig:hits_median -->2<!-- /fig:hits_median --> per document.
+    Any alternative lexicon would be specified and pre-registered before it is run over the
+    sample, under the same expanding-window protocol as everything else.
+    <span class="ref">(DECISIONS.md 2026-07-11 &mdash; A&amp;BG (2012) baseline lexicon;
+    2026-09-02 &mdash; presentation pass, stage two.)</span></p>
 
     <details class="disclosure">
       <summary><span class="caret" aria-hidden="true"></span>More detail</summary>
@@ -427,7 +454,8 @@
   <section class="card" id="limitations">
     <h2>Limitations</h2>
     <p class="plain-summary">What could undermine the result: very few dictionary hits per
-    document, a 2012 word list, risk premia inside the forward curve, and a small sample.</p>
+    document, a 2012 word list, risk premia inside the forward curve, a small sample, and a
+    skill differential that has not been tested for significance.</p>
 
     <details class="disclosure">
       <summary><span class="caret" aria-hidden="true"></span>More detail</summary>
@@ -476,6 +504,18 @@
       <!-- fig:n_scheduled -->61<!-- /fig:n_scheduled --> scheduled meetings in the
       ladder's evaluation window; <!-- fig:frag_n -->24<!-- /fig:frag_n --> in the fragility subsample.
       <span class="ref">(data/ladder_v1.json; data/inference_v1.json.)</span></li>
+      <li><strong>No significance test on the skill differential.</strong> Skill against L1 is
+      a point value. Whether L3's negative skill is distinguishable from zero on
+      <!-- fig:n_scheduled -->61<!-- /fig:n_scheduled --> meetings has not been tested. A
+      Diebold&ndash;Mariano test on the Brier loss differential (L1 against L2, L3 and L4) is
+      scheduled for the September cycle, to be pre-registered before it is run.
+      <span class="ref">(DECISIONS.md 2026-09-02 &mdash; presentation pass, stage two.)</span></li>
+      <li><strong>No standard errors published.</strong> <code>data/inference_v1.json</code>
+      carries each coefficient's estimate, t-statistic and p-value but not its standard error.
+      Adding it is a science-layer change, deferred to the next cycle rather than derived from
+      two already-rounded numbers.
+      <span class="ref">(DECISIONS.md 2026-08-30 &mdash; presentation and consistency pass;
+      2026-09-02 &mdash; presentation pass, stage two.)</span></li>
       <li><strong>The two specifications disagree.</strong> Spec 3 (OLS on the
       continuous surprise) is nominally significant on the full sample
       (p&nbsp;=&nbsp;<!-- fig:spec3_p -->0.0310<!-- /fig:spec3_p -->)
@@ -485,6 +525,32 @@
     </ul>
       </div>
     </details>
+  </section>
+
+  <!-- References: the same list as index.html's Related work, generated by
+       pipeline/build_fallbacks.py from RELATED_WORK. -->
+  <section class="card" id="references">
+    <h2>References</h2>
+    <p>Entries marked [VERIFY] have not yet been checked against the source from this
+    repository; nothing in them has been added from memory.</p>
+    <!-- fallback:references -->
+    <dl class="refs">
+      <dt>Apel, Mikael and Marianna Blix Grimaldi (2012), "The Information Content of Central Bank Minutes", Sveriges Riksbank Working Paper Series No. 261, April 2012.</dt>
+      <dd>the dictionary this index implements verbatim, from a retrieved copy of the paper</dd>
+      <dt>Gerlach-Kristen, P. (2004). On whether the MPC's voting record is informative about future UK monetary policy. Scandinavian Journal of Economics. <span class="verify" title="not yet checked against the source">[VERIFY]</span></dt>
+      <dd>source of the vote-skew construction, cited by Apel and Blix Grimaldi (2012, p.13)</dd>
+      <dt>Hansen, S. and McMahon, M. (2016). Shocking language. Journal of International Economics. <span class="verify" title="not yet checked against the source">[VERIFY]</span></dt>
+      <dd>central bank communication treated as text and measured for its effects</dd>
+      <dt>Bholat, D., Hansen, S., Santos, P. and Schonhardt-Bailey, C. (2015). Text Mining for Central Banks. Bank of England, CCBS Handbook No. 33. <span class="verify" title="not yet checked against the source">[VERIFY]</span></dt>
+      <dd>the Bank's own handbook on text methods</dd>
+      <dt>Lloyd, S. P. (2018). OIS-based measures of monetary policy expectations. Bank of England Staff Working Paper No. 709. <span class="verify" title="not yet checked against the source">[VERIFY]</span></dt>
+      <dd>why OIS forwards carry premia as well as expectations, the risk-premia limitation</dd>
+      <dt>Gneiting, T. and Raftery, A. E. (2007). Strictly proper scoring rules, prediction, and estimation. Journal of the American Statistical Association. <span class="verify" title="not yet checked against the source">[VERIFY]</span></dt>
+      <dd>the Brier and log scores used to score every call are strictly proper</dd>
+      <dt>Diebold, F. X. and Mariano, R. S. (1995). Comparing predictive accuracy. Journal of Business &amp; Economic Statistics. <span class="verify" title="not yet checked against the source">[VERIFY]</span></dt>
+      <dd>the test on the loss differential scheduled for the September cycle</dd>
+    </dl>
+    <!-- /fallback:references -->
   </section>
 
   <footer>

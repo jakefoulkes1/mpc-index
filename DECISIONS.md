@@ -53,6 +53,7 @@ Changes apply forward only; nothing is retrofitted. Locked calls are never touch
 - 2026-08-10 — [MPC calendar transcribed from the Bank; last draft badge cleared](#2026-08-10--mpc-calendar-transcribed-from-the-bank-last-draft-badge-cleared)
 - 2026-08-30 — [presentation and consistency pass: every figure generated](#2026-08-30--presentation-and-consistency-pass-every-figure-generated)
 - 2026-09-02 — [README brought under the figure generator; lock time discrepancy corrected; rounding and sign policy enforced across surfaces](#2026-09-02--readme-brought-under-the-figure-generator-lock-time-discrepancy-corrected-rounding-and-sign-policy-enforced-across-surfaces)
+- 2026-09-02 — [presentation pass, stage two: the words](#2026-09-02--presentation-pass-stage-two-the-words)
 
 ## 2026-07-05 — repo created
 - **Thesis:** does the tone of MPC communication carry information about the next
@@ -2347,3 +2348,186 @@ data file changed. 135 -> 155 tests, all green. Branch
   - `LOCKDAY.md` still quotes "107 tests" and "line 465". Historical runbook,
     kept as written under the note at its head.
   - og-image.png is still the dark theme (Stage 3 regenerates it).
+
+## 2026-09-02 — presentation pass, stage two: the words
+
+Stage 2 of the September presentation pass. Presentation only. **No model,
+no specification and no recomputation**; nothing under `data/predictions/`
+and no science-layer file touched; `data/annotations.json` unchanged since
+stage one. 155 -> 166 tests, all green. Every piece of prose below was
+written under the maintainer's 2 September instruction to bypass the
+approval gates and is **awaiting his post-hoc review**; each is recorded
+verbatim here so the review can be done against this entry rather than by
+diffing the page.
+
+- **Six placeholders replaced by prose, not by deleting the badge.** The
+  register followed is the Results framing paragraph and the July episode:
+  plain, declarative, British spelling, willing to say "it does not". Every
+  numeric claim is a generated `fig` region (shown here as `{fig:NAME}`); no
+  replacement is longer than the placeholder it replaces.
+  1. **Summary bullets.** Before: *What was tested / What was found / What
+     remains uncertain* (three bullets, 2026-08-30). After:
+     - *"**Question.** Does the hawkish or dovish tone of the MPC's minutes,
+       scored with a published dictionary (Apel & Blix Grimaldi, 2012), say
+       anything about the next Bank Rate decision that the OIS curve has not
+       already priced? Tested on {fig:n_scheduled} scheduled meetings from
+       {fig:eval_start}, with every live call locked and timestamped before
+       the announcement."*
+     - *"**Answer.** No. Every model that adds the tone index does worse than
+       market pricing out of sample; the best of them, L3, scores
+       {fig:l3_skill} against the L1 benchmark, where zero would be a tie.
+       The null is the result."*
+     - *"**Limits.** One weaker test on the size of the market surprise is
+       nominally significant on the full sample (p = {fig:spec3_p}) and
+       fails after {fig:frag_start} (p = {fig:frag_p}); the index rests on a
+       median of {fig:hits_median} dictionary hits per document; and L3's
+       negative skill has not been tested against zero."*
+  2. **Call card, "In plain English".** Before: *"...this is the call itself
+     — written down and timestamped before the announcement, so it cannot be
+     quietly revised afterwards. The percentages beneath are the market's,
+     not mine; the point call and the reasoning are mine."* After: *"In plain
+     English: this is the call, written down and tagged before the
+     announcement so it cannot be revised afterwards. The percentages are the
+     market's; the point call and the reasoning are mine."*
+  3. **Market panel.** Before: *"...this is what the rate market and the gilt
+     curve looked like around the latest reading. It is background only —
+     none of it feeds the index, the benchmark or any locked call."* After:
+     *"In plain English: where the rate market and the gilt curve stood
+     around the latest reading. Background only; nothing here feeds the
+     index, the benchmark or a locked call."*
+  4. **Results (ladder).** Before: *"...the market's own pricing (L1) called
+     these decisions best — every model that adds the tone index scored
+     worse, not better."* After: *"In plain English: the market's own pricing
+     (L1) called these decisions best. Every model that adds the tone index
+     did worse, not better."*
+  5. **Spec 3.** Before: *"...one test finds a weak link between the previous
+     minutes' tone and how the decision surprised the market, but it fades
+     after 2023 and a stricter test finds nothing."* After: *"In plain
+     English: one test finds a weak link between the previous minutes' tone
+     and the size of the market's surprise. It does not hold after
+     {fig:frag_start}, and a stricter test finds nothing."* (The hand-typed
+     "2023" is gone with it.)
+  6. **July miss note.** Before: *"July: right on the decision, wrong on the
+     vote split. The locked call — hold — was correct and is scored above.
+     The ancillary call, that the hawkish minority would stay at two, was
+     wrong: it went to three."* After: *"**July: right on the decision, wrong
+     on the vote.** The locked call, hold, was correct and is scored above.
+     The unscored side-call, that the hawkish minority would stay at two, was
+     wrong: it went to three. Read the episode, "The minority grew"."*
+  Badges and `<!-- DRAFT: JF to revise -->` comments removed with each.
+  `pipeline/tests/test_no_draft_markers.py` fails if "JF to revise", "DRAFT",
+  `class="draft-note"` or "TODO(Jake)" appears on either page, the README,
+  the published episodes or their source markdown.
+- **Contribution paragraph, placed under the Summary list rather than as a
+  fourth bullet**: three sentences in one bullet would outweigh the three
+  one-idea bullets above it. Verbatim: *"Three things here are new. The Apel
+  and Blix Grimaldi dictionary is applied to Bank of England minutes and
+  tested against a market-implied benchmark rather than against realised
+  decisions alone, which is the comparison that decides whether tone carries
+  information anyone could act on. The calls are pre-registered: locked,
+  git-tagged and timestamped before each announcement, scored after it, with
+  the misses kept on the record. And the {fig:lock_month} episode found that
+  the vote turned on forward-risk language the lexicon does not measure,
+  which motivates a second series, to be pre-registered separately before it
+  is run."*
+- **The "What is this?" section is deleted and the standfirst is the
+  question only.** With the Summary now carrying question, answer, limits and
+  contribution, the section repeated all four; its two sentences not already
+  on the page went into the Question bullet ("scored with a published
+  dictionary (Apel & Blix Grimaldi, 2012)") and the contribution ("with the
+  misses kept on the record"). The standfirst lost its second sentence
+  ("Every call is locked before the announcement, timestamped, and scored —
+  including the misses"), which the contribution now says once.
+- **"Why this lexicon", methodology.html, visible under Index construction's
+  summary rather than inside its expander** - it is an argument, not
+  apparatus. Verbatim: *"**Why this lexicon.** A published, unmodified
+  dictionary was chosen over a bespoke or fitted one for three reasons. It
+  can be falsified: the term lists were fixed by other authors before this
+  corpus was seen. Nothing in it is fitted in-sample, so a null result cannot
+  be blamed on over-fitting and a positive one could not have been
+  manufactured. And it can be replicated against the paper, whose term lists
+  and page references are stored verbatim. The cost is known: the lists are
+  the paper's 2012 vintage; a match such as "higher inflation" records the
+  topic discussed rather than the stance taken; and hits are sparse, a median
+  of {fig:hits_median} per document. Any alternative lexicon would be
+  specified and pre-registered before it is run over the sample, under the
+  same expanding-window protocol as everything else."* Cited to the
+  2026-07-11 baseline-lexicon entry and to this one.
+- **Two limitations added, unsoftened**, to the methodology list (after
+  "Small n") and as one fine-print line each under the ladder and the Spec 3
+  expanders on index.html. Verbatim (methodology): *"**No significance test
+  on the skill differential.** Skill against L1 is a point value. Whether
+  L3's negative skill is distinguishable from zero on {fig:n_scheduled}
+  meetings has not been tested. A Diebold–Mariano test on the Brier loss
+  differential (L1 against L2, L3 and L4) is scheduled for the September
+  cycle, to be pre-registered before it is run."* and *"**No standard errors
+  published.** `data/inference_v1.json` carries each coefficient's estimate,
+  t-statistic and p-value but not its standard error. Adding it is a
+  science-layer change, deferred to the next cycle rather than derived from
+  two already-rounded numbers."* (cross-referenced to 2026-08-30). The
+  Limitations summary line gained "and a skill differential that has not
+  been tested for significance"; the Summary's Limits bullet carries the same
+  point in one clause.
+- **Related work: one list, two surfaces, nothing invented.** `RELATED_WORK`
+  in `build_fallbacks.py` renders as "Related work" on index.html (after
+  Episodes) and "References" on methodology.html (before the footer), as a
+  definition list with a one-clause annotation each. The seven entries are
+  the brief's candidates, author-year-title-venue exactly as supplied, **no
+  volume, page or DOI**. Apel & Blix Grimaldi carries the `citation` string
+  from `pipeline/score/lexicon/abg_2012.json` verbatim and no marker. The
+  other six carry a visible **[VERIFY]** marker: the repository holds only
+  "(Gerlach-Kristen 2004)" for the vote-skew source and nothing at all for
+  Hansen & McMahon, Bholat et al., Lloyd, Gneiting & Raftery or Diebold &
+  Mariano, so their venues and titles are unverified *from this repository*,
+  which is the brief's test. A one-line note on both pages says so. **The
+  markers are on the live page deliberately** - the brief asked for them
+  until the maintainer supplies the verified set - and they are the one
+  thing in this pass that reads as unfinished; listed first in the handover.
+- **Status line replaces the "Beta · pre-registered" badge, on both pages.**
+  Format: *"1 locked call · next lock 15 September 2026 · 95 documents ·
+  site built 2 September 2026 (e50ee92)"*. The count is from
+  `data/track_record.json`, the corpus size from `data/index.json`, the next
+  lock from the Bank's calendar in `site_context.py` (first meeting after the
+  newest locked call's, minus `LOCK_DATE_OFFSET_DAYS`), all through
+  `fallback:status`; the build stamp is a second region, `fallback:buildstamp`,
+  which `build_build_info.py` now writes alongside the footer sentence from
+  the same JSON (and `build_fallbacks.py` writes from the same JSON, so
+  either script leaves both current). index.html's JavaScript refreshes both
+  stamps from the fetched file. The middle dots here are the one place the
+  brief allows them.
+- **Track record gains a pending row for the next meeting.** *"17 September
+  2026 · Pending · locks 15 September 2026"* with an em dash in every other
+  cell, muted, generated by `build_track()` from the same calendar rule as
+  the status line. `renderTrackRecord()` keeps `tr.kind-pending` rows when it
+  rebuilds the table from `track_record.json` (which cannot contain one), and
+  the rehearsals toggle never hides them. **Both states tested**: with July
+  the newest lock the pending meeting is 17 September (lock 15 September);
+  with a September lock present it becomes 5 November (lock 3 November) -
+  the row moves on by itself the moment `lock-2026-09.json` exists and the
+  site is rebuilt.
+- **Byline, contact, affiliation** were made one source in stage one
+  (`AUTHOR` in `site_figures.py` -> both footers, both `meta author`, the
+  README). `CITATION.cff` already carries the same name and was not changed.
+  og-image gets the byline when it is redrawn in stage three.
+- **Copy pass, as reader two (four minutes, printed).** Cut as repetition:
+  the call card's attribution line *"Written by hand before the announcement,
+  and never edited afterwards"* (the card's plain-English line says it); the
+  ladder's *"Standing caveat: the market benchmark (L1) is the bar..."*
+  paragraph (the Results framing paragraph says it, two paragraphs above),
+  leaving one pointer to the methodology and `data/ladder_v1.json`; the
+  "What is this?" section and the standfirst's second sentence, above.
+  Heading text was already sentence case; the all-caps rendering is a CSS
+  transform and goes with the eyebrows in stage three, as does "Hover or tap
+  the line for details", which the brief ties to the chart restyle. "Not
+  investment advice" and "How to check this" kept.
+- **A census lesson, recorded because it shaped this entry's title.** The
+  first draft cited "(DECISIONS.md 2026-09-02 — presentation pass, Stage 2)"
+  on methodology.html and the census failed it: "2" is a digit in prose with
+  no data file behind it. Entry titles cited from a page therefore carry no
+  digits beyond the date - hence "stage two".
+- **Deferred to the model batch** (unchanged from stage one, restated because
+  this stage published the promises): the Diebold–Mariano test on the loss
+  differentials; `se` in the inference output; the second, separately
+  pre-registered risk-management series; the vote split as a scored
+  distribution. **Found, not fixed**: the dead `.draft-note` and `.beta` CSS
+  rules (stage three rewrites the stylesheet); the chart hint text.
