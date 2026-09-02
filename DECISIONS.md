@@ -2877,3 +2877,14 @@ this entry.
   bypassed approval gates - the stage-two entry carries all of it verbatim;
   (3) the design plan in the stage-three entry; (4) the acceptance checklist
   in the brief, which is his to sign.
+- **Deploy check, 2 September 2026, 11:10 BST.** `main` fast-forwarded to
+  `da5c5c3` (the stage-four stamp commit) and pushed. GitHub Pages reported
+  `built da5c5c3` on the third ten-second poll; the `tests` workflow for the
+  push passed. Fetched live with cache-busting and compared by SHA-256 to
+  `main`: index.html `0269b78317bbff2a`, methodology.html `8e7ecebf3dc44dca`,
+  og-image.png `5a6f7ac9f9ea217b`, site/site.css `99ca1a07c1185d69`,
+  site/theme.js `0af9db582c0cda35`, SourceSerif4-Regular.woff2
+  `1c1814f7eb72a72e` - **all six identical**. The stage-three commit link
+  that returned 404 before the push returns 200. This bullet is itself
+  pushed in a further stamp commit, which the same comparison will follow;
+  it is not re-recorded here.
