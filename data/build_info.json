@@ -1,9 +1,9 @@
 {
   "schema": "build-info-v1",
-  "last_commit_sha": "2ee6ba5813b8e6c839d2fe3873a594b27fbe7c13",
-  "last_commit_short_sha": "2ee6ba5",
-  "last_commit_iso": "2026-09-02T15:01:10+01:00",
-  "last_commit_subject": "Close-out: references verified, Lloyd gloss corrected, hierarchy, en-GB, print justification",
-  "generated_utc": "2026-09-02T14:01:10+00:00",
+  "last_commit_sha": "e8df5177c308bc325beb2fc5b7e211eed9860c99",
+  "last_commit_short_sha": "e8df517",
+  "last_commit_iso": "2026-09-02T15:02:46+01:00",
+  "last_commit_subject": "Deploy check recorded for the close-out",
+  "generated_utc": "2026-09-02T14:02:46+00:00",
   "note": "Written by pipeline/build_build_info.py from git log -1 at the time it ran. Not a claim about the data's vintage - data/index.json carries its own generated_utc."
 }
