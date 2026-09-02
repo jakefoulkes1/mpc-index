@@ -1,9 +1,9 @@
 {
   "schema": "build-info-v1",
-  "last_commit_sha": "ada2a3b7504226414cf9477f0d7b236b697be5fc",
-  "last_commit_short_sha": "ada2a3b",
-  "last_commit_iso": "2026-09-02T11:08:37+01:00",
-  "last_commit_subject": "Stage 3: design pass",
-  "generated_utc": "2026-09-02T10:08:37+00:00",
+  "last_commit_sha": "17420a6e84f30c1d7419f470daa2f7b7af161e54",
+  "last_commit_short_sha": "17420a6",
+  "last_commit_iso": "2026-09-02T11:10:15+01:00",
+  "last_commit_subject": "Stage 4: QA, reader simulation, deploy record",
+  "generated_utc": "2026-09-02T10:10:15+00:00",
   "note": "Written by pipeline/build_build_info.py from git log -1 at the time it ran. Not a claim about the data's vintage - data/index.json carries its own generated_utc."
 }
