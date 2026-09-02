@@ -1,9 +1,9 @@
 {
   "schema": "build-info-v1",
-  "last_commit_sha": "fdcb7b4756842975b920156863d6069dd5200380",
-  "last_commit_short_sha": "fdcb7b4",
-  "last_commit_iso": "2026-09-02T10:42:35+01:00",
-  "last_commit_subject": "Stage 2: words",
-  "generated_utc": "2026-09-02T09:42:35+00:00",
+  "last_commit_sha": "ada2a3b7504226414cf9477f0d7b236b697be5fc",
+  "last_commit_short_sha": "ada2a3b",
+  "last_commit_iso": "2026-09-02T11:08:37+01:00",
+  "last_commit_subject": "Stage 3: design pass",
+  "generated_utc": "2026-09-02T10:08:37+00:00",
   "note": "Written by pipeline/build_build_info.py from git log -1 at the time it ran. Not a claim about the data's vintage - data/index.json carries its own generated_utc."
 }
