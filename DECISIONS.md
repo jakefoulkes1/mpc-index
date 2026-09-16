@@ -3289,3 +3289,10 @@ plus the new episodes-page test).
   commit. Checked both ways in a worktree: the `lock-2026-09` commit passes;
   `97e8180`, an unstamped records commit with the same HEAD~2/HEAD~1 shape
   and no lock file, still fails with the original message.
+- **And a second false alarm, found when this entry reached CI.**
+  `test_decisions_dates.py` compared entry dates with the runner's own
+  date, which is UTC: at 23:25 UTC on 16 September it rejected this entry,
+  dated 17 September from `date` on the author's clock, as future-dated.
+  The guard now takes "today" in Europe/London, the clock CLAUDE.md's rule
+  refers to. It still catches what it was written for - dates invented on
+  an assumed cadence run days ahead, not an hour.
