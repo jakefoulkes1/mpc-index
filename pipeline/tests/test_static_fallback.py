@@ -25,7 +25,12 @@ ROOT = Path(__file__).resolve().parents[2]
 INDEX_HTML = ROOT / "index.html"
 METHODOLOGY_HTML = ROOT / "methodology.html"
 LADDER = ROOT / "data" / "ladder_v1.json"
-LOCK = ROOT / "data" / "predictions" / "lock-2026-07.json"
+# The lock the site displays: the newest lock-* file, by the same rule the
+# generator uses, so these tests follow each new lock rather than pinning
+# the first one (they pinned lock-2026-07 until the September lock).
+from pipeline.site_figures import prediction_file  # noqa: E402
+
+LOCK = ROOT / prediction_file()
 BUILD_INFO = ROOT / "data" / "build_info.json"
 INFERENCE = ROOT / "data" / "inference_v1.json"
 TRACK = ROOT / "data" / "track_record.json"
@@ -166,7 +171,7 @@ def test_verify_box_links_to_the_tag(index_html):
     the page - points at the tag named by the prediction file, and offers the
     git command that reads the call as it stood when it was locked."""
     block = region(index_html, "verify")
-    tag = LOCK.stem  # lock-2026-07
+    tag = LOCK.stem
     assert f"https://github.com/jakefoulkes1/mpc-index/releases/tag/{tag}" in block
     assert f"git show {tag}:data/predictions/{LOCK.name}" in block
     assert "https://github.com/jakefoulkes1/mpc-index<" in block or \
@@ -260,7 +265,7 @@ def test_call_card_fallback_outcome_matches_lock_file(index_html):
     Brier - both read from the file, neither recomputed here."""
     lock = json.loads(LOCK.read_text())
     if lock["outcome"] is None or lock["scores"] is None:
-        pytest.skip("lock-2026-07.json is not scored yet")
+        pytest.skip(f"{LOCK.name} is not scored yet")
 
     block = region(index_html, "call")
     brier = lock["scores"]["m0_market_only"]["brier_score"]

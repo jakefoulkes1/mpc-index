@@ -432,8 +432,11 @@ def build_call(html: str) -> str:
     tag_url = f"{REPO_URL}/releases/tag/{tag}"
 
     scored = lock["outcome"] is not None and lock["scores"] is not None
-    brier = lock["scores"]["m0_market_only"]["brier_score"]
-    hit = lock["point_call"] == lock["outcome"]
+    # A fresh lock has outcome and scores null until score_outcomes runs;
+    # the outcome block is then empty and hidden, exactly as the script
+    # hides it, so the static and scripted card agree in both states.
+    brier = lock["scores"]["m0_market_only"]["brier_score"] if scored else None
+    hit = scored and lock["point_call"] == lock["outcome"]
 
     # Next announcement: the first meeting in the Bank's published calendar
     # after this call's own. From the calendar constant, never typed in.
@@ -461,6 +464,17 @@ def build_call(html: str) -> str:
     vs = abs(lock["index_current"] - lock["index_trailing_mean"])
     word = "above" if lock["index_current"] > lock["index_trailing_mean"] else "below"
 
+    outcome_row = (
+        f'''<span class="oc-item"><span class="oc-l">Outcome</span><span class="oc-v">{lock["outcome"]}</span></span><span class="oc-item"><span class="oc-l">Brier (m0)</span><span class="oc-v">{score(brier)}</span></span><span class="oc-item"><span class="oc-l">Point call</span><span class="oc-v{" oc-hit" if hit else ""}">{"matched" if hit else "missed"}</span></span>'''
+        if scored else ""
+    )
+    outcome_note = (
+        '''
+      <p class="oc-note" id="call-outcome-note">Scored after the announcement by
+      <code>pipeline/predict/score_outcomes.py</code>, which fills the outcome and scores fields
+      and nothing else.</p>'''
+        if scored else ""
+    )
     body = f'''
   <section class="section call-card locked" id="call-card" aria-labelledby="call-badge"
            data-prediction-file="{PREDICTION_FILE}">
@@ -494,11 +508,8 @@ def build_call(html: str) -> str:
     <!-- Once the announcement has happened and score_outcomes has run, the
          card stops being a forward-looking notice and becomes a result. Both
          figures come from the locked file's own outcome/scores fields. -->
-    <div class="call-outcome" id="call-outcome">
-      <div class="call-outcome-row"><span class="oc-item"><span class="oc-l">Outcome</span><span class="oc-v">{lock["outcome"]}</span></span><span class="oc-item"><span class="oc-l">Brier (m0)</span><span class="oc-v">{score(brier)}</span></span><span class="oc-item"><span class="oc-l">Point call</span><span class="oc-v{" oc-hit" if hit else ""}">{"matched" if hit else "missed"}</span></span></div>
-      <p class="oc-note" id="call-outcome-note">Scored after the announcement by
-      <code>pipeline/predict/score_outcomes.py</code>, which fills the outcome and scores fields
-      and nothing else.</p>
+    <div class="call-outcome" id="call-outcome"{"" if scored else " hidden"}>
+      <div class="call-outcome-row">{outcome_row}</div>{outcome_note}
     </div>
 
     <p class="call-next" id="call-next">Next announcement:

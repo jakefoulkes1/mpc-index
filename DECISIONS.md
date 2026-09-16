@@ -3163,6 +3163,13 @@ a per-meeting override table for the "next lock" date the pages show.
   | 4 | 0.20 |
   | 5 or more (a hike) | 0.20 |
 
+- Both the vote-split distribution and the shaded decision distribution
+  (cut 0.00 / hold 0.80 / hike 0.20) are scored after the announcement with
+  the Brier score summed over outcome bins, the form defined in the site
+  glossary and used for m0 (July: 0.0030). The pipeline scores m0 only, so
+  these two scores are computed by hand and recorded in the
+  post-announcement DECISIONS entry.
+
 ### The risk-management second series is deferred to the November lock
 
 - The July episode proposed a second series counting risk-management
@@ -3213,3 +3220,21 @@ a per-meeting override table for the "next lock" date the pages show.
   September call's rationale addresses it in words, and whether the read
   should change is a question for after the September outcome, under the
   forward-only rule.
+
+### Lock-commit addendum: two site-layer fixes the fresh lock exposed
+
+- **`build_fallbacks.build_call` crashed on an unscored lock.** Line 435
+  read `lock["scores"]["m0_market_only"]["brier_score"]` unconditionally;
+  it was written on 10 August (`e340cbf`) when the only lock on disk was
+  July's, already scored, so the locked-but-unscored state that every fresh
+  lock passes through was never exercised. The lookups are now guarded and
+  the outcome block is emitted empty and `hidden` until `score_outcomes`
+  has run - the same rule the page script applies - so the static and
+  scripted card agree in both states.
+- **`test_static_fallback.py` pinned `lock-2026-07.json` by name.** It now
+  reads the lock through `site_figures.prediction_file()`, the newest-lock
+  rule the generator uses, so it follows each new lock. Its outcome test
+  skips, as designed, until the September call is scored.
+- Suite: 178 passed, 1 skipped. The lock file itself was written by
+  `pipeline.predict.lock` and then had only `point_call` and `rationale`
+  filled in by the author; nothing in it was touched by either fix.

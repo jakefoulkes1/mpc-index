@@ -86,7 +86,7 @@ this backtest.
 **Spec 3** — <!-- fallback:readme_spec3 -->Regressing each meeting's market surprise on the *previous* meeting's index (OLS, Newey–West standard errors, 4 lags, n=92 scheduled meetings): coefficient **−2.15** (t = −2.16, **p = 0.0310**). On the post-hiking-cycle subsample (from 1 September 2023, n=24) the result does not replicate: coefficient −3.35 (t = −1.55, p = 0.1221). Spec 2, an ordered-logit likelihood-ratio test on the discrete decision, finds nothing: LR = 0.4778, p = 0.4894. Coefficients and t-statistics are rounded to 2 decimal places and p-values to 4; full precision is in `data/inference_v1.json`.<!-- /fallback:readme_spec3 -->
 The two specifications disagree; both are reported.
 
-<!-- fallback:readme_lock -->**First pre-registered lock: 28 July 2026, 19:08:36 UTC, for the 30 July 2026 announcement** (tag `lock-2026-07`). Locked calls so far: 1. Next lock: 16 September 2026, for the 17 September 2026 announcement.<!-- /fallback:readme_lock -->
+<!-- fallback:readme_lock -->**First pre-registered lock: 16 September 2026, 17:20:49 UTC, for the 17 September 2026 announcement** (tag `lock-2026-09`). Locked calls so far: 2. Next lock: 3 November 2026, for the 5 November 2026 announcement.<!-- /fallback:readme_lock -->
 Files under `data/predictions/lock-*` are permanent once written, misses
 included.
 

@@ -57,6 +57,34 @@
       },
       "outcome": null,
       "brier_m0": null
+    },
+    {
+      "filename": "lock-2026-09.json",
+      "kind": "locked",
+      "meeting_announcement": "2026-09-17",
+      "lock_timestamp": "2026-09-16T17:20:49+00:00",
+      "point_call": "hold",
+      "m0_market_only": {
+        "p_cut": 0.0,
+        "p_hold": 0.7108,
+        "p_hike": 0.2892
+      },
+      "outcome": null,
+      "brier_m0": null
+    },
+    {
+      "filename": "rehearsal-2026-09-16.json",
+      "kind": "rehearsal",
+      "meeting_announcement": "2026-09-17",
+      "lock_timestamp": "2026-09-16T10:22:59+00:00",
+      "point_call": null,
+      "m0_market_only": {
+        "p_cut": 0.0,
+        "p_hold": 0.7483,
+        "p_hike": 0.2517
+      },
+      "outcome": null,
+      "brier_m0": null
     }
   ]
 }
