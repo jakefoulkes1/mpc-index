@@ -1,9 +1,9 @@
 {
   "schema": "build-info-v1",
-  "last_commit_sha": "97e81803078e370d7b92b1bb80439bc694aa0b55",
-  "last_commit_short_sha": "97e8180",
-  "last_commit_iso": "2026-09-16T18:20:24+01:00",
-  "last_commit_subject": "Records before the September lock: runbook, vote-split pre-registration, lock date moves to 16 September",
-  "generated_utc": "2026-09-16T17:20:28+00:00",
+  "last_commit_sha": "4f38477c2af5901903d5c06073109647012a693c",
+  "last_commit_short_sha": "4f38477",
+  "last_commit_iso": "2026-09-16T18:27:12+01:00",
+  "last_commit_subject": "Lock call for 17 September 2026",
+  "generated_utc": "2026-09-16T17:27:21+00:00",
   "note": "Written by pipeline/build_build_info.py from git log -1 at the time it ran. Not a claim about the data's vintage - data/index.json carries its own generated_utc."
 }
