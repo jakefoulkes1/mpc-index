@@ -212,6 +212,23 @@ def sparsity() -> dict:
     return {"median": med, "q1": q1, "q3": q3, "iqr": q3 - q1, "min": hits[0], "max": hits[-1]}
 
 
+def locked_calls() -> tuple[int, int, int]:
+    """(locked calls, of those how many have a known outcome, of those how
+    many the point call got right). Read from data/track_record.json rather
+    than counted by hand.
+
+    Correctness is counted only over records the outcome is known for: an
+    unscored lock is neither a hit nor a miss, and must not be shown as one -
+    which is why the scored count is returned too, so a surface can say
+    "1 correct of 1 scored" rather than "1 correct" against 2 locked.
+    """
+    records = load("data/track_record.json")["records"]
+    locked = [r for r in records if r["kind"] == "locked"]
+    scored = [r for r in locked if r["outcome"] is not None]
+    correct = sum(1 for r in scored if r["point_call"] == r["outcome"])
+    return len(locked), len(scored), correct
+
+
 def figures() -> dict[str, str]:
     """Every figure on any surface, as the string the surface should show.
 
@@ -222,7 +239,7 @@ def figures() -> dict[str, str]:
     ladder = load("data/ladder_v1.json")
     inf = load("data/inference_v1.json")
     validation = load("data/validation_v1.json")
-    track = load("data/track_record.json")
+    context = load("data/site_context.json")
     pred_path = prediction_file()
     lock = load(pred_path)
 
@@ -243,7 +260,7 @@ def figures() -> dict[str, str]:
     n_specials = len(specials)
     n_spec3 = full["n"]
 
-    locked = [r for r in track["records"] if r["kind"] == "locked"]
+    n_locked, n_scored, n_correct = locked_calls()
     next_meeting = next_meeting_after(lock["meeting_announcement"])
 
     fig: dict[str, str] = {
@@ -301,8 +318,16 @@ def figures() -> dict[str, str]:
         "lock_meeting": gb_date(lock["meeting_announcement"]),
         "lock_tag": Path(pred_path).stem,
         "lock_month": gb_month(lock["meeting_announcement"]),
+        # ---- the episode notes, now their own page ----
+        "episode_count": str(len(load("data/annotations.json")["episodes"])),
+        # ---- the stat strip (DECISIONS.md 2026-09-17, structure pass landed) ----
+        # Bank Rate as the context panel already prints it, from the same
+        # published series; the strip states the level, the panel the history.
+        "bank_rate": f"{context['bank_rate_history']['points'][-1]['rate_pct']:.2f}%",
+        "lock_correct": str(n_correct),
+        "lock_scored": str(n_scored),
         # ---- the record and the calendar ----
-        "lock_count": str(len(locked)),
+        "lock_count": str(n_locked),
         "next_meeting": gb_date(next_meeting),
         "next_lock_date": gb_date(lock_date_for(next_meeting)),
         # ---- frozen specification constants, imported read-only ----

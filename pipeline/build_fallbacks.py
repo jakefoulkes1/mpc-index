@@ -387,6 +387,42 @@ def build_track(html: str) -> str:
     return replace_region(html, "track", body)
 
 
+# ------------------------------------------------------- the stat strip
+
+
+def build_statstrip(html: str) -> str:
+    """Four figures under the masthead: the rate, the record, the result and
+    the corpus. Display numerals with small-caps labels and no sentences -
+    the scale of the thing before any of its prose.
+
+    "Best tone model" and not "best model": L2 (market modelled, no text)
+    scores better than L3, so the strip would misdescribe the ladder if it
+    called L3 the best model outright. L3 is the best of the models that
+    read the index, which is the comparison the page is about.
+    (DECISIONS.md 2026-09-17, structure pass landed.)
+    """
+    f = figures()
+    items = [
+        ("Bank Rate", f["bank_rate"], f"next decision {f['next_meeting']}"),
+        ("Locked calls", f["lock_count"],
+         f"{f['lock_correct']} correct of {f['lock_scored']} scored"),
+        ("Best tone model vs market", f["l3_skill"],
+         "below zero: worse than the curve"),
+        ("Corpus", f["corpus_n"], "documents"),
+    ]
+    # One <dt> and two <dd>s per figure - valid, and it makes each cell three
+    # rows of the strip's own grid, so the numerals share a baseline however
+    # many lines a label takes.
+    cells = "".join(
+        f'<div class="stat"><dt>{label}</dt>'
+        f'<dd class="stat-n">{value}</dd>'
+        f'<dd class="stat-sub">{sub}</dd></div>'
+        for label, value, sub in items
+    )
+    body = f'\n  <dl class="statstrip">{cells}</dl>\n  '
+    return replace_region(html, "statstrip", body)
+
+
 # ---------------------------------------------------- verification box
 
 
@@ -400,7 +436,7 @@ def build_verify(html: str) -> str:
     tag_url = f"{REPO_URL}/releases/tag/{tag}"
     body = f'''
   <section class="section" id="how-to-check">
-    <h2>How to check this</h2>
+    <h2>How to verify the call yourself</h2>
     <p class="plain-summary">Nothing here has to be taken on trust. The call below was tagged
     and pushed to GitHub before the announcement it is about, and everything behind it is in
     the open.</p>
@@ -446,13 +482,23 @@ def build_call(html: str) -> str:
     stamp_utc = gb_stamp_utc(stamp_iso)
     lock_day = gb_date(stamp_iso)
 
-    rationale = (
-        lock["rationale"]
-        .replace("&", "&amp;")
-        .replace("<", "&lt;")
-        .replace("—", "&mdash;")
-        .replace("−", "&minus;")
+    # The rationale is shown in two parts - its first sentence, then the rest
+    # behind a disclosure - and is NEVER re-paragraphed: the 2026-08-30
+    # rejection of reformatting stands. The text is not edited, only cut, and
+    # the two halves rejoined with one space are the locked file's own string
+    # byte for byte (asserted by pipeline/tests/test_static_fallback.py).
+    def entities(text: str) -> str:
+        return (
+            text.replace("&", "&amp;")
+            .replace("<", "&lt;")
+            .replace("—", "&mdash;")
+            .replace("−", "&minus;")
+        )
+
+    lead_raw, rest_raw = split_first_sentence(
+        lock["rationale"].strip(), f"the rationale in {PREDICTION_FILE}"
     )
+    rationale_lead, rationale_rest = entities(lead_raw), entities(rest_raw)
     prob_divs = "".join(
         f'<div class="call-prob{" is-lead" if k == lead else ""}{" is-call" if k == lock["point_call"] else ""}">'
         f'<span class="n">{pct(v)}</span><span class="l">{k}</span></div>'
@@ -501,7 +547,11 @@ def build_call(html: str) -> str:
     <p class="fine call-index-line" id="call-index-line">A&amp;BG index ({lock["index_current_doc_id"]}): <strong>{index_value(lock["index_current"])}</strong> vs trailing {lock["index_trailing_n"]}-document mean <strong>{index_value(lock["index_trailing_mean"])}</strong> ({index_value(vs)} {word})</p>
     <div class="call-rationale" id="call-rationale">
       <p class="call-rationale-h" id="call-rationale-h">Point call <span class="pt-call">{lock["point_call"]}</span></p>
-      <p class="call-rationale-body" id="call-rationale-body">{rationale}</p>
+      <p class="call-rationale-body" id="call-rationale-body">{rationale_lead}</p>
+      <details class="disclosure rationale-more" open>
+        <summary><span class="caret" aria-hidden="true"></span>Read the full locked rationale</summary>
+        <div class="disclosure-body"><p class="call-rationale-body" id="call-rationale-rest">{rationale_rest}</p></div>
+      </details>
     </div>
     <p class="fine" id="call-fine" style="display:none"></p>
 
@@ -687,53 +737,166 @@ def build_context(html: str) -> str:
 # ------------------------------------------------------------ episodes
 
 
-def render_markdown(md: str) -> str:
-    """The same small Markdown subset renderMarkdown() implements in index.html.
+def inline_markdown(s: str) -> str:
+    """Escape, then bold, italic and links. Mirrored by inline() in
+    index.html, which uses it for the episode standfirsts."""
+    s = s.replace("&", "&amp;").replace("<", "&lt;").replace(">", "&gt;")
+    s = re.sub(r"\*\*(.+?)\*\*", r"<strong>\1</strong>", s)
+    s = re.sub(r"\*(.+?)\*", r"<em>\1</em>", s)
+    s = re.sub(r"\[([^\]]+)\]\((https?://[^)\s]+)\)", r'<a href="\2" rel="noopener">\1</a>', s)
+    return s
 
-    Kept deliberately literal so the two agree: escape, then bold, italic and
-    links; blocks split on blank lines; an all-dash block is a list; a lone
-    ##/###/#### line is a heading one level down.
+
+def render_markdown(md: str, base_level: int = 2) -> str:
+    """The small Markdown subset the episode bodies are written in.
+
+    Blocks split on blank lines; an all-dash block is a list; a lone
+    ##/###/#### line is a heading one level below `base_level`, which is the
+    level of the heading the body sits under. On episodes.html each note's
+    title is an h2, so `##` is an h3 and no level is skipped.
     """
-    def inline(s: str) -> str:
-        s = s.replace("&", "&amp;").replace("<", "&lt;").replace(">", "&gt;")
-        s = re.sub(r"\*\*(.+?)\*\*", r"<strong>\1</strong>", s)
-        s = re.sub(r"\*(.+?)\*", r"<em>\1</em>", s)
-        s = re.sub(r"\[([^\]]+)\]\((https?://[^)\s]+)\)", r'<a href="\2" rel="noopener">\1</a>', s)
-        return s
-
     out = []
     for block in re.split(r"\n{2,}", md):
         lines = block.split("\n")
         if lines and all(re.match(r"^\s*-\s+", line) for line in lines):
-            items = "".join(f"<li>{inline(re.sub(r'^\s*-\s+', '', line))}</li>" for line in lines)
+            items = "".join(
+                f"<li>{inline_markdown(re.sub(r'^\s*-\s+', '', line))}</li>" for line in lines
+            )
             out.append(f"<ul>{items}</ul>")
             continue
         h = re.match(r"^(#{2,4})\s+(.*)$", block)
         if h and len(lines) == 1:
-            level = len(h.group(1)) + 2  # ## -> h4, under the episode's h3 title
-            out.append(f"<h{level}>{inline(h.group(2))}</h{level}>")
+            level = len(h.group(1)) + base_level - 1
+            out.append(f"<h{level}>{inline_markdown(h.group(2))}</h{level}>")
             continue
-        out.append(f"<p>{inline(block.replace(chr(10), ' '))}</p>")
+        out.append(f"<p>{inline_markdown(block.replace(chr(10), ' '))}</p>")
     return "".join(out)
 
 
-def build_episodes(html: str) -> str:
-    d = load("data/annotations.json")
-    articles = []
-    for ep in d["episodes"]:
-        articles.append(
-            f'<article class="episode" id="episode-{ep["date"]}">'
-            f'<h3>{ep["title"].replace("<", "&lt;")}</h3>'
-            f'<p class="ep-date">{gb_date(ep["date"])}</p>'
-            f'<div class="ep-body">{render_markdown(ep.get("body") or "")}</div>'
-            f"</article>"
+# One sentence rule, used in two places: the standfirsts on the front page
+# and the first sentence of the locked rationale. A full stop, question mark
+# or exclamation mark, then whitespace, then something that starts a sentence.
+# index.html implements the same rule in JavaScript (splitSentences there);
+# pipeline/tests/test_static_js_parity.py fails if the two ever disagree.
+SENTENCE_BREAK = re.compile(r"[.!?](?=\s+[A-Z\u201c\"\'(\[])")
+
+
+def sentences(text: str, n: int, source: str) -> str:
+    """The first `n` sentences of `text`, as written.
+
+    HARD STOP rather than a guess: a passage that does not contain `n`
+    sentence breaks is a passage this rule cannot summarise, and a truncated
+    or padded standfirst would misrepresent the note it stands for.
+    """
+    cut = 0
+    for i, m in enumerate(SENTENCE_BREAK.finditer(text), start=1):
+        cut = m.end()
+        if i == n:
+            return text[:cut].strip()
+    raise SystemExit(
+        f"HARD STOP: {source} has fewer than {n} sentences under the site's sentence "
+        f"rule, so its first {n} cannot be taken. Write it so it has, or say what "
+        f"should stand in its place - do not truncate it here."
+    )
+
+
+def split_first_sentence(text: str, source: str) -> tuple[str, str]:
+    """(first sentence, the rest), separated by exactly one space.
+
+    The separator is asserted rather than assumed: the two halves are shown
+    in two elements, and the promise this display makes is that putting them
+    back together with a single space reproduces the original byte for byte.
+    """
+    m = SENTENCE_BREAK.search(text)
+    if not m:
+        raise SystemExit(
+            f"HARD STOP: {source} has no sentence break, so its first sentence cannot "
+            f"be shown apart from the rest."
         )
+    cut = m.end()
+    lead, rest = text[:cut], text[cut:]
+    gap = rest[: len(rest) - len(rest.lstrip())]
+    if gap != " ":
+        raise SystemExit(
+            f"HARD STOP: {source} separates its first sentence from the rest with "
+            f"{gap!r}, not a single space. The disclosure display rejoins them with one "
+            f"space, so it would not reproduce the text as written."
+        )
+    return lead, rest.lstrip()
+
+
+# ------------------------------------------------------------- episodes
+
+
+def episode_articles() -> str:
+    """Every episode, whole and in the order the build wrote them. This is the
+    long form, and it lives on episodes.html only."""
+    d = load("data/annotations.json")
+    return "".join(
+        f'<article class="episode" id="episode-{ep["date"]}">'
+        f'<h2>{ep["title"].replace("<", "&lt;")}</h2>'
+        f'<p class="ep-date">{gb_date(ep["date"])}</p>'
+        f'<div class="ep-body">{render_markdown(ep.get("body") or "")}</div>'
+        f"</article>"
+        for ep in d["episodes"]
+    )
+
+
+def build_episodes(html: str, where: str = "episodes.html") -> str:
     body = f'''
     <div id="episodes-list">
-      {"".join(articles)}
+      {episode_articles()}
     </div>
     '''
+    return replace_region(html, "episodes", body, where=where)
+
+
+def episode_standfirst(ep: dict) -> str:
+    """The first two sentences of an episode's opening block, rendered with the
+    same inline Markdown subset the body uses. Not a summary: the note's own
+    opening, so nothing on the front page is written twice."""
+    first_block = re.split(r"\n{2,}", (ep.get("body") or "").strip())[0]
+    return inline_markdown(sentences(first_block, 2, f'episode "{ep["title"]}"'))
+
+
+def build_episode_list(html: str) -> str:
+    """The front page's short form: title, date, standfirst, link. No bodies.
+
+    The essay moved to episodes.html on 2026-09-02; what stays here is the
+    index to it.
+    """
+    d = load("data/annotations.json")
+    items = "".join(
+        f'<li class="ep-item">'
+        f'<h3 class="ep-title"><a href="episodes.html#episode-{ep["date"]}">'
+        f'{ep["title"].replace("<", "&lt;")}</a></h3>'
+        f'<p class="ep-date">{gb_date(ep["date"])}</p>'
+        f'<p class="ep-standfirst">{episode_standfirst(ep)}</p>'
+        f'<p class="ep-more"><a href="episodes.html#episode-{ep["date"]}">'
+        f'Read the full note</a></p>'
+        f"</li>"
+        for ep in d["episodes"]
+    )
+    body = f'''
+    <ul id="episodes-list" class="episode-list">
+      {items}
+    </ul>
+    '''
     return replace_region(html, "episodes", body)
+
+
+def build_episode_toc(html: str) -> str:
+    """episodes.html's contents, from the same list its articles come from -
+    the methodology page's ToC pattern, one entry per note."""
+    d = load("data/annotations.json")
+    items = "".join(
+        f'\n      <li><a href="#episode-{ep["date"]}">{ep["title"].replace("<", "&lt;")}'
+        f'</a> <span class="toc-date">{gb_date(ep["date"])}</span></li>'
+        for ep in d["episodes"]
+    )
+    return replace_region(
+        html, "toc", f"\n    <ol>{items}\n    </ol>\n    ", where="episodes.html"
+    )
 
 
 # -------------------------------------------------------------- README
@@ -791,8 +954,8 @@ def main() -> None:
     index_path = ROOT / "index.html"
     html = index_path.read_text()
     for fn in (
-        build_verify, build_call, build_latest, build_chart, build_context,
-        build_ladder, build_spec3, build_track, build_episodes, build_gen_note,
+        build_statstrip, build_verify, build_call, build_latest, build_chart, build_context,
+        build_ladder, build_spec3, build_track, build_episode_list, build_gen_note,
     ):
         html = fn(html)
     html = build_meta(html, "index.html")
@@ -811,14 +974,24 @@ def main() -> None:
     meth = build_toc(meth, "methodology.html")
     meth_path.write_text(write_figures(meth, "methodology.html"))
 
+    ep_path = ROOT / "episodes.html"
+    eps = ep_path.read_text()
+    eps = build_episodes(eps)
+    eps = build_episode_toc(eps)
+    eps = build_meta(eps, "episodes.html")
+    eps = build_byline(eps, "episodes.html")
+    eps = build_status(eps, "episodes.html")
+    ep_path.write_text(write_figures(eps, "episodes.html"))
+
     readme_path = ROOT / "README.md"
     readme = build_readme(readme_path.read_text())
     readme_path.write_text(write_figures(readme, "README.md", plain()))
 
     print(
-        "regenerated index.html blocks: verify, call, latest, chart, context, "
-        "ladder, spec3, track, episodes, gennote, meta, byline, status, related work; "
+        "regenerated index.html blocks: statstrip, verify, call, latest, chart, context, "
+        "ladder, spec3, track, episode list, gennote, meta, byline, status, related work; "
         "methodology.html: meta, byline, status, references; "
+        "episodes.html: episodes, contents, meta, byline, status; "
         "README.md: ladder table, spec3, lock line, byline"
     )
 

@@ -71,7 +71,7 @@ code { font-family: var(--mono); font-size: .86em; }
 table, .num, .score, .call-prob .n, .call-stamp time, .status-line, .big, .ois-chg, .oc-v, .call-index-line, .docline { font-variant-numeric: tabular-nums; }
 
 /* small labels: the serif's own small caps, never a sans */
-.label, .call-badge, .stamp-label, .call-prob .l, .call-rationale-h, .oc-l, .track-badge, th, .ctx-h, .context-badge, .m-label, .theme-toggle {
+.label, .call-badge, .stamp-label, .call-prob .l, .call-rationale-h, .oc-l, .track-badge, th, .ctx-h, .context-badge, .m-label, .theme-toggle, .statstrip dt {
   font-variant-caps: all-small-caps; letter-spacing: .05em; font-weight: 400;
 }
 
@@ -91,6 +91,29 @@ h1 { font: 400 var(--fs-2xl)/1.15 var(--display); margin: 0 0 var(--sp-3); }
 html:not(.js) .theme-toggle { display: none; }
 .backlink { font-size: var(--fs-sm); color: var(--ink-2); display: inline-block; margin-bottom: var(--sp-3); }
 
+/* ---------- stat strip: four figures, no sentences ----------
+   Directly under the masthead: display numerals with small-caps labels, so
+   the scale of the thing is read before any of its prose. Four columns on
+   desktop, two on a phone - never a sideways scroll.
+   (DECISIONS.md 2026-09-17, structure pass landed.) */
+.statstrip {
+  display: grid; grid-template-columns: repeat(4, minmax(0, 1fr));
+  grid-template-rows: auto auto auto;
+  gap: var(--sp-4) var(--sp-5);
+  margin: 0 0 var(--sp-6); padding-bottom: var(--sp-5);
+  border-bottom: 1px solid var(--rule);
+}
+/* Each figure spans the strip's three rows, so a label that wraps to two
+   lines cannot drop its own numeral below the other three. */
+.statstrip .stat {
+  min-width: 0; display: grid; grid-row: span 3; grid-template-rows: subgrid;
+  align-content: start; row-gap: 0;
+}
+.statstrip dt { font-size: var(--fs-sm); color: var(--ink-2); margin: 0; align-self: start; }
+.statstrip dd { margin: 0; }
+.stat-n { font: 400 var(--fs-xl)/1 var(--display); font-variant-numeric: tabular-nums; overflow-wrap: break-word; align-self: end; padding-top: var(--sp-2); }
+.stat-sub { font-size: var(--fs-xs); color: var(--ink-2); line-height: 1.4; padding-top: var(--sp-2); }
+
 /* ---------- sections: a document, not cards ---------- */
 .section { margin: 0 0 var(--sp-6); }
 .section + .section { padding-top: var(--sp-5); border-top: 1px solid var(--rule); }
@@ -98,7 +121,7 @@ h2 { font: 400 var(--fs-lg)/1.25 var(--serif); margin: 0 0 var(--sp-4); }
 h3, .subhead { font: italic 400 var(--fs-md)/1.3 var(--serif); margin: var(--sp-5) 0 var(--sp-3); }
 .subhead { margin-top: 0; }
 .subhead .count { font-style: normal; font-size: var(--fs-sm); color: var(--ink-2); }
-.section > p, .prose, .plain-summary, .results-framing, .contribution, .call-rationale-body, .fine, .ep-body, .section li, .miss-note, footer p { max-width: var(--measure); }
+.section > p, .prose, .plain-summary, .results-framing, .contribution, .call-rationale-body, .fine, .ep-body, .section li, .miss-note, footer p, .toc + #episodes-list .ep-body { max-width: var(--measure); }
 .plain-summary { margin: 0 0 var(--sp-4); }
 .fine { font-size: var(--fs-sm); color: var(--ink-2); line-height: 1.55; margin: var(--sp-3) 0 0; }
 /* Three blocks are argument, not apparatus - why the sample sizes differ, and
@@ -112,6 +135,16 @@ h3, .subhead { font: italic 400 var(--fs-md)/1.3 var(--serif); margin: var(--sp-
 .section ul, .section ol { margin: 0 0 var(--sp-3); padding-left: 1.5em; }
 .section li { margin: 0 0 var(--sp-2); }
 .section li::marker { color: var(--ink-2); }
+
+/* takeaways: the three statements a reader should leave with, set above the
+   Question / Answer / Limits block and larger than it. No bullets, no rule -
+   the size does the separating. (DECISIONS.md 2026-09-17, structure pass landed.) */
+.takeaways { list-style: none; margin: 0 0 var(--sp-5); padding: 0; }
+.takeaways li {
+  font: 400 var(--fs-md)/1.4 var(--serif); margin: 0 0 var(--sp-3);
+  max-width: var(--measure); text-wrap: pretty;
+}
+.takeaways li:last-child { margin-bottom: 0; }
 
 /* summary: run-in labels, no bullets (not a sequence) */
 .summary-list { list-style: none; margin: 0; padding: 0; }
@@ -166,6 +199,13 @@ html.js .disclosure:not(.ready) > .disclosure-body { display: none; }
 .call-rationale-h { font-size: var(--fs-sm); color: var(--ink-2); margin: 0 0 var(--sp-2); }
 .call-rationale-h .pt-call { color: var(--accent); font-variant-caps: normal; letter-spacing: 0; font-size: var(--fs-body); margin-left: .4em; }
 .call-rationale-body { line-height: 1.7; margin: 0; max-width: 64ch; text-wrap: pretty; }
+/* The locked rationale is one paragraph and stays one paragraph: only the
+   display is split, its first sentence standing and the rest behind a
+   disclosure. In print the two run back into a single continuous block, so
+   paper shows the text exactly as it was written.
+   (DECISIONS.md 2026-09-02; the 2026-08-30 rejection of reformatting stands.) */
+.rationale-more { margin-top: var(--sp-3); }
+.rationale-more .disclosure-body > .call-rationale-body { margin: 0; }
 .call-outcome { border-top: 1px solid var(--rule); margin-top: var(--sp-4); padding-top: var(--sp-3); }
 .call-outcome-row { display: flex; flex-wrap: wrap; gap: var(--sp-2) var(--sp-6); margin-bottom: var(--sp-2); }
 .oc-item { display: flex; flex-direction: column; gap: 2px; }
@@ -263,14 +303,29 @@ tr.kind-dryrun, tr.kind-rehearsal, tr.kind-pending { color: var(--ink-2); }
 .glossary-list dd, .refs dd { margin: 2px 0 0; color: var(--ink-2); }
 .glossary-list dd { max-width: var(--measure); }
 
-/* ---------- episodes ---------- */
-.episode { padding: var(--sp-4) 0; border-top: 1px solid var(--rule); }
+/* ---------- episodes ----------
+   The notes themselves are on episodes.html, where each is an <h2> and its
+   own ## headings are <h3>s under it. The front page carries the short form:
+   title, date, the note's own first two sentences, and a link.
+   (DECISIONS.md 2026-09-17, structure pass landed.) */
+.episode { padding: var(--sp-5) 0; border-top: 1px solid var(--rule); }
 .episode:first-child { border-top: 0; padding-top: var(--sp-3); }
-.episode h3 { font: 400 var(--fs-md)/1.3 var(--serif); margin: 0 0 2px; }
+.episode h2 { margin: 0 0 2px; }
 .ep-date { font-size: var(--fs-sm); color: var(--ink-2); margin: 0 0 var(--sp-3); }
 .ep-body p { margin: 0 0 var(--sp-3); }
+.ep-body h3 { margin: var(--sp-5) 0 var(--sp-2); }
 .ep-body h4 { font: italic 400 var(--fs-body)/1.3 var(--serif); margin: var(--sp-4) 0 var(--sp-2); }
 .ep-body ul { margin: 0 0 var(--sp-3); padding-left: 1.4em; }
+.toc-date { color: var(--ink-2); }
+
+/* the front page's index to them */
+/* .section ul sets a bullet indent; this list has no bullets and needs none */
+.section .episode-list { list-style: none; margin: 0; padding: 0; }
+.ep-item { padding: var(--sp-4) 0; border-top: 1px solid var(--rule); max-width: var(--measure); }
+.ep-item:first-child { border-top: 0; padding-top: var(--sp-2); }
+.ep-title { font: 400 var(--fs-md)/1.3 var(--serif); margin: 0 0 2px; }
+.ep-standfirst { margin: 0 0 var(--sp-2); max-width: var(--measure); text-wrap: pretty; }
+.ep-more { font-size: var(--fs-sm); margin: 0; }
 
 /* ---------- failure states ---------- */
 .section-error { font-size: var(--fs-sm); border-left: 2px solid var(--hawk); padding: var(--sp-2) 0 var(--sp-2) var(--sp-3); margin: var(--sp-3) 0; max-width: var(--measure); }
@@ -296,6 +351,7 @@ footer strong { color: var(--ink); }
   :root { --fs-body: 17px; --fs-md: 20px; --fs-lg: 24px; --fs-xl: 28px; --fs-2xl: 30px; --fs-display: 38px; }
   .wrap { padding: var(--sp-5) 16px var(--sp-6); }
   .ctx-grid { grid-template-columns: 1fr; }
+  .statstrip { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--sp-4); }
   .call-card { padding: var(--sp-4) var(--sp-4) var(--sp-3); }
   .theme-toggle { position: static; display: inline-block; margin-bottom: var(--sp-3); }
 }
@@ -343,7 +399,17 @@ footer strong { color: var(--ink); }
   a[href^="http"]::after { content: " (" attr(href) ")"; font-size: .82em; color: var(--ink-2); word-break: break-all; }
   /* the commit stamps identify their commit by hash; the URL adds nothing on paper */
   .status-line a::after, #build-note a::after, footer p:last-child a::after { content: none; }
-  .call-card, table, .table-scroll, .verify-list, .episode, .ctx-figure, .chart-wrap { break-inside: avoid; page-break-inside: avoid; }
+  .call-card, table, .table-scroll, .verify-list, .ctx-figure, .chart-wrap, .statstrip { break-inside: avoid; page-break-inside: avoid; }
+  /* An episode note is pages long; keeping it whole would leave half a sheet
+     blank before every one of them. Its parts are protected instead. */
+  .episode h2, .ep-body h3, .ep-body h4 { break-after: avoid; page-break-after: avoid; }
+  /* The locked rationale, whole: the lead sentence and the rest run back
+     together into one continuous paragraph, the summary being hidden above. */
+  #call-rationale-body, .rationale-more, .rationale-more .disclosure-body, #call-rationale-rest { display: inline; }
+  /* the browser's own box around an open <details>' content, which is block
+     by default and would otherwise start the remainder on a fresh line */
+  .rationale-more::details-content { display: inline; content-visibility: visible; }
+  .rationale-more { margin: 0; }
   h2, h3 { break-after: avoid; page-break-after: avoid; }
   .section + .section { padding-top: var(--sp-4); }
   .chart-wrap svg#chart:not(:empty) { display: block !important; }

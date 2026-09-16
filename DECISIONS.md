@@ -3238,3 +3238,54 @@ a per-meeting override table for the "next lock" date the pages show.
 - Suite: 178 passed, 1 skipped. The lock file itself was written by
   `pipeline.predict.lock` and then had only `point_call` and `rationale`
   filled in by the author; nothing in it was touched by either fix.
+
+## 2026-09-17 — structure pass landed from the stash; the lock-commit false alarm in the stamp guard fixed
+
+Site layer only, the morning of the announcement. `lock-2026-09.json`,
+`lock-2026-07.json` and both tags are untouched; no science module, no
+schema. Tests 179 -> 196 (195 passed, 1 skipped until September is scored,
+plus the new episodes-page test).
+
+### The structure pass, set aside on 16 September, lands
+
+- The stash "structure pass (stat strip, takeaways, episodes.html) - set
+  aside 2026-09-16 before the contrast/disclosure pass" was the author's
+  front-page restructuring, based on `c0c7695`, complete with its untracked
+  template and test. Applied on a throwaway branch over the four lock-day
+  commits: one conflict, inside the generated `call` region, resolved by
+  taking the stashed markup and regenerating. As landed:
+  - **A stat strip under the masthead**: Bank Rate and the next decision,
+    locked calls, the best tone model's skill against the curve, the corpus
+    size. Every figure from `site_figures.figures()`.
+  - **The episode notes move to their own page, `episodes.html`**, with a
+    contents list; the front page keeps a standfirst per episode linking
+    through. `episodes.html` joins the link, draft-marker, process-comment,
+    figure-census and screenshot sweeps.
+  - **The call card shows the point call and first sentence, with the full
+    rationale in an open disclosure** beneath it; the static/JavaScript
+    parity test covers the split.
+  - The pass's own citations read "DECISIONS.md 2026-09-02, structure
+    pass", an entry that was never written. They now cite this one.
+- **One wording change to the pass.** The strip's locked-calls sub-label
+  read "1 correct" against a count of 2, which with September unscored
+  reads as one miss. `site_figures.locked_calls()` now returns the scored
+  count as well, and the sub-label reads "1 correct of 1 scored" - the
+  strip never counts an unscored call as a hit or a miss.
+- The stash is dropped once this is pushed and seen live.
+
+### The stamp guard's false alarm on the lock commit
+
+- `test_build_info_fresh.py` allowed one unstamped state: HEAD is a
+  stamp-only commit for the commit `build_info.json` names. LOCKDAY rule 4
+  creates a second on purpose - the lock commit is left unstamped so the
+  `lock-*` tag sits on it and the stamp follows - and on 16 September the
+  suite reported that as a failure on the tag ref and on the `main` push
+  that carried it (173 passed otherwise). A test that reports a problem
+  that is not one is worse than none, the day before it is run under time
+  pressure.
+- The guard now recognises a commit that **adds a
+  `data/predictions/lock-*.json`** and holds it to the lock shape instead:
+  `build_info.json` must name HEAD~2 and HEAD~1 must be a stamp-only
+  commit. Checked both ways in a worktree: the `lock-2026-09` commit passes;
+  `97e8180`, an unstamped records commit with the same HEAD~2/HEAD~1 shape
+  and no lock file, still fails with the original message.

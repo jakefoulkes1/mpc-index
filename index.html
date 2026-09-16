@@ -48,15 +48,35 @@
     <!-- Status line, generated: counts and the next lock date by
          pipeline/build_fallbacks.py, the build stamp by
          pipeline/build_build_info.py (the same source as the footer). -->
-    <p class="status-line" id="status-line"><!-- fallback:status --><a href="#call-card">2 locked calls</a> <span class="sep" aria-hidden="true">&middot;</span> next lock 3 November 2026 <span class="sep" aria-hidden="true">&middot;</span> 95 documents<!-- /fallback:status --> <span class="sep" aria-hidden="true">&middot;</span> <span id="build-stamp"><!-- fallback:buildstamp -->site built 16 September 2026 (<a href="https://github.com/jakefoulkes1/mpc-index/commit/4f38477c2af5901903d5c06073109647012a693c"><code>4f38477</code></a>)<!-- /fallback:buildstamp --></span></p>
+    <p class="status-line" id="status-line"><!-- fallback:status --><a href="#call-card">2 locked calls</a> <span class="sep" aria-hidden="true">&middot;</span> next lock 3 November 2026 <span class="sep" aria-hidden="true">&middot;</span> 95 documents<!-- /fallback:status --> <span class="sep" aria-hidden="true">&middot;</span> <span id="build-stamp"><!-- fallback:buildstamp -->site built 16 September 2026 (<a href="https://github.com/jakefoulkes1/mpc-index/commit/3da905bacec749f29f47d53d5517bba3042fb9b3"><code>3da905b</code></a>)<!-- /fallback:buildstamp --></span></p>
   </header>
 
   <main id="main">
 
+  <!-- Stat strip: the four figures a reader should have before any prose -
+       the rate and when it is next set, the record, the headline result and
+       the size of the corpus. Generated from the catalogue by
+       pipeline/build_fallbacks.py (build_statstrip); no sentences, and
+       nothing here is typed. (DECISIONS.md 2026-09-17, structure pass landed.) -->
+  <!-- fallback:statstrip -->
+  <dl class="statstrip"><div class="stat"><dt>Bank Rate</dt><dd class="stat-n">3.75%</dd><dd class="stat-sub">next decision 5 November 2026</dd></div><div class="stat"><dt>Locked calls</dt><dd class="stat-n">2</dd><dd class="stat-sub">1 correct of 1 scored</dd></div><div class="stat"><dt>Best tone model vs market</dt><dd class="stat-n">&minus;0.6712</dd><dd class="stat-sub">below zero: worse than the curve</dd></div><div class="stat"><dt>Corpus</dt><dd class="stat-n">95</dd><dd class="stat-sub">documents</dd></div></dl>
+  <!-- /fallback:statstrip -->
+
   <!-- Summary: question, answer, limits, and what is new. First thing on
        the page, deliberately. Every figure is a generated region. -->
   <section class="section" id="summary" aria-labelledby="summary-h">
-    <h2 id="summary-h" class="visually-hidden">Summary</h2>
+    <h2 id="summary-h" class="visually-hidden">What was tested, and what was found</h2>
+    <!-- Three takeaways, before anything else: the finding, its size, and the
+         one result that does not survive. Set larger than the Question /
+         Answer / Limits block below, which keeps its own wording.
+         (DECISIONS.md 2026-09-17, structure pass landed.) -->
+    <ul class="takeaways">
+      <li>Every model that adds the tone index does worse than market pricing.</li>
+      <li>The best of them, L3, scores
+      <!-- fig:l3_skill -->&minus;0.6712<!-- /fig:l3_skill --> where zero would be a tie.</li>
+      <li>The one nominally significant test does not hold after
+      <!-- fig:frag_start -->1 September 2023<!-- /fig:frag_start -->.</li>
+    </ul>
     <ul class="summary-list">
       <li><strong>Question.</strong> Does the hawkish or dovish tone of the MPC's minutes,
       scored with a published dictionary (Apel &amp; Blix Grimaldi, 2012), say anything about
@@ -91,7 +111,7 @@
        prediction file by pipeline/build_fallbacks.py. -->
   <!-- fallback:verify -->
   <section class="section" id="how-to-check">
-    <h2>How to check this</h2>
+    <h2>How to verify the call yourself</h2>
     <p class="plain-summary">Nothing here has to be taken on trust. The call below was tagged
     and pushed to GitHub before the announcement it is about, and everything behind it is in
     the open.</p>
@@ -141,7 +161,11 @@
     <p class="fine call-index-line" id="call-index-line">A&amp;BG index (minutes-2026-07): <strong>0.667</strong> vs trailing 4-document mean <strong>1.220</strong> (0.554 below)</p>
     <div class="call-rationale" id="call-rationale">
       <p class="call-rationale-h" id="call-rationale-h">Point call <span class="pt-call">hold</span></p>
-      <p class="call-rationale-body" id="call-rationale-body">Hold at 3.75%. The communication index is recorded as context and does not enter the call: L3 scores &minus;0.6712 against the market-only benchmark and Spec 2 returns p = 0.4894, so there remains no warrant on this project's own evidence for letting tone override L1. The index reads 0.667 against a trailing 4-document mean of 1.220 (0.554 below), dovish while the hawkish minority grew; this is what the July episode predicted of a lexicon keyed to realised inflation facing forward-risk reasoning. p(hike) is shaded below m0's 28.9%, to 20%, on the first of July's two reasons only. A read at meeting plus three days falls inside the curve's first one-month bucket and is taken from it, a forward dated mid-October; the fitted spline smooths part of the moves priced for 5 November and 17 December back into that point. On the 15 September curve the nodes stand 7.2, 21.7, 35.9 and 49.3bp above SONIA at one to four months: the later steps run near 14bp a month, while the first is half that, which is the shape expected if the one-month point is carrying part of November rather than a priced September move. That effect is larger than in July, when the next meeting was priced far more lightly. The second reason does not transfer: this repricing is energy-driven rather than a fiscal risk premium. The first remains testable against the November lock. The macro flow since 30 July moved the headline but not the measures the majority said it was waiting for. Headline CPI rose to 3.1% from 2.9% on goods and motor fuels, while core held at 2.6% and services at 3.4%; payrolls fell by an estimated 26,000, and vacancies are the lowest outside the pandemic since 2014. That is first-round energy pass-through of the kind the July majority said it would look through, with no sign yet of the second-round effects the Governor has named as his threshold. The vote split is called at 6–3, with Greene, Mann and Pill again in the minority: the minority has run 8–1, 7–2, 6–3, but 5–4 requires a central-bloc member to act on energy persistence alone. The counter-observation, recorded rather than passed over, is that regular pay growth held at 3.5% and private-sector regular pay was 2.9% rather than continuing to slow, while Brent traded near $108 on 15 September. If 17 September brings a hike or a fourth vote for one, the error is in the reading of the central bloc's threshold, not in the data.</p>
+      <p class="call-rationale-body" id="call-rationale-body">Hold at 3.75%.</p>
+      <details class="disclosure rationale-more" open>
+        <summary><span class="caret" aria-hidden="true"></span>Read the full locked rationale</summary>
+        <div class="disclosure-body"><p class="call-rationale-body" id="call-rationale-rest">The communication index is recorded as context and does not enter the call: L3 scores &minus;0.6712 against the market-only benchmark and Spec 2 returns p = 0.4894, so there remains no warrant on this project's own evidence for letting tone override L1. The index reads 0.667 against a trailing 4-document mean of 1.220 (0.554 below), dovish while the hawkish minority grew; this is what the July episode predicted of a lexicon keyed to realised inflation facing forward-risk reasoning. p(hike) is shaded below m0's 28.9%, to 20%, on the first of July's two reasons only. A read at meeting plus three days falls inside the curve's first one-month bucket and is taken from it, a forward dated mid-October; the fitted spline smooths part of the moves priced for 5 November and 17 December back into that point. On the 15 September curve the nodes stand 7.2, 21.7, 35.9 and 49.3bp above SONIA at one to four months: the later steps run near 14bp a month, while the first is half that, which is the shape expected if the one-month point is carrying part of November rather than a priced September move. That effect is larger than in July, when the next meeting was priced far more lightly. The second reason does not transfer: this repricing is energy-driven rather than a fiscal risk premium. The first remains testable against the November lock. The macro flow since 30 July moved the headline but not the measures the majority said it was waiting for. Headline CPI rose to 3.1% from 2.9% on goods and motor fuels, while core held at 2.6% and services at 3.4%; payrolls fell by an estimated 26,000, and vacancies are the lowest outside the pandemic since 2014. That is first-round energy pass-through of the kind the July majority said it would look through, with no sign yet of the second-round effects the Governor has named as his threshold. The vote split is called at 6–3, with Greene, Mann and Pill again in the minority: the minority has run 8–1, 7–2, 6–3, but 5–4 requires a central-bloc member to act on energy persistence alone. The counter-observation, recorded rather than passed over, is that regular pay growth held at 3.5% and private-sector regular pay was 2.9% rather than continuing to slow, while Brent traded near $108 on 15 September. If 17 September brings a hike or a fourth vote for one, the error is in the reading of the central bloc's threshold, not in the data.</p></div>
+      </details>
     </div>
     <p class="fine" id="call-fine" style="display:none"></p>
 
@@ -160,7 +184,7 @@
 
   <!-- 2. The index (latest reading + history chart) -->
   <section class="section">
-    <h2>The communication index</h2>
+    <h2>What the index reads today</h2>
 
     <div id="status" style="display:none"></div>
     <!-- fallback:latest - the latest reading, generated from data/index.json
@@ -273,7 +297,7 @@
 
   <!-- 3. Results -->
   <section class="section">
-    <h2 id="ladder-heading">Results</h2>
+    <h2 id="ladder-heading">No model beat market pricing</h2>
     <h3 class="subhead">Benchmark ladder <span class="count" id="ladder-schema">(ladder-v1)</span></h3>
     <div id="ladder-status" style="display:none"></div>
     <div id="ladder-content">
@@ -392,9 +416,9 @@
   <!-- 9. Glossary. Collapsed, because a reader who knows these terms should
        not have to scroll past them. -->
   <section class="section" id="glossary">
-    <h2>Glossary</h2>
+    <h2>The seven terms this page uses</h2>
     <details class="disclosure" open>
-      <summary><span class="caret" aria-hidden="true"></span>One line each: the seven terms this page uses</summary>
+      <summary><span class="caret" aria-hidden="true"></span>One line each</summary>
       <div class="disclosure-body">
         <dl class="glossary-list">
           <dt>Brier score</dt>
@@ -426,7 +450,7 @@
 
   <!-- 3b. Track record -->
   <section class="section">
-    <h2>Track record</h2>
+    <h2>Every locked call, scored</h2>
     <p class="fine" style="margin-top:-6px">Every locked call &mdash; marked as such, and never
     editable after the fact. Dry runs and rehearsals are hidden by default and can be shown
     below. Brier is for the m0 market-only reference (a locked point call has no probability
@@ -463,30 +487,33 @@
       <strong>July: right on the decision, wrong on the vote.</strong> The locked call, hold,
       was correct and is scored above. The unscored side-call, that the hawkish minority would
       stay at two, was wrong: it went to three.
-      <a href="#episode-2026-07-30">Read the episode, &ldquo;The minority grew&rdquo;</a>.</p>
+      <a href="episodes.html#episode-2026-07-30">Read the episode, &ldquo;The minority grew&rdquo;</a>.</p>
     </div>
   </section>
 
-  <!-- 4. Episodes (hand-written annotations) -->
+  <!-- 4. Episodes. The notes themselves live on episodes.html since
+       2026-09-02; what stays here is the title, the date, the note's own
+       opening two sentences and a link. Nothing is summarised: the
+       standfirst is the note's first two sentences as written. -->
   <section class="section" id="episodes">
-    <h2>Episodes</h2>
+    <h2>Notes on particular meetings</h2>
     <p class="fine" style="margin-top:-6px">Short, dated annotations on specific meetings and
-    moments &mdash; written by hand, not generated.</p>
+    moments &mdash; written by hand, not generated.
+    <a href="episodes.html">All notes</a>.</p>
     <div id="episodes-status" class="fine" style="display:none"></div>
     <!-- fallback:episodes - generated from data/annotations.json by
-         pipeline/build_fallbacks.py, using the same small Markdown subset
-         renderMarkdown() implements, and overwritten by renderEpisodes() on
-         success. -->
-    <div id="episodes-list">
-      <article class="episode" id="episode-2026-07-30"><h3>The minority grew</h3><p class="ep-date">30 July 2026</p><div class="ep-body"><p>The July call scored cleanly. Bank Rate held at 3.75% on 30 July; the locked probabilities returned a Brier of 0.003; nothing in the record moved between lock and score but the outcome field and the scores that follow from it. That is the mechanism working exactly as designed, and it is not what this note is about. The interesting thing about July is not the call. It is the part of the reading that failed while the call succeeded.</p><h4>1. What happened</h4><p>At the meeting ending 29 July, announced on the 30th, the MPC voted six to three to maintain Bank Rate at 3.75%. Megan Greene, Catherine Mann and Huw Pill preferred an immediate quarter-point rise to 4.00%. It was the fifth consecutive meeting at 3.75% and the third consecutive meeting at which the hawkish minority has grown: 8–1 in April, 7–2 in June, 6–3 in July. The run begins from a unanimous 9–0 in March — the Committee's first undivided decision in four and a half years — which makes the sequence cleaner still: one dissent added at each of three successive meetings from a base of none.</p><p>The accompanying Monetary Policy Report carried a central projection of CPI peaking near 3.2% in the fourth quarter. At the press conference Bailey moved directly to damp the hawkish reading, telling reporters not to leave the room thinking the Bank was edging towards a hike. On the day, then, the vote record and the Governor's communication pointed in opposite directions, and the Governor was managing that divergence deliberately.</p><h4>2. What I called</h4><p>Hold at 3.75%. Correct. The probabilities were locked on 28 July under the announcement-minus-two convention, with p(hike) shaded modestly below the market-implied 3.86% for the two documented regime-specific reasons: a forward read at meeting-plus-three, interpolated across whole-month buckets on a steeply upward-sloping short curve, absorbs September's expectations into July's; and the fiscal repricing of 20 July that carried the ten-year gilt to 5.04% is a risk premium rather than an expectation of Bank Rate. Both remain testable against the September lock, when the near-month slope will differ. The communication index was recorded as context and kept out of the call, on the standing ground that L3 scores −0.6729 against the market-only benchmark and Spec 2 returns p = 0.4918. [Figures as at the 28 July lock. The ladder was re-run on 10 August after the July minutes were ingested and now reads −0.6712 / 0.4894 — Ed., September 2026.] There is no warrant on this project's own evidence for letting tone override L1, and July gave none.</p><p>The ancillary vote-split call — unscored — was that the minority would hold at two. It went to three. Mann moved. She was named in the lock-day rationale as the member most likely to reason her way towards an activist hike while continuing to vote for a hold. I had identified the right person and drawn precisely the wrong conclusion about her.</p><h4>3. Why I was wrong</h4><p>The argument was that the macro flow since 18 June ran against the two dissenters on nearly every measure they had invoked. Headline CPI fell to 2.6% against a 2.7% consensus, its lowest in fifteen months; services eased to 3.6%; regular pay growth slowed to 3.4%, joint-slowest since October 2020; input producer prices decelerated to 7.3% from 9.3% as Brent retraced. Greene and Pill, on that reading, had dissented on an energy shock that was already unwinding.</p><p>The flow did run against them. Every one of those figures held. They dissented anyway, and a third member joined them.</p><p>So the error is not in the data. It is in the assumption that connected the data to the votes. I had read the June dissents as claims about realised inflation — that prices were running hotter than the majority allowed — and inferred that a run of disinflationary prints would erode the claim and, with it, the dissent. That is not what the dissenters were saying, and July made it explicit. Their stated reasons, taken together:</p><ul><li>Greene argued that moving early reduces the probability that second-round effects take hold at all.</li><li>Mann named the decisive change as diplomatic and geopolitical — the collapse of the US–Iran memorandum, the widening of the conflict, the energy volatility that followed — and not any price series.</li><li>Pill argued for raising now precisely in order to cut through the noise in commodity and asset prices, as an unambiguous signal of willingness to act on upside risk.</li></ul><p>Not one of the three is an argument from realised inflation. Pill's is the sharpest against me: he treats the incoming data as noise to be seen through. My reasoning assigned decisive weight to a series that the decisive voters had explicitly set aside.</p><p>Bailey's own framing is the gap in a sentence. Inflation has fallen faster than expected, to 2.6%; the Bank's central projection has it peaking near 3.2% in Q4. Both are true at once. A committee looking backwards sees disinflation; a committee looking forwards sees a peak still ahead of it. The minority is not disputing the first fact. It is pricing the second. They are not reasoning from realised disinflation. They are reasoning from forward risk.</p><h4>4. What it changes</h4><p>Two things, of different orders.</p><p>The smaller is a correction to how I read the Committee. It is not divided about the object of concern. Bailey, Breeden, Lombardelli, Ramsden, Taylor and Dhingra all framed the hold in terms of second-round effects, insurance, or the conditions under which they would tighten; Ramsden said outright that crystallised upside risk could warrant a hike and that subsiding risk would have him considering a resumption of cuts. Everyone is watching the same thing. What separates the six from the three is the evidentiary threshold for acting on it before it appears. Greene would move pre-emptively; Ramsden would move on confirmation. On a hawk–dove scale those two positions read as near-neighbours. In vote space they are opposite.</p><p>The larger is that this may be a problem with what the index measures rather than with how I read its output. A lexicon keyed to realised-inflation language is not mis-calibrated here; it is oriented along the wrong axis. It cannot see the dimension the July vote actually turned on, and its failure mode is worse than silence: it will score July's disinflationary language as dovish at exactly the meeting where the hawkish minority grew. The index and the vote record will diverge systematically, and the divergence will present as noise rather than as the finding it is.</p><p>That points to a second series rather than a rescaling of the first — a risk-management measure counting conditionality, pre-emption, insurance, second-round effects, signalling and tail risk, scored separately from realised-inflation tone. The testable proposition is that the gap between the two carries the vote information: that in July the realised-inflation series fell while the risk-management series rose, and that the divergence, not the level of either, is what tracks dissent counts.</p><p>One discipline note, because it is the whole point of the exercise. None of this touches the July record, and none of it may be fitted to July. If a second series is built, it must be specified and pre-registered before the September lock and run over the full sample from January 2019 under the same expanding-window protocol as everything else. Otherwise the fix is in-sample, and the negative result it claims to overturn is merely reproduced with extra steps.</p><p>The last change I am persuaded of is procedural. The vote split should be pre-registered as a scored distribution from September rather than carried as an unscored ancillary. July's miss cost nothing in the ledger — which is precisely the problem. A reading that can be wrong without penalty is not doing the work the rest of the project does.</p></div></article>
-    </div>
+         pipeline/build_fallbacks.py (build_episode_list) and overwritten by
+         renderEpisodes() on success. Titles, dates and standfirsts only. -->
+    <ul id="episodes-list" class="episode-list">
+      <li class="ep-item"><h3 class="ep-title"><a href="episodes.html#episode-2026-07-30">The minority grew</a></h3><p class="ep-date">30 July 2026</p><p class="ep-standfirst">The July call scored cleanly. Bank Rate held at 3.75% on 30 July; the locked probabilities returned a Brier of 0.003; nothing in the record moved between lock and score but the outcome field and the scores that follow from it.</p><p class="ep-more"><a href="episodes.html#episode-2026-07-30">Read the full note</a></p></li>
+    </ul>
     <!-- /fallback:episodes -->
   </section>
 
   <!-- Related work: one list, shared with methodology.html's References and
        generated by pipeline/build_fallbacks.py from RELATED_WORK. -->
   <section class="section" id="related-work">
-    <h2>Related work</h2>
+    <h2>Where this sits in the literature</h2>
     <p class="fine" style="margin-top:-6px">Where this sits. Each entry was checked against a
     primary source.</p>
     <!-- fallback:relatedwork -->
@@ -532,7 +559,7 @@
     <!-- fallback:buildinfo - generated from data/build_info.json by
          pipeline/build_build_info.py, refreshed by JS when it loads. -->
     <p><span id="build-note">Site last updated 16 September 2026 (<a
-      href="https://github.com/jakefoulkes1/mpc-index/commit/4f38477c2af5901903d5c06073109647012a693c"><code>4f38477</code></a>).</span></p>
+      href="https://github.com/jakefoulkes1/mpc-index/commit/3da905bacec749f29f47d53d5517bba3042fb9b3"><code>3da905b</code></a>).</span></p>
     <!-- /fallback:buildinfo -->
   </footer>
 </div>
@@ -934,10 +961,19 @@ function renderCallCard(p) {
     `(${fmtIndex(Math.abs(vsTrailing))} ${vsWord})`;
 
   if (locked) {
-    // The rationale is Jake's own prose: set as prose, at a readable measure.
+    // The rationale is the author's own prose: set as prose, at a readable
+    // measure, and never re-paragraphed (DECISIONS.md 2026-08-30). Only the
+    // display is split - its first sentence, then the rest behind the
+    // disclosure - and the two rejoined with one space are the locked file's
+    // string exactly. If the rule finds no break, the whole thing is shown.
     document.getElementById('call-rationale-h').innerHTML =
       `Point call <span class="pt-call">${p.point_call}</span>`;
-    document.getElementById('call-rationale-body').textContent = p.rationale;
+    const lead = firstSentences(p.rationale.trim(), 1);
+    const rest = lead === null ? '' : p.rationale.trim().slice(lead.length).trim();
+    document.getElementById('call-rationale-body').textContent =
+      lead === null ? p.rationale : lead;
+    document.getElementById('call-rationale-rest').textContent = rest;
+    document.querySelector('.rationale-more').style.display = rest ? '' : 'none';
     document.getElementById('call-rationale').style.display = 'block';
     document.getElementById('call-fine').style.display = 'none';
   } else {
@@ -1495,28 +1531,26 @@ function drawSparkline(svgId, series, color) {
   });
 }
 
-// Minimal, safe markdown -> HTML for hand-written episode bodies. Supports
-// paragraphs, ##/### headings, **bold**, *italic*, [links](https://...),
-// and - bullet lists. Content is escaped first (episodes are trusted, but
-// escaping keeps stray angle brackets from breaking layout).
-function renderMarkdown(md) {
-  const esc = s => s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
-  const inline = s => esc(s)
+// The episode bodies live on episodes.html, which is generated whole; the
+// front page needs only the inline subset (bold, italic, links) and the
+// site's sentence rule, both of which mirror pipeline/build_fallbacks.py
+// (inline_markdown and SENTENCE_BREAK there).
+// pipeline/tests/test_static_js_parity.py fails if the two ever disagree.
+function inlineMarkdown(md) {
+  return md.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
     .replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>')
     .replace(/\*(.+?)\*/g, '<em>$1</em>')
     .replace(/\[([^\]]+)\]\((https?:\/\/[^)\s]+)\)/g, '<a href="$2" rel="noopener">$1</a>');
-  return md.split(/\n{2,}/).map(block => {
-    const lines = block.split('\n');
-    if (lines.length && lines.every(l => /^\s*-\s+/.test(l))) {
-      return '<ul>' + lines.map(l => `<li>${inline(l.replace(/^\s*-\s+/, ''))}</li>`).join('') + '</ul>';
-    }
-    const h = block.match(/^(#{2,4})\s+(.*)$/);
-    if (h && lines.length === 1) {
-      const lvl = h[1].length + 2; // ## -> h4 (under the episode's h3 title), ### -> h5
-      return `<h${lvl}>${inline(h[2])}</h${lvl}>`;
-    }
-    return `<p>${inline(block.replace(/\n/g, ' '))}</p>`;
-  }).join('');
+}
+
+// A sentence ends at . ! or ? followed by whitespace and the start of another
+// sentence. Written with a lookahead only, so it parses in every browser the
+// site supports. Returns null rather than guessing when there are too few.
+function firstSentences(text, n) {
+  const marked = text.replace(/([.!?])(\s+)(?=[A-Z\u201c"'(\[])/g, '$1\u0000');
+  const parts = marked.split('\u0000');
+  if (parts.length < n) return null;
+  return parts.slice(0, n).join(' ').trim();
 }
 
 function renderEpisodes(d) {
@@ -1531,15 +1565,28 @@ function renderEpisodes(d) {
     return;
   }
   list.innerHTML = d.episodes.map(ep => {
-    const date = fmtDate(ep.date);
-    return `<article class="episode" id="episode-${ep.date}">` +
-      `<h3>${ep.title.replace(/</g, '&lt;')}</h3>` +
-      `<p class="ep-date">${date}</p>` +
-      `<div class="ep-body">${renderMarkdown(ep.body || '')}</div>` +
-      `</article>`;
+    const href = `episodes.html#episode-${ep.date}`;
+    const firstBlock = (ep.body || '').trim().split(/\n{2,}/)[0];
+    const stand = firstSentences(firstBlock, 2);
+    // No standfirst rather than an invented one: the note is still linked.
+    const standfirst = stand === null ? '' :
+      `<p class="ep-standfirst">${inlineMarkdown(stand)}</p>`;
+    return '<li class="ep-item">' +
+      `<h3 class="ep-title"><a href="${href}">${ep.title.replace(/</g, '&lt;')}</a></h3>` +
+      `<p class="ep-date">${fmtDate(ep.date)}</p>` +
+      standfirst +
+      `<p class="ep-more"><a href="${href}">Read the full note</a></p>` +
+      '</li>';
   }).join('');
   status.style.display = 'none';
   list.style.display = 'block';
+}
+
+// Links made before the notes moved to their own page pointed at
+// index.html#episode-DATE. Send them on rather than landing the reader on a
+// section that no longer holds the note. (DECISIONS.md 2026-09-02.)
+if (/^#episode-\d{4}-\d{2}-\d{2}$/.test(location.hash)) {
+  location.replace('episodes.html' + location.hash);
 }
 </script>
 </body>

@@ -142,28 +142,70 @@ def test_call_card_fallback_figures_match_lock_file(index_html):
     assert f"{lock['index_trailing_n']}-document mean" in block
 
 
+def _characters(markup: str) -> str:
+    """A generated region's text with the house-style entities resolved back
+    to the characters the JSON holds."""
+    return (
+        markup.replace("&mdash;", "—")
+        .replace("&minus;", "−")
+        .replace("&amp;", "&")
+        .strip()
+    )
+
+
 def test_call_card_fallback_point_call_and_rationale_match_lock_file(index_html):
-    """The call itself and Jake's rationale are reproduced verbatim - this is
-    the one piece of hand-written prose on the page, and a fallback that
-    quietly paraphrased it would be worse than no fallback at all."""
+    """The call itself and the author's rationale are reproduced verbatim -
+    this is the one piece of hand-written prose on the page, and a fallback
+    that quietly paraphrased it would be worse than no fallback at all.
+
+    Since 2026-09-02 the rationale is *displayed* in two parts: its first
+    sentence stands, and the rest sits inside a disclosure. The text is not
+    re-paragraphed and not edited - only cut - so the promise this test keeps
+    is that the two parts, rejoined with a single space, are the locked
+    file's own string character for character.
+    """
     lock = json.loads(LOCK.read_text())
     block = region(index_html, "call")
 
     assert f'<span class="pt-call">{lock["point_call"]}</span>' in block
 
-    body = re.search(r'id="call-rationale-body"[^>]*>(.*?)</p>', block, re.S)
-    assert body, "the built-in call card has no rationale paragraph"
-    # Only the house-style entities differ from the JSON's own characters.
-    rendered = (
-        body.group(1)
-        .replace("&mdash;", "—")
-        .replace("&minus;", "−")
-        .replace("&amp;", "&")
-        .strip()
-    )
-    assert rendered == lock["rationale"].strip(), (
+    lead = re.search(r'id="call-rationale-body"[^>]*>(.*?)</p>', block, re.S)
+    rest = re.search(r'id="call-rationale-rest"[^>]*>(.*?)</p>', block, re.S)
+    assert lead, "the built-in call card has no rationale lead sentence"
+    assert rest, "the built-in call card has no disclosed remainder of the rationale"
+
+    assert _characters(lead.group(1)) + " " + _characters(rest.group(1)) == lock["rationale"].strip(), (
         "the built-in rationale is not character-for-character the locked file's"
     )
+
+
+def test_the_disclosed_rationale_is_split_not_reformatted(index_html):
+    """One sentence out front, the remainder behind one disclosure, and no
+    paragraph break introduced into either half.
+
+    The 2026-08-30 decision not to re-paragraph the rationale stands; this is
+    a display split, and this test is what keeps the difference real.
+    """
+    lock = json.loads(LOCK.read_text())
+    block = region(index_html, "call")
+    lead = _characters(re.search(r'id="call-rationale-body"[^>]*>(.*?)</p>', block, re.S).group(1))
+    rest = _characters(re.search(r'id="call-rationale-rest"[^>]*>(.*?)</p>', block, re.S).group(1))
+
+    assert lock["rationale"].strip().startswith(lead), "the lead is not the rationale's own opening"
+    assert lead.endswith((".", "!", "?")), f"the lead is not a whole sentence: {lead!r}"
+    # Exactly one sentence out front: no further break of the site's own kind.
+    from pipeline.build_fallbacks import SENTENCE_BREAK
+
+    assert not SENTENCE_BREAK.search(lead), f"more than one sentence is standing: {lead!r}"
+    for half in (lead, rest):
+        assert "<p" not in half and "<br" not in half, (
+            "the rationale has been given a paragraph break it does not have in the "
+            "locked file - re-paragraphing was rejected on 2026-08-30"
+        )
+    assert 'class="disclosure rationale-more" open' in block, (
+        "the rationale disclosure must ship open, for readers without scripting and for print"
+    )
+    assert "Read the full locked rationale" in block
 
 
 def test_verify_box_links_to_the_tag(index_html):

@@ -1,7 +1,7 @@
 """Screenshots and print-to-PDF of both pages, for looking at - not a test.
 
 Serves the repository root on http://localhost:8000 (or the port given),
-then captures index.html and methodology.html:
+then captures index.html, methodology.html and episodes.html:
 
   * full-page PNGs at 380px, 768px and 1280px, in the light and dark
     colour schemes, with JavaScript on;
@@ -21,7 +21,7 @@ import threading
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[2]
-PAGES = ("index.html", "methodology.html")
+PAGES = ("index.html", "methodology.html", "episodes.html")
 WIDTHS = (380, 768, 1280)
 SCHEMES = ("light", "dark")
 

@@ -20,7 +20,7 @@ from pathlib import Path
 import pytest
 
 ROOT = Path(__file__).resolve().parents[2]
-SURFACES = ("index.html", "methodology.html", "README.md")
+SURFACES = ("index.html", "methodology.html", "episodes.html", "README.md")
 
 
 def _strip_scripts(raw: str) -> str:

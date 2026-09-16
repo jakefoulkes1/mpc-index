@@ -1,5 +1,7 @@
-"""Parity test: the built-in (no-JavaScript) text of every section must
-agree with what the JavaScript renders from the same data.
+"""Browser tests: what the page actually renders, both ways and on paper.
+
+Parity: the built-in (no-JavaScript) text of every section must agree with
+what the JavaScript renders from the same data.
 
 Every JS-rendered section of index.html ships with a static fallback
 generated from the same JSON by pipeline/build_fallbacks.py. The two are
@@ -115,4 +117,67 @@ def test_static_fallbacks_and_javascript_render_the_same_text(site_url):
     }
     assert not diffs, "static fallback and JavaScript disagree:\n" + "\n".join(
         f"#{k}\n  static:   {a[:300]!r}\n  scripted: {b[:300]!r}" for k, (a, b) in diffs.items()
+    )
+
+
+@pytest.mark.parametrize("js", [True, False], ids=["scripted", "static"])
+def test_the_locked_rationale_prints_as_one_continuous_paragraph(site_url, js):
+    """On paper the rationale is one paragraph, as it was written.
+
+    The front page shows its first sentence and hides the rest behind a
+    disclosure (DECISIONS.md 2026-09-02). That is a display split and nothing
+    more: the print stylesheet runs the two halves back into a single flow,
+    so the last line of the lead and the first line of the remainder sit on
+    the same baseline. A block box anywhere in that chain - including the
+    browser's own ::details-content around an open <details> - would put a
+    paragraph break into text that has none, which is what was rejected on
+    2026-08-30.
+    """
+    try:
+        from playwright.sync_api import sync_playwright
+    except ImportError:
+        pytest.skip("playwright not installed")
+
+    with sync_playwright() as p:
+        try:
+            browser = p.chromium.launch()
+        except Exception as e:  # noqa: BLE001 - a missing browser is a skip
+            pytest.skip(f"chromium not available: {e}")
+        try:
+            ctx = browser.new_context(
+                viewport={"width": 1100, "height": 900}, java_script_enabled=js
+            )
+            page = ctx.new_page()
+            page.goto(f"{site_url}/index.html", wait_until="networkidle")
+            page.emulate_media(media="print")
+            if js:
+                # What Chromium fires when it prints; theme.js opens every
+                # <details> on it. emulate_media alone does not.
+                page.evaluate("() => window.dispatchEvent(new Event('beforeprint'))")
+            page.wait_for_timeout(200)
+            box = page.evaluate(
+                """() => {
+                  const lead = document.getElementById('call-rationale-body');
+                  const rest = document.getElementById('call-rationale-rest');
+                  const lr = [...lead.getClientRects()], rr = [...rest.getClientRects()];
+                  return {
+                    leadTop: Math.round(lr[lr.length - 1].top),
+                    leadRight: Math.round(lr[lr.length - 1].right),
+                    restTop: Math.round(rr[0].top),
+                    restLeft: Math.round(rr[0].left),
+                    text: document.getElementById('call-rationale').innerText,
+                  };
+                }"""
+            )
+        finally:
+            browser.close()
+
+    assert box["restTop"] == box["leadTop"], (
+        "the locked rationale breaks to a new line on paper: the lead ends at y="
+        f"{box['leadTop']} and the remainder starts at y={box['restTop']}. "
+        "That is a paragraph break in text that has none."
+    )
+    assert box["restLeft"] >= box["leadRight"], "the remainder does not follow the lead sentence"
+    assert "Read the full locked rationale" not in box["text"], (
+        "the disclosure's label is printing inside the rationale"
     )

@@ -19,7 +19,16 @@ The practical consequence, which is the point: a content commit is not
 publishable on its own. Run `python -m pipeline.build_build_info` and commit
 the stamp before pushing, and push both together.
 
-See DECISIONS.md, 2026-08-10.
+The one other unstamped state is the lock commit itself. LOCKDAY rule 4 puts
+the stamp *after* the `lock-*` tag so the tag stays on the commit that adds
+the lock file, which means the suite runs on that commit - on the tag ref,
+and on main for the push that carried it - with build_info.json naming the
+content commit before it (HEAD~2, stamped by HEAD~1). On 16 September 2026
+that reported a failure that was not one. A commit that adds a
+data/predictions/lock-*.json file is recognised here and held to that shape
+instead.
+
+See DECISIONS.md, 2026-08-10 and 2026-09-17.
 """
 import json
 import subprocess
@@ -45,6 +54,14 @@ def git(*args: str) -> str | None:
     return result.stdout.strip()
 
 
+def _adds_a_lock_file() -> bool:
+    """True when HEAD adds a data/predictions/lock-*.json - the lock commit."""
+    added = (git("diff", "--name-only", "--diff-filter=A", "HEAD~1", "HEAD") or "").split()
+    return any(
+        f.startswith("data/predictions/lock-") and f.endswith(".json") for f in added
+    )
+
+
 def test_build_info_names_head_or_is_one_stamp_commit_behind():
     head = git("rev-parse", "HEAD")
     if head is None:
@@ -60,6 +77,26 @@ def test_build_info_names_head_or_is_one_stamp_commit_behind():
             "git history too shallow to check the stamp-commit allowance "
             "(CI needs actions/checkout with fetch-depth: 0)"
         )
+
+    if _adds_a_lock_file():
+        # The lock commit: unstamped by design (LOCKDAY rule 4), so the tag
+        # sits on it. build_info must then name the content commit before
+        # it, with HEAD~1 the stamp for that commit.
+        grandparent = git("rev-parse", "HEAD~2")
+        assert named == grandparent, (
+            f"HEAD adds a lock file, so it is the unstamped lock commit; "
+            f"data/build_info.json should name HEAD~2 ({(grandparent or '?')[:7]}) "
+            f"but names {named[:7]}. The stamp before the lock was skipped - "
+            f"see LOCKDAY rule 4."
+        )
+        changed = set((git("diff", "--name-only", "HEAD~2", "HEAD~1") or "").split())
+        extra = changed - STAMP_ONLY_FILES
+        assert not extra, (
+            f"HEAD is the lock commit, but HEAD~1 is not a stamp-only commit: "
+            f"it also changes {sorted(extra)}. The records before a lock need "
+            f"their own stamp commit, then the lock."
+        )
+        return
 
     assert named == parent, (
         f"data/build_info.json names {named[:7]}, which is neither HEAD ({head[:7]}) "

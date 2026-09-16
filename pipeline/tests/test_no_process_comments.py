@@ -23,6 +23,7 @@ ROOT = Path(__file__).resolve().parents[2]
 SURFACES = [
     ROOT / "index.html",
     ROOT / "methodology.html",
+    ROOT / "episodes.html",
     ROOT / "README.md",
     ROOT / "site" / "site.css",
     ROOT / "site" / "theme.js",

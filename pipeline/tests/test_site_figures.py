@@ -48,7 +48,7 @@ from pipeline.build_annotations import load_episodes
 from pipeline.site_figures import figures, plain
 
 ROOT = Path(__file__).resolve().parents[2]
-PAGES = ("index.html", "methodology.html")
+PAGES = ("index.html", "methodology.html", "episodes.html")
 SURFACES = PAGES + ("README.md",)
 
 FIG_RE = re.compile(
@@ -363,7 +363,9 @@ def test_lock_time_on_every_surface_is_the_lock_files_own():
     stamp = gb_stamp_utc(lock["lock_timestamp"])
     for surface in SURFACES:
         text = whole_text((ROOT / surface).read_text(), surface)
-        if surface == "methodology.html":
-            continue  # states the protocol, not the instant
+        if surface in ("methodology.html", "episodes.html"):
+            # methodology.html states the protocol, not the instant; the
+            # episode notes discuss calls but do not republish the call card.
+            continue
         assert stamp in text, f"{surface} does not show the lock timestamp {stamp!r}"
         assert "12:00" not in text, f"{surface} still carries the scheduled 12:00, not the recorded lock time"

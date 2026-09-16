@@ -20,6 +20,7 @@ ROOT = Path(__file__).resolve().parents[2]
 SURFACES = [
     ROOT / "index.html",
     ROOT / "methodology.html",
+    ROOT / "episodes.html",
     ROOT / "README.md",
     ROOT / "data" / "annotations.json",
     *sorted((ROOT / "site" / "annotations").glob("*.md")),
