@@ -171,9 +171,23 @@ def next_meeting_after(iso: str) -> str:
     return later[0]
 
 
+# Live locks that deviate from the announcement-minus-two convention, each
+# recorded in DECISIONS.md before the lock. The historical benchmark in
+# build_market_history.py is untouched by this table; it only moves the
+# "next lock" date the site shows.
+LOCK_DATE_OVERRIDES = {
+    # DECISIONS.md 2026-09-16: announcement-minus-one, so the call can use
+    # the August CPI release published 07:00 BST on 16 September.
+    "2026-09-17": "2026-09-16",
+}
+
+
 def lock_date_for(meeting_iso: str) -> str:
     """Announcement minus LOCK_DATE_OFFSET_DAYS calendar days: the convention
-    build_market_history.py uses for every historical lock date."""
+    build_market_history.py uses for every historical lock date - unless the
+    meeting has a recorded deviation in LOCK_DATE_OVERRIDES."""
+    if meeting_iso in LOCK_DATE_OVERRIDES:
+        return LOCK_DATE_OVERRIDES[meeting_iso]
     d = date.fromisoformat(meeting_iso) - timedelta(days=LOCK_DATE_OFFSET_DAYS)
     return d.isoformat()
 

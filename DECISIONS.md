@@ -3117,3 +3117,99 @@ it will look.
   **all four identical to `main`**. The share card is byte-identical to the
   one deployed this morning, as it should be: nothing in this session
   touched the series it draws.
+
+## 2026-09-16 — September lock: announcement-minus-one, vote-split distribution pre-registered, second series deferred, rehearsal recorded, near-node clipping noted
+
+Written before the September lock, in the records commit that precedes it.
+No science module is changed. The only code change is in the site layer:
+a per-meeting override table for the "next lock" date the pages show.
+
+### The lock date moves from 15 to 16 September (announcement-minus-one)
+
+- The July lock followed the announcement-minus-two convention (28 July for
+  30 July). The September lock is taken on **16 September 2026**, one day
+  before the announcement, so that the call can use the August CPI release
+  published at 07:00 BST on 16 September. This is a deviation from July's
+  convention, decided and recorded here before the lock is written. The
+  lock must therefore be timestamped after 07:00 BST on 16 September and
+  the tag pushed before 12:00 BST on 17 September.
+- **Site surfaces.** `pipeline/site_figures.py` gains `LOCK_DATE_OVERRIDES`,
+  a table of live locks that deviate from the convention, consulted by
+  `lock_date_for()` before the announcement-minus-`LOCK_DATE_OFFSET_DAYS`
+  rule. The historical benchmark in `pipeline/build_market_history.py` is
+  untouched: the constant and every historical lock date in
+  `data/market_history.csv` stand. The status line on both pages, the
+  pending row in the track record and the README lock line were regenerated
+  through `build_fallbacks` and now read 16 September 2026; nothing
+  generated was edited by hand. `test_status_and_pending.py` asserts the
+  override for September and the convention for November (3 November).
+- **The September runbook is `LOCKDAY-2026-09.md`**: the author's
+  instructions for this lock, saved verbatim before the lock commit.
+  The July episode's commitment was that the runbook and the vote-split
+  pre-registration would exist before the September lock; neither did at
+  the start of the session, and both are written now, in this commit.
+
+### Pre-registration: the vote split as a scored distribution
+
+- From this meeting onward the vote split is a scored call, not an unscored
+  ancillary. It is scored with a **multi-category Brier score over the
+  number of votes for a hike**, alongside the decision call.
+- The September distribution, fixed here before the lock:
+
+  | votes for a hike | probability |
+  |---|---|
+  | 0–2 | 0.10 |
+  | 3 | 0.50 |
+  | 4 | 0.20 |
+  | 5 or more (a hike) | 0.20 |
+
+### The risk-management second series is deferred to the November lock
+
+- The July episode proposed a second series counting risk-management
+  language, to be specified and pre-registered before the September lock
+  and run over the full sample from January 2019 under the expanding-window
+  protocol. It is **not** specified tonight. A specification written and
+  run over the full sample in one evening would not meet the
+  pre-registration standard the July episode set, and a specification
+  written tonight without being run would be pre-registered in name only.
+  It is deferred to the November lock, to be written in its own brief with
+  time to be read before it is run.
+
+### The rehearsal: an uncommitted lock file, renamed
+
+- At 11:22 BST today (`lock_timestamp` 2026-09-16T10:22:59+00:00) the lock
+  command was run once, on the 14 September curve, and wrote
+  `data/predictions/lock-2026-09.json` with `point_call` null and the
+  placeholder rationale. It gave m0 p_hike **25.17%** (forward 3.7941%,
+  SONIA 3.7312%, implied change 6.29bp). It was never committed or tagged.
+- Because a `lock-*` file is never modified once written, the file was
+  **renamed, contents untouched**, to
+  `data/predictions/rehearsal-2026-09-16.json` (SHA-256
+  `ad30c0b5765adfc8e11d6884d2991ea5a050f41dc9642f88c3faf3b5b28312bc`).
+  The site's newest-lock rule ignores it, as it ignores the July
+  rehearsals. Its `index_trailing_mean` is 1.2203, not the 1.2202 the
+  runbook expected; the fresh lock's value is checked at lock time.
+- Before the rename the suite stood at 7 failed, 172 passed - every failure
+  the site treating the stray file as the newest lock against HTML that
+  still said July. After the rename: 179 passed.
+- **The lock is taken on the freshest curve available at lock time**, per
+  the existing convention. At the time of writing that is the 15 September
+  curve, on which m0 p_hike reads 28.92%. That choice follows the rule, not
+  the resulting number; the rehearsal's 25.17% is recorded here so the
+  difference is on the record.
+
+### Finding: the meeting-plus-three read clips to the first maturity node
+
+- `market_probs_for_meeting` reads the forward at meeting plus
+  `LOCK_OFFSET_DAYS` (3) days. On a curve dated 15 September, meeting plus
+  three (20 September) is **0.164 months** out, below the curve's first
+  node at 1.000 month, and the read is **clipped to that node**: a forward
+  dated 15 October 2026 (3.8035% on the 15 September curve). The
+  probability is therefore taken from a forward about one month out, not
+  at meeting plus three, whenever the curve is less than a month old at
+  lock time. The first four nodes on that curve: 15 October 3.8035%,
+  15 November 3.9483%, 15 December 4.0902%, 15 January 4.2245%.
+- Recorded as a finding only. No code is changed before the lock; the
+  September call's rationale addresses it in words, and whether the read
+  should change is a question for after the September outcome, under the
+  forward-only rule.

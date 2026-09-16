@@ -4,7 +4,8 @@ move on by themselves.
 Status line (replaces the "Beta" badge, DECISIONS.md 2026-09-02): the count
 of locked calls from data/track_record.json, the corpus size from
 data/index.json, the next lock date from the Bank's calendar
-(pipeline/site_context.py) under the announcement-minus-two convention, and
+(pipeline/site_context.py) under the announcement-minus-two convention (or a
+recorded per-meeting deviation, pipeline/site_figures.py LOCK_DATE_OVERRIDES), and
 the build stamp from data/build_info.json - on both pages, from one
 generator.
 
@@ -69,7 +70,9 @@ def test_pending_row_moves_on_when_the_next_lock_exists():
     lock, September is pending; with September locked, November is."""
     assert next_meeting_after("2026-07-30") == "2026-09-17"
     assert next_meeting_after("2026-09-17") == "2026-11-05"
-    assert lock_date_for("2026-09-17") == "2026-09-15"
+    # September is the recorded deviation (DECISIONS.md 2026-09-16:
+    # announcement-minus-one); November falls back to the convention.
+    assert lock_date_for("2026-09-17") == "2026-09-16"
     assert lock_date_for("2026-11-05") == "2026-11-03"
 
 
