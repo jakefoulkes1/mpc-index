@@ -3296,3 +3296,61 @@ plus the new episodes-page test).
   The guard now takes "today" in Europe/London, the clock CLAUDE.md's rule
   refers to. It still catches what it was written for - dates invented on
   an assumed cadence run days ahead, not an hour.
+
+## 2026-10-04 — September outcome scored; the shaded and vote-split distributions scored by hand
+
+The post-announcement entry the 2026-09-16 pre-registration calls for.
+`lock-2026-07.json` and both tags are untouched; no science module, no
+schema, no code.
+
+### The outcome
+
+- At the meeting ending 16 September, announced 17 September 2026, the MPC
+  voted **6–3 to maintain Bank Rate at 3.75%**; Greene, Mann and Pill voted
+  to raise it by 0.25 percentage points, to 4%. Checked against the Bank's
+  own page (`monetary-policy-summary-and-minutes/2026/september-2026`) before
+  the outcome was written.
+- `score_outcomes` was run with `hold`. `git diff` on `lock-2026-09.json`
+  touches `outcome` and `scores` only, the documented exception (LOCKDAY.md,
+  rule 3). A byte-identical scored copy of the file was already sitting
+  uncommitted in the working tree from an earlier run; re-running the scorer
+  reproduced it exactly (blob `9c90d18`).
+- Scored 17 days after the announcement, not on the day. Nothing in the
+  record depends on when the scorer runs; the `lock-2026-09` tag fixes the
+  call as it stood before the announcement.
+
+### Scores (Brier summed over outcome bins; lower is better)
+
+| forecast | distribution | Brier | log |
+|---|---|---|---|
+| m0, market only (pipeline) | cut 0 / hold 71.08 / hike 28.92 | 0.1673 | 0.3414 |
+| the author's shaded call (by hand) | cut 0 / hold 80 / hike 20 | 0.0800 | 0.2231 |
+| always-hold reference (pipeline) | hold 100 | 0.0000 | 0.0000 |
+
+- **Vote split, scored for the first time** (by hand, against the
+  distribution pre-registered on 2026-09-16; outcome: three votes for a
+  hike): 0–2 at 0.10, **3 at 0.50**, 4 at 0.20, 5 or more at 0.20 gives
+  Brier (0.5)² + 0.1² + 0.2² + 0.2² = **0.3400**; log score −ln 0.5 = 0.6931.
+- The shading below m0 lowered the Brier score from 0.1673 to 0.0800 at this
+  meeting. That is one outcome; it is not evidence that the shading reason
+  (the one-month clip) is right, which remains to be tested against the
+  November lock as the rationale says.
+- The schema holds m0 only, so the two hand scores live here, not in the
+  lock file. Computed with `score_outcomes.brier_score` / `log_score`
+  imported read-only.
+
+### Finding, recorded only: the contribution sentence's month token rolls with each lock
+
+- index.html's Summary says "the {fig:lock_month} episode found that the
+  vote turned on forward-risk language the lexicon does not measure". As
+  written on 2026-09-02 the token rendered "July 2026", and the July episode
+  makes exactly that claim. `lock_month` is the newest lock's month, so the
+  September lock commit (`4f38477`) re-rendered it as "September 2026", and
+  the November lock will make it "November 2026". Left as it stands at the
+  author's instruction pending the September episode; not changed here.
+
+### Index reading
+
+- The September minutes are not yet ingested (corpus 95 documents, last
+  `minutes-2026-07`), so the reading is unchanged from the lock: 0.6667
+  (`minutes-2026-07`) against a trailing four-document mean of 1.2203.

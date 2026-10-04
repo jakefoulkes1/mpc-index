@@ -26,6 +26,15 @@
   "index_trailing_n": 4,
   "point_call": "hold",
   "rationale": "Hold at 3.75%. The communication index is recorded as context and does not enter the call: L3 scores \u22120.6712 against the market-only benchmark and Spec 2 returns p = 0.4894, so there remains no warrant on this project's own evidence for letting tone override L1. The index reads 0.667 against a trailing 4-document mean of 1.220 (0.554 below), dovish while the hawkish minority grew; this is what the July episode predicted of a lexicon keyed to realised inflation facing forward-risk reasoning. p(hike) is shaded below m0's 28.9%, to 20%, on the first of July's two reasons only. A read at meeting plus three days falls inside the curve's first one-month bucket and is taken from it, a forward dated mid-October; the fitted spline smooths part of the moves priced for 5 November and 17 December back into that point. On the 15 September curve the nodes stand 7.2, 21.7, 35.9 and 49.3bp above SONIA at one to four months: the later steps run near 14bp a month, while the first is half that, which is the shape expected if the one-month point is carrying part of November rather than a priced September move. That effect is larger than in July, when the next meeting was priced far more lightly. The second reason does not transfer: this repricing is energy-driven rather than a fiscal risk premium. The first remains testable against the November lock. The macro flow since 30 July moved the headline but not the measures the majority said it was waiting for. Headline CPI rose to 3.1% from 2.9% on goods and motor fuels, while core held at 2.6% and services at 3.4%; payrolls fell by an estimated 26,000, and vacancies are the lowest outside the pandemic since 2014. That is first-round energy pass-through of the kind the July majority said it would look through, with no sign yet of the second-round effects the Governor has named as his threshold. The vote split is called at 6\u20133, with Greene, Mann and Pill again in the minority: the minority has run 8\u20131, 7\u20132, 6\u20133, but 5\u20134 requires a central-bloc member to act on energy persistence alone. The counter-observation, recorded rather than passed over, is that regular pay growth held at 3.5% and private-sector regular pay was 2.9% rather than continuing to slow, while Brent traded near $108 on 15 September. If 17 September brings a hike or a fourth vote for one, the error is in the reading of the central bloc's threshold, not in the data.",
-  "outcome": null,
-  "scores": null
+  "outcome": "hold",
+  "scores": {
+    "m0_market_only": {
+      "brier_score": 0.1673,
+      "log_score": 0.3414
+    },
+    "always_hold_reference": {
+      "brier_score": 0.0,
+      "log_score": -0.0
+    }
+  }
 }

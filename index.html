@@ -59,7 +59,7 @@
        pipeline/build_fallbacks.py (build_statstrip); no sentences, and
        nothing here is typed. (DECISIONS.md 2026-09-17, structure pass landed.) -->
   <!-- fallback:statstrip -->
-  <dl class="statstrip"><div class="stat"><dt>Bank Rate</dt><dd class="stat-n">3.75%</dd><dd class="stat-sub">next decision 5 November 2026</dd></div><div class="stat"><dt>Locked calls</dt><dd class="stat-n">2</dd><dd class="stat-sub">1 correct of 1 scored</dd></div><div class="stat"><dt>Best tone model vs market</dt><dd class="stat-n">&minus;0.6712</dd><dd class="stat-sub">below zero: worse than the curve</dd></div><div class="stat"><dt>Corpus</dt><dd class="stat-n">95</dd><dd class="stat-sub">documents</dd></div></dl>
+  <dl class="statstrip"><div class="stat"><dt>Bank Rate</dt><dd class="stat-n">3.75%</dd><dd class="stat-sub">next decision 5 November 2026</dd></div><div class="stat"><dt>Locked calls</dt><dd class="stat-n">2</dd><dd class="stat-sub">2 correct of 2 scored</dd></div><div class="stat"><dt>Best tone model vs market</dt><dd class="stat-n">&minus;0.6712</dd><dd class="stat-sub">below zero: worse than the curve</dd></div><div class="stat"><dt>Corpus</dt><dd class="stat-n">95</dd><dd class="stat-sub">documents</dd></div></dl>
   <!-- /fallback:statstrip -->
 
   <!-- Summary: question, answer, limits, and what is new. First thing on
@@ -138,7 +138,7 @@
   <!-- fallback:call -->
   <section class="section call-card locked" id="call-card" aria-labelledby="call-badge"
            data-prediction-file="data/predictions/lock-2026-09.json">
-    <div class="call-badge locked" id="call-badge">LOCKED CALL</div>
+    <div class="call-badge locked" id="call-badge">LOCKED CALL &middot; SCORED</div>
     <p class="call-heading" id="call-heading">Call for <strong>17 September 2026</strong></p>
     <p class="call-stamp" id="call-stamp"><span class="stamp-label">Locked</span><time
       datetime="2026-09-16T17:20:49+00:00">16 September 2026, 17:20:49 UTC</time> <span
@@ -172,8 +172,11 @@
     <!-- Once the announcement has happened and score_outcomes has run, the
          card stops being a forward-looking notice and becomes a result. Both
          figures come from the locked file's own outcome/scores fields. -->
-    <div class="call-outcome" id="call-outcome" hidden>
-      <div class="call-outcome-row"></div>
+    <div class="call-outcome" id="call-outcome">
+      <div class="call-outcome-row"><span class="oc-item"><span class="oc-l">Outcome</span><span class="oc-v">hold</span></span><span class="oc-item"><span class="oc-l">Brier (m0)</span><span class="oc-v">0.1673</span></span><span class="oc-item"><span class="oc-l">Point call</span><span class="oc-v oc-hit">matched</span></span></div>
+      <p class="oc-note" id="call-outcome-note">Scored after the announcement by
+      <code>pipeline/predict/score_outcomes.py</code>, which fills the outcome and scores fields
+      and nothing else.</p>
     </div>
 
     <p class="call-next" id="call-next">Next announcement:
@@ -474,7 +477,7 @@
                static state is the record itself, not a control that does nothing. -->
           <tbody id="track-tbody">
             <tr class="kind-locked"><td>30 July 2026</td><td><span class="track-badge locked">Locked</span></td><td>hold</td><td>0%</td><td>96%</td><td>4%</td><td>hold</td><td>0.0030</td></tr>
-            <tr class="kind-locked"><td>17 September 2026</td><td><span class="track-badge locked">Locked</span></td><td>hold</td><td>0%</td><td>71%</td><td>29%</td><td>&mdash;</td><td>&mdash;</td></tr>
+            <tr class="kind-locked"><td>17 September 2026</td><td><span class="track-badge locked">Locked</span></td><td>hold</td><td>0%</td><td>71%</td><td>29%</td><td>hold</td><td>0.1673</td></tr>
             <tr class="kind-pending"><td>5 November 2026</td><td><span class="track-badge pending">Pending</span> <span class="track-lockdate">locks 3 November 2026</span></td><td>&mdash;</td><td>&mdash;</td><td>&mdash;</td><td>&mdash;</td><td>&mdash;</td><td>&mdash;</td></tr>
           </tbody>
         <!-- /fallback:track -->
