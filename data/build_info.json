@@ -1,9 +1,9 @@
 {
   "schema": "build-info-v1",
-  "last_commit_sha": "d9e691bde86807b2e72f7f82a014b348644ab404",
-  "last_commit_short_sha": "d9e691b",
-  "last_commit_iso": "2026-10-04T20:29:15+01:00",
-  "last_commit_subject": "Outcome: 17 September 2026 MPC",
-  "generated_utc": "2026-10-04T19:29:20+00:00",
+  "last_commit_sha": "16151a022614c559c92e2651ffd2afe2929b678f",
+  "last_commit_short_sha": "16151a0",
+  "last_commit_iso": "2026-10-04T20:29:32+01:00",
+  "last_commit_subject": "Last-updated stamp for the September outcome",
+  "generated_utc": "2026-10-04T19:37:56+00:00",
   "note": "Written by pipeline/build_build_info.py from git log -1 at the time it ran. Not a claim about the data's vintage - data/index.json carries its own generated_utc."
 }
