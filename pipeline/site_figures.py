@@ -317,7 +317,6 @@ def figures() -> dict[str, str]:
         "lock_stamp_utc": gb_stamp_utc(lock["lock_timestamp"]),
         "lock_meeting": gb_date(lock["meeting_announcement"]),
         "lock_tag": Path(pred_path).stem,
-        "lock_month": gb_month(lock["meeting_announcement"]),
         # ---- the episode notes, now their own page ----
         "episode_count": str(len(load("data/annotations.json")["episodes"])),
         # ---- the stat strip (DECISIONS.md 2026-09-17, structure pass landed) ----

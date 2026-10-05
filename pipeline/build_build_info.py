@@ -6,13 +6,14 @@ touches no existing schema and nothing under data/predictions/.
 
 The stamp names the commit that was HEAD when this script ran, so the
 correct order on a release day is: commit the content, then run this, then
-commit data/build_info.json and the two rewritten stamps on their own. That
+commit data/build_info.json and the rewritten stamps on their own. That
 second commit changes no prose, so the stamp always points at the commit the
 reader is actually looking at. See DECISIONS.md, 2026-07-30.
 
 As well as the json, this rewrites the static `<!-- fallback:buildinfo -->`
-stamp in both HTML pages - index.html, which also refreshes it by fetch, and
-methodology.html, which runs no JavaScript and has only the static one. They
+stamp in each HTML page - index.html, which also refreshes it by fetch, and
+methodology.html and episodes.html, which run no JavaScript and have only
+the static one (episodes.html joined on 2026-10-05). They
 are rewritten here rather than by hand because
 pipeline/tests/test_static_fallback.py asserts they match the json, and a
 hand-edit is exactly the step that gets forgotten.
@@ -27,7 +28,7 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
 OUT = ROOT / "data" / "build_info.json"
-PAGES = (ROOT / "index.html", ROOT / "methodology.html")
+PAGES = (ROOT / "index.html", ROOT / "methodology.html", ROOT / "episodes.html")
 COMMIT_URL = "https://github.com/jakefoulkes1/mpc-index/commit/"
 
 

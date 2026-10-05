@@ -3354,3 +3354,51 @@ schema, no code.
 - The September minutes are not yet ingested (corpus 95 documents, last
   `minutes-2026-07`), so the reading is unchanged from the lock: 0.6667
   (`minutes-2026-07`) against a trailing four-document mean of 1.2203.
+
+## 2026-10-05 — a generated figure reassigned a finding to the wrong month; episodes page joins the build stamp
+
+Site layer only. No science module, no schema, no data file; both lock files
+and both tags untouched. Tests 196 -> 197.
+
+### The contribution sentence: July, hard-coded
+
+- **What happened.** On 2026-09-02 the Summary's contribution paragraph was
+  written as "the {fig:lock_month} episode found that the vote turned on
+  forward-risk language the lexicon does not measure". `lock_month` is the
+  month of the newest `data/predictions/lock-*.json`. It rendered "July 2026",
+  which was true: the finding is the 30 July episode's. When the September
+  lock landed (`4f38477`, 16 September) the generator re-rendered it as
+  "September 2026", and it stood live for nineteen days attributing July's
+  finding to an episode that had not been written. Nothing failed. At the
+  November lock it would have moved again.
+- **Why the guards missed it.** The figure census exists to catch prose
+  drifting from data, but it checks that every number is *generated*; this
+  one was. The census was satisfied by exactly the binding that caused the
+  error. A finding belongs to the episode that made it, which is a fixed
+  fact, not a figure that follows the newest file. Binding it to a moving
+  figure is the error; regenerating it faithfully is how the error spread.
+- **The fix.** index.html now reads "the July 2026 episode" as plain text.
+  `lock_month` had no other use and is removed from `site_figures.figures()`
+  rather than left for the dead-figure test to pass by accident ("September
+  2026" is a substring of the call card's "17 September 2026"). The phrase is
+  in the census allowlist (`NOT_A_FIGURE`) with this reason, so any other
+  digit in that sentence still fails.
+- The 2026-10-04 entry recorded the sentence as "left as it stands"; this
+  supersedes that, at the author's instruction.
+- The rule this leaves: **a generated figure is for a quantity, not for the
+  identity of the evidence behind a claim.**
+
+### episodes.html joins the build stamp
+
+- `episodes.html` arrived with the structure pass (2026-09-17) carrying both
+  stamp regions, but `build_build_info.PAGES` and the stamp guard's
+  `STAMP_ONLY_FILES` listed only index.html and methodology.html. Its footer
+  had read "2 September 2026 (`e8df517`)" since it was created, and its own
+  comment claimed `test_static_fallback.py` would fail on that drift; the
+  test did not cover it. On 2026-10-04 the gap failed CI once, when a stamp
+  commit carried a regenerated episodes.html stamp the guard did not allow.
+- Now covered in all four places: `build_build_info.PAGES`,
+  `STAMP_ONLY_FILES`, `test_build_info_fallback_matches_json` (parametrised
+  over all three pages), and `test_status_and_pending.PAGES` (its two
+  "both pages" tests renamed "every page"). Both new checks failed on the
+  stale stamp before it was regenerated - the guard working, not a defect.

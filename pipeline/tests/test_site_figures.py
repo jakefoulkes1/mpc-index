@@ -120,6 +120,9 @@ NOT_A_FIGURE = [
      "a rejected alternative convention, recorded as history"),
     ("on the 2026 curve", "the curve vintage the bias was quantified on"),
     ("the 30 July 2026 lock rationale", "the locked call this limitation was raised in"),
+    ("the July 2026 episode found that",
+     "the episode a finding belongs to, fixed: as {fig:lock_month} it followed the newest "
+     "lock and reassigned July's finding to September (DECISIONS.md 2026-10-05)"),
     ("post-September-2023", "the fragility window, whose start date is a figure elsewhere"),
     ("a 0-2 scale where 1.0 is neutral", "the index's definitional range and midpoint"),
     ("Range [0, 2]", "the index's definitional range"),

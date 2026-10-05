@@ -24,6 +24,7 @@ from pipeline.site_figures import clip, score
 ROOT = Path(__file__).resolve().parents[2]
 INDEX_HTML = ROOT / "index.html"
 METHODOLOGY_HTML = ROOT / "methodology.html"
+EPISODES_HTML = ROOT / "episodes.html"
 LADDER = ROOT / "data" / "ladder_v1.json"
 # The lock the site displays: the newest lock-* file, by the same rule the
 # generator uses, so these tests follow each new lock rather than pinning
@@ -346,9 +347,9 @@ def test_call_card_heading_is_not_a_stale_forward_notice(index_html):
 # ------------------------------------------------------------ build info
 
 
-@pytest.mark.parametrize("path", [INDEX_HTML, METHODOLOGY_HTML])
+@pytest.mark.parametrize("path", [INDEX_HTML, METHODOLOGY_HTML, EPISODES_HTML])
 def test_build_info_fallback_matches_json(path):
-    """Both footers' static "last updated" stamps match data/build_info.json.
+    """Every footer's static "last updated" stamps match data/build_info.json.
 
     methodology.html runs no JavaScript, so its stamp is only ever as fresh
     as the last run of pipeline/build_build_info.py - which is exactly why

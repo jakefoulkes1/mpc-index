@@ -40,7 +40,7 @@ ROOT = Path(__file__).resolve().parents[2]
 BUILD_INFO = ROOT / "data" / "build_info.json"
 
 # A stamp commit may touch these and nothing else.
-STAMP_ONLY_FILES = {"data/build_info.json", "index.html", "methodology.html"}
+STAMP_ONLY_FILES = {"data/build_info.json", "index.html", "methodology.html", "episodes.html"}
 
 
 def git(*args: str) -> str | None:

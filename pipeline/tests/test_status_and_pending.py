@@ -6,7 +6,7 @@ of locked calls from data/track_record.json, the corpus size from
 data/index.json, the next lock date from the Bank's calendar
 (pipeline/site_context.py) under the announcement-minus-two convention (or a
 recorded per-meeting deviation, pipeline/site_figures.py LOCK_DATE_OVERRIDES), and
-the build stamp from data/build_info.json - on both pages, from one
+the build stamp from data/build_info.json - on every page, from one
 generator.
 
 Pending row: the next meeting in the calendar after the newest locked call
@@ -23,7 +23,7 @@ from pipeline.site_context import UPCOMING_MEETINGS
 from pipeline.site_figures import figures, lock_date_for, next_meeting_after
 
 ROOT = Path(__file__).resolve().parents[2]
-PAGES = ("index.html", "methodology.html")
+PAGES = ("index.html", "methodology.html", "episodes.html")
 
 
 def region(html: str, name: str) -> str:
@@ -32,7 +32,7 @@ def region(html: str, name: str) -> str:
     return m.group(1)
 
 
-def test_status_line_on_both_pages_states_the_record_the_calendar_and_the_corpus():
+def test_status_line_on_every_page_states_the_record_the_calendar_and_the_corpus():
     f = figures()
     track = json.loads((ROOT / "data/track_record.json").read_text())
     locked = sum(1 for r in track["records"] if r["kind"] == "locked")
@@ -46,7 +46,7 @@ def test_status_line_on_both_pages_states_the_record_the_calendar_and_the_corpus
         assert "Beta" not in html, f"{page} still carries the Beta badge"
 
 
-def test_build_stamp_in_the_status_line_matches_build_info_on_both_pages():
+def test_build_stamp_in_the_status_line_matches_build_info_on_every_page():
     info = json.loads((ROOT / "data/build_info.json").read_text())
     for page in PAGES:
         stamp = region((ROOT / page).read_text(), "buildstamp")
