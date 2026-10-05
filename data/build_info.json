@@ -1,9 +1,9 @@
 {
   "schema": "build-info-v1",
-  "last_commit_sha": "83364b0d3117e97fb6b9a57131e48decb3765101",
-  "last_commit_short_sha": "83364b0",
-  "last_commit_iso": "2026-10-05T13:40:10+01:00",
-  "last_commit_subject": "Fix: July episode hard-coded in the contribution sentence; episodes.html joins the build stamp",
-  "generated_utc": "2026-10-05T12:40:10+00:00",
+  "last_commit_sha": "361e0190f59f28dcf31641f31d6a15a838d206f7",
+  "last_commit_short_sha": "361e019",
+  "last_commit_iso": "2026-10-05T15:04:56+01:00",
+  "last_commit_subject": "Ingest: September 2026 meeting, corpus to 96 documents",
+  "generated_utc": "2026-10-05T14:04:56+00:00",
   "note": "Written by pipeline/build_build_info.py from git log -1 at the time it ran. Not a claim about the data's vintage - data/index.json carries its own generated_utc."
 }
