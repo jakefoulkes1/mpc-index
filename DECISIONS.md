@@ -3402,3 +3402,56 @@ and both tags untouched. Tests 196 -> 197.
   over all three pages), and `test_status_and_pending.PAGES` (its two
   "both pages" tests renamed "every page"). Both new checks failed on the
   stale stamp before it was regenerated - the guard working, not a defect.
+
+## 2026-10-05 — dated claims: no generated figure inside a statement about what a figure said at a past date
+
+Site layer only; no science module, schema, data file or lock file touched.
+Tests 197 -> 198.
+
+### The rule
+
+- **A generated figure must never appear inside text that makes a dated
+  claim about what a figure said at a past date.** A `{fig:}` token always
+  renders the current value; placed under an old date it turns a true
+  historical statement into a false one at the next rebuild, silently and
+  with every guard satisfied. Dated claims are typed, with the value as it
+  stood on that date, and they stay typed.
+- Generated figures remain the rule for *current* claims ("the ladder reads
+  ..."), which is what they are for. The test is the sentence, not the
+  number: if the sentence carries a date the value belongs to, the value is
+  history.
+
+### This is the second instance
+
+- **First** (entry above, same date): the Summary's "{fig:lock_month}
+  episode found ..." reassigned the July episode's finding to September when
+  the September lock landed.
+- **Second**: the July episode's editor's note, added in September, reads
+  "The ladder was re-run on 10 August after the July minutes were ingested
+  and now reads {fig:l3_skill} / {fig:spec2_p} — Ed., September 2026." The
+  September ingest (run locally on 2026-10-05, not yet published when this
+  was written) moves L3 skill to −0.6250 and Spec 2 to p = 0.4997; republished
+  as it stood, the note would have said the 10 August re-run produced them.
+  Caught by reading the failing `test_annotations_json_carries_resolved_figure_tokens`
+  before regenerating, not by any guard designed for it.
+- **The fix**: the note's figures are typed as the 10 August values,
+  −0.6712 / 0.4894, in `site/annotations/2026-07-the-minority-grew.md`.
+  The rendered page does not change in this commit, because those are still
+  the published values; the difference appears when the ingest lands.
+
+### The guard, and why it is not a census allowlist entry
+
+- The author asked for both figures to be allowlisted in the census
+  (`NOT_A_FIGURE`). They cannot be: the census strips every generated region
+  before counting, and the episode bodies on `episodes.html` sit inside the
+  generated `episodes` region, so the census never reads them - which is
+  also why the note's neighbouring typed figures (−0.6729, 0.4918) have
+  never needed entries. An entry would match nothing, and
+  `test_the_allowlist_has_no_stale_entries` fails on exactly that.
+- Instead, `test_no_figure_token_inside_a_dated_editors_note` reads the
+  episode sources directly: no `{fig:}` token inside any `[... — Ed. ...]`
+  note, and the July note carries −0.6712 / 0.4894. Checked both ways: it
+  finds the note (one match) and fails on the old tokenised text.
+- It holds the rule only for editor's notes, the one form a dated claim takes
+  that a test can recognise. A dated claim written as ordinary prose is held
+  by the rule above and by reading, not by a test.

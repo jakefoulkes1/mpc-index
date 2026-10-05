@@ -357,6 +357,21 @@ def test_annotations_json_carries_resolved_figure_tokens():
         assert "{fig:" not in (ROOT / surface).read_text(), f"{surface} carries an unresolved figure token"
 
 
+def test_no_figure_token_inside_a_dated_editors_note():
+    """An editor's note states what a figure read at a past date; a {fig:}
+    token there re-renders it to today's value under the old date. The July
+    note's "re-run on 10 August ... now reads" figures are therefore typed:
+    the 10 August values, not the catalogue's. The census cannot carry this
+    as a NOT_A_FIGURE entry - episode bodies sit inside the generated
+    episodes region it strips - so the rule is held here instead.
+    (DECISIONS.md 2026-10-05, dated claims.)"""
+    for path in sorted((ROOT / "site/annotations").glob("*.md")):
+        for note in re.findall(r"\[[^\[\]]*— Ed\.[^\]]*\]", path.read_text()):
+            assert "{fig:" not in note, f"{path.name}: figure token in a dated editor's note: {note!r}"
+    july = (ROOT / "site/annotations/2026-07-the-minority-grew.md").read_text()
+    assert "re-run on 10 August after the July minutes were ingested and now reads −0.6712 / 0.4894" in july
+
+
 def test_lock_time_on_every_surface_is_the_lock_files_own():
     """The lock timestamp reads the same everywhere it appears, and it is the
     lock file's own instant - never a scheduled or remembered time."""
