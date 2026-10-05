@@ -1,9 +1,9 @@
 {
   "schema": "build-info-v1",
-  "last_commit_sha": "361e0190f59f28dcf31641f31d6a15a838d206f7",
-  "last_commit_short_sha": "361e019",
-  "last_commit_iso": "2026-10-05T15:04:56+01:00",
-  "last_commit_subject": "Ingest: September 2026 meeting, corpus to 96 documents",
-  "generated_utc": "2026-10-05T14:04:56+00:00",
+  "last_commit_sha": "a48f75a35ace1273ff9de0e7e9493c56f7458d95",
+  "last_commit_short_sha": "a48f75a",
+  "last_commit_iso": "2026-10-05T20:18:59+01:00",
+  "last_commit_subject": "Episode: September 2026, the lexicon caught it anyway",
+  "generated_utc": "2026-10-05T19:19:06+00:00",
   "note": "Written by pipeline/build_build_info.py from git log -1 at the time it ran. Not a claim about the data's vintage - data/index.json carries its own generated_utc."
 }
