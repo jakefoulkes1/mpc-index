@@ -29,7 +29,7 @@
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="630">
 <!-- fallback:ogalt -->
-<meta property="og:image:alt" content="The A&amp;BG communication index for Bank of England MPC minutes, August 2015 to July 2026, plotted against its neutral value.">
+<meta property="og:image:alt" content="The A&amp;BG communication index for Bank of England MPC minutes, August 2015 to September 2026, plotted against its neutral value.">
 <!-- /fallback:ogalt -->
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:title" content="MPC Communication Index">
@@ -48,7 +48,7 @@
     <!-- Status line, generated: counts and the next lock date by
          pipeline/build_fallbacks.py, the build stamp by
          pipeline/build_build_info.py (the same source as the footer). -->
-    <p class="status-line" id="status-line"><!-- fallback:status --><a href="#call-card">2 locked calls</a> <span class="sep" aria-hidden="true">&middot;</span> next lock 3 November 2026 <span class="sep" aria-hidden="true">&middot;</span> 95 documents<!-- /fallback:status --> <span class="sep" aria-hidden="true">&middot;</span> <span id="build-stamp"><!-- fallback:buildstamp -->site built 5 October 2026 (<a href="https://github.com/jakefoulkes1/mpc-index/commit/83364b0d3117e97fb6b9a57131e48decb3765101"><code>83364b0</code></a>)<!-- /fallback:buildstamp --></span></p>
+    <p class="status-line" id="status-line"><!-- fallback:status --><a href="#call-card">2 locked calls</a> <span class="sep" aria-hidden="true">&middot;</span> next lock 3 November 2026 <span class="sep" aria-hidden="true">&middot;</span> 96 documents<!-- /fallback:status --> <span class="sep" aria-hidden="true">&middot;</span> <span id="build-stamp"><!-- fallback:buildstamp -->site built 5 October 2026 (<a href="https://github.com/jakefoulkes1/mpc-index/commit/83364b0d3117e97fb6b9a57131e48decb3765101"><code>83364b0</code></a>)<!-- /fallback:buildstamp --></span></p>
   </header>
 
   <main id="main">
@@ -59,7 +59,7 @@
        pipeline/build_fallbacks.py (build_statstrip); no sentences, and
        nothing here is typed. (DECISIONS.md 2026-09-17, structure pass landed.) -->
   <!-- fallback:statstrip -->
-  <dl class="statstrip"><div class="stat"><dt>Bank Rate</dt><dd class="stat-n">3.75%</dd><dd class="stat-sub">next decision 5 November 2026</dd></div><div class="stat"><dt>Locked calls</dt><dd class="stat-n">2</dd><dd class="stat-sub">2 correct of 2 scored</dd></div><div class="stat"><dt>Best tone model vs market</dt><dd class="stat-n">&minus;0.6712</dd><dd class="stat-sub">below zero: worse than the curve</dd></div><div class="stat"><dt>Corpus</dt><dd class="stat-n">95</dd><dd class="stat-sub">documents</dd></div></dl>
+  <dl class="statstrip"><div class="stat"><dt>Bank Rate</dt><dd class="stat-n">3.75%</dd><dd class="stat-sub">next decision 5 November 2026</dd></div><div class="stat"><dt>Locked calls</dt><dd class="stat-n">2</dd><dd class="stat-sub">2 correct of 2 scored</dd></div><div class="stat"><dt>Best tone model vs market</dt><dd class="stat-n">&minus;0.6250</dd><dd class="stat-sub">below zero: worse than the curve</dd></div><div class="stat"><dt>Corpus</dt><dd class="stat-n">96</dd><dd class="stat-sub">documents</dd></div></dl>
   <!-- /fallback:statstrip -->
 
   <!-- Summary: question, answer, limits, and what is new. First thing on
@@ -73,7 +73,7 @@
     <ul class="takeaways">
       <li>Every model that adds the tone index does worse than market pricing.</li>
       <li>The best of them, L3, scores
-      <!-- fig:l3_skill -->&minus;0.6712<!-- /fig:l3_skill --> where zero would be a tie.</li>
+      <!-- fig:l3_skill -->&minus;0.6250<!-- /fig:l3_skill --> where zero would be a tie.</li>
       <li>The one nominally significant test does not hold after
       <!-- fig:frag_start -->1 September 2023<!-- /fig:frag_start -->.</li>
     </ul>
@@ -81,17 +81,17 @@
       <li><strong>Question.</strong> Does the hawkish or dovish tone of the MPC's minutes,
       scored with a published dictionary (Apel &amp; Blix Grimaldi, 2012), say anything about
       the next Bank Rate decision that the OIS curve has not already priced? Tested on
-      <!-- fig:n_scheduled -->61<!-- /fig:n_scheduled --> scheduled meetings from
+      <!-- fig:n_scheduled -->62<!-- /fig:n_scheduled --> scheduled meetings from
       <!-- fig:eval_start -->1 January 2019<!-- /fig:eval_start -->, with every live call
       locked and timestamped before the announcement.</li>
       <li><strong>Answer.</strong> No. Every model that adds the tone index does worse than
       market pricing out of sample; the best of them, L3, scores
-      <!-- fig:l3_skill -->&minus;0.6712<!-- /fig:l3_skill --> against the L1 benchmark, where
+      <!-- fig:l3_skill -->&minus;0.6250<!-- /fig:l3_skill --> against the L1 benchmark, where
       zero would be a tie. The null is the result.</li>
       <li><strong>Limits.</strong> One weaker test on the size of the market surprise is
-      nominally significant on the full sample (p&nbsp;=&nbsp;<!-- fig:spec3_p -->0.0310<!-- /fig:spec3_p -->)
+      nominally significant on the full sample (p&nbsp;=&nbsp;<!-- fig:spec3_p -->0.0375<!-- /fig:spec3_p -->)
       and fails after <!-- fig:frag_start -->1 September 2023<!-- /fig:frag_start -->
-      (p&nbsp;=&nbsp;<!-- fig:frag_p -->0.1221<!-- /fig:frag_p -->); the index rests on a median
+      (p&nbsp;=&nbsp;<!-- fig:frag_p -->0.1777<!-- /fig:frag_p -->); the index rests on a median
       of <!-- fig:hits_median -->2<!-- /fig:hits_median --> dictionary hits per document; and
       L3's negative skill has not been tested against zero.</li>
     </ul>
@@ -195,11 +195,11 @@
          success. Shown by default so a failed fetch leaves a reading, not a
          blank. -->
     <div class="reading" id="content">
-      <p class="docline" id="docline">MPC minutes for the meeting ending <strong>29 July 2026</strong>, published 30 July 2026. Decision: maintain Bank Rate at 3.75%; vote 6&ndash;3.</p>
-      <p class="score" id="score"><span class="sign-dove">0.667</span> <span class="score-word">net dovish (A&amp;BG Net Index, 0&ndash;2 scale, 1.0 = neutral)</span></p>
-      <div class="scale"><div class="marker" id="marker" style="left:33.3350%"></div></div>
+      <p class="docline" id="docline">MPC minutes for the meeting ending <strong>16 September 2026</strong>, published 17 September 2026. Decision: maintain Bank Rate at 3.75%; vote 6&ndash;3.</p>
+      <p class="score" id="score"><span class="sign-hawk">1.333</span> <span class="score-word">net hawkish (A&amp;BG Net Index, 0&ndash;2 scale, 1.0 = neutral)</span></p>
+      <div class="scale"><div class="marker" id="marker" style="left:66.6650%"></div></div>
       <div class="scale-labels"><span>&larr; dovish</span><span>neutral</span><span>hawkish &rarr;</span></div>
-      <p class="fine" id="detail">1 hawkish and 2 dovish noun+adjective hits; lexicon <code>abg_2012</code>; sha256 <code>30d23354736d7d77&hellip;</code>; <a href="https://www.bankofengland.co.uk/monetary-policy-summary-and-minutes/2026/july-2026">source document</a>.</p>
+      <p class="fine" id="detail">4 hawkish and 2 dovish noun+adjective hits; lexicon <code>abg_2012</code>; sha256 <code>0c3764be868cbee3&hellip;</code>; <a href="https://www.bankofengland.co.uk/monetary-policy-summary-and-minutes/2026/september-2026">source document</a>.</p>
     </div>
     <!-- /fallback:latest -->
 
@@ -210,9 +210,9 @@
          series described in words, generated from data/index.json and hidden
          by renderChart() once the real chart is on screen. -->
     <p class="fine" id="chart-fallback">The chart is drawn by JavaScript. In words:
-    <strong>95</strong> readings from 6 August 2015 to
-    30 July 2026 on the A&amp;BG 0&ndash;2 scale, where 1.0
-    is neutral. Latest <strong>0.667</strong> (minutes-2026-07); series low
+    <strong>96</strong> readings from 6 August 2015 to
+    17 September 2026 on the A&amp;BG 0&ndash;2 scale, where 1.0
+    is neutral. Latest <strong>1.333</strong> (minutes-2026-09); series low
     0.000 (minutes-2015-12), high 2.000 (minutes-2015-08). A shaded band marks the hiking cycle, 16 December 2021 to 3 August 2023, derived from the Bank Rate history;
     a dashed rule marks where the fragility sub-sample begins, 1 September 2023; a diamond marks
     the locked call for 17 September 2026. Every point is in
@@ -318,7 +318,7 @@
         market-implied benchmark &mdash; not against L0, since beating always-hold is trivial
         and any model that cannot clear L1 has added nothing. The finding is that no
         text-augmented model beat market pricing out-of-sample &mdash; L3 comes in at
-        <!-- fig:l3_skill -->&minus;0.6712<!-- /fig:l3_skill --> against L1 &mdash; which offers
+        <!-- fig:l3_skill -->&minus;0.6250<!-- /fig:l3_skill --> against L1 &mdash; which offers
         no warrant for letting the tone index override what the curve already implies.
       </p>
       <div class="table-scroll" tabindex="0" role="region" aria-label="Benchmark ladder scores, L0 to L4">
@@ -331,11 +331,11 @@
           <!-- fallback:ladder - generated from data/ladder_v1.json, replaced by
                renderLadder() on success, asserted by test_static_fallback.py. -->
           <tbody id="ladder-tbody">
-            <tr><td><strong>L0</strong><span class="model-gloss">always-hold</span></td><td>0.6557</td><td>6.7945</td><td>&mdash;</td><td>61</td></tr>
-            <tr class="model-l1"><td><strong>L1</strong><span class="model-gloss">market pricing</span></td><td>0.0891</td><td>0.1437</td><td>&mdash;</td><td>61</td></tr>
-            <tr><td><strong>L2</strong><span class="model-gloss">market modelled</span></td><td>0.0995</td><td>0.1676</td><td>&minus;0.1167</td><td>61</td></tr>
-            <tr><td><strong>L3</strong><span class="model-gloss">market + tone + skew</span></td><td>0.1489</td><td>0.2623</td><td>&minus;0.6712</td><td>61</td></tr>
-            <tr><td><strong>L4</strong><span class="model-gloss">member simulation</span></td><td>0.1617</td><td>0.2587</td><td>&minus;0.8148</td><td>61</td></tr>
+            <tr><td><strong>L0</strong><span class="model-gloss">always-hold</span></td><td>0.6452</td><td>6.6849</td><td>&mdash;</td><td>62</td></tr>
+            <tr class="model-l1"><td><strong>L1</strong><span class="model-gloss">market pricing</span></td><td>0.0904</td><td>0.1470</td><td>&mdash;</td><td>62</td></tr>
+            <tr><td><strong>L2</strong><span class="model-gloss">market modelled</span></td><td>0.0980</td><td>0.1660</td><td>&minus;0.0841</td><td>62</td></tr>
+            <tr><td><strong>L3</strong><span class="model-gloss">market + tone + skew</span></td><td>0.1469</td><td>0.2599</td><td>&minus;0.6250</td><td>62</td></tr>
+            <tr><td><strong>L4</strong><span class="model-gloss">member simulation</span></td><td>0.1592</td><td>0.2553</td><td>&minus;0.7611</td><td>62</td></tr>
           </tbody>
         <!-- /fallback:ladder -->
         </table>
@@ -345,14 +345,14 @@
            size on the page, so the explanation sits here rather than in a
            footnote. Canonical version: methodology.html#sample-sizes. -->
       <p class="fine substantive" id="sample-sizes-note"><strong>Why the sample sizes differ.</strong>
-      The corpus is <strong><!-- fig:corpus_n -->95<!-- /fig:corpus_n --></strong> documents
+      The corpus is <strong><!-- fig:corpus_n -->96<!-- /fig:corpus_n --></strong> documents
       (<!-- fig:corpus_start_month -->August 2015<!-- /fig:corpus_start_month --> &ndash;
-      <!-- fig:corpus_end_month -->July 2026<!-- /fig:corpus_end_month -->, including the
+      <!-- fig:corpus_end_month -->September 2026<!-- /fig:corpus_end_month -->, including the
       two emergency meetings of March 2020). The ladder evaluates from
       <!-- fig:eval_start -->1 January 2019<!-- /fig:eval_start --> onwards,
       leaving everything earlier as training data only &mdash;
-      <strong><!-- fig:n_evaluated -->63<!-- /fig:n_evaluated --></strong> meetings, of
-      which the <strong><!-- fig:n_scheduled -->61<!-- /fig:n_scheduled --></strong> scheduled
+      <strong><!-- fig:n_evaluated -->64<!-- /fig:n_evaluated --></strong> meetings, of
+      which the <strong><!-- fig:n_scheduled -->62<!-- /fig:n_scheduled --></strong> scheduled
       ones carry the headline scores above and the
       <!-- fig:n_specials -->2<!-- /fig:n_specials --> specials are scored separately. The
       Spec&nbsp;3 test below runs on the whole corpus rather
@@ -360,9 +360,9 @@
       <!-- fig:n_specials -->2<!-- /fig:n_specials --> specials and
       <!-- fig:corpus_start_month -->August 2015<!-- /fig:corpus_start_month --> (no preceding
       decision to measure a change from):
-      <strong><!-- fig:spec3_n -->92<!-- /fig:spec3_n --></strong>. The
-      fragility subsample is the <strong><!-- fig:frag_n -->24<!-- /fig:frag_n --></strong> of
-      those <!-- fig:spec3_n -->92<!-- /fig:spec3_n --> falling on or after
+      <strong><!-- fig:spec3_n -->93<!-- /fig:spec3_n --></strong>. The
+      fragility subsample is the <strong><!-- fig:frag_n -->25<!-- /fig:frag_n --></strong> of
+      those <!-- fig:spec3_n -->93<!-- /fig:spec3_n --> falling on or after
       <!-- fig:frag_start -->1 September 2023<!-- /fig:frag_start -->. <a href="methodology.html#sample-sizes">Full note in the
       methodology</a>.</p>
 
@@ -371,7 +371,7 @@
         <div class="disclosure-body">
           <!-- fallback:laddermeta - generated from data/ladder_v1.json by
                pipeline/build_fallbacks.py, replaced by renderLadder() on success. -->
-          <p class="fine" id="ladder-meta" style="margin-top:0">Scheduled meetings only, evaluated from 1 January 2019 onwards (n&nbsp;=&nbsp;61); 2 special meetings reported separately, not blended in; log-score probability floor 1e&minus;9.</p>
+          <p class="fine" id="ladder-meta" style="margin-top:0">Scheduled meetings only, evaluated from 1 January 2019 onwards (n&nbsp;=&nbsp;62); 2 special meetings reported separately, not blended in; log-score probability floor 1e&minus;9.</p>
           <!-- /fallback:laddermeta -->
           <p class="fine">
             Every modelling choice is in the <a href="methodology.html#evaluation">methodology</a>
@@ -381,7 +381,7 @@
           <p class="fine substantive">
             <strong>Not yet tested: whether the skill differential is distinguishable from
             zero.</strong> Skill against L1 is a point value on
-            <!-- fig:n_scheduled -->61<!-- /fig:n_scheduled --> meetings; a Diebold&ndash;Mariano
+            <!-- fig:n_scheduled -->62<!-- /fig:n_scheduled --> meetings; a Diebold&ndash;Mariano
             test on the Brier loss differential (L1 against L2, L3 and L4) is scheduled for the
             September cycle. See <a href="methodology.html#limitations">Limitations</a>.
           </p>
@@ -405,7 +405,7 @@
         <div class="disclosure-body">
         <!-- fallback:spec3 - generated from data/inference_v1.json, replaced by
              renderInference() on success, asserted by test_static_fallback.py. -->
-          <p id="spec3-line" class="prose" style="margin:0">Regressing each meeting's market surprise on the <em>previous</em> meeting's index (OLS, Newey&ndash;West standard errors, 4 lags, n=92 scheduled meetings): coefficient <strong>&minus;2.15</strong> (t = &minus;2.16, <strong>p = 0.0310</strong>). On the post-hiking-cycle subsample (from 1 September 2023, n=24) the result does not replicate: coefficient &minus;3.35 (t = &minus;1.55, p = 0.1221). Spec 2, an ordered-logit likelihood-ratio test on the discrete decision, finds nothing: LR = 0.4778, p = 0.4894. Coefficients and t-statistics are rounded to 2 decimal places and p-values to 4; full precision is in <code>data/inference_v1.json</code>.</p>
+          <p id="spec3-line" class="prose" style="margin:0">Regressing each meeting's market surprise on the <em>previous</em> meeting's index (OLS, Newey&ndash;West standard errors, 4 lags, n=93 scheduled meetings): coefficient <strong>&minus;2.08</strong> (t = &minus;2.08, <strong>p = 0.0375</strong>). On the post-hiking-cycle subsample (from 1 September 2023, n=25) the result does not replicate: coefficient &minus;2.97 (t = &minus;1.35, p = 0.1777). Spec 2, an ordered-logit likelihood-ratio test on the discrete decision, finds nothing: LR = 0.4556, p = 0.4997. Coefficients and t-statistics are rounded to 2 decimal places and p-values to 4; full precision is in <code>data/inference_v1.json</code>.</p>
         <!-- /fallback:spec3 -->
           <p class="fine substantive"><strong>No standard errors are published.</strong>
           <code>data/inference_v1.json</code> carries each coefficient's estimate, t-statistic
@@ -558,7 +558,7 @@
     <!-- /fallback:byline -->
     <p>Source documents &copy; Bank of England, linked, not republished. Lexicon: Apel &amp;
     Blix Grimaldi (2012), implemented verbatim (see the decisions log).
-    <!-- fallback:gennote --><span id="gen-note">Index data generated 5 August 2026.</span><!-- /fallback:gennote --></p>
+    <!-- fallback:gennote --><span id="gen-note">Index data generated 5 October 2026.</span><!-- /fallback:gennote --></p>
     <!-- fallback:buildinfo - generated from data/build_info.json by
          pipeline/build_build_info.py, refreshed by JS when it loads. -->
     <p><span id="build-note">Site last updated 5 October 2026 (<a

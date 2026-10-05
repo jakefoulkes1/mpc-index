@@ -12,8 +12,8 @@ Does the tone of the Bank of England Monetary Policy Committee's published
 minutes carry information about the next Bank Rate decision beyond what
 financial markets already price into the OIS/SONIA curve? Every MPC minutes
 document from <!-- fig:corpus_start_month -->August 2015<!-- /fig:corpus_start_month --> to
-<!-- fig:corpus_end_month -->July 2026<!-- /fig:corpus_end_month -->
-(<!-- fig:corpus_n -->95<!-- /fig:corpus_n --> documents) is scored with the
+<!-- fig:corpus_end_month -->September 2026<!-- /fig:corpus_end_month -->
+(<!-- fig:corpus_n -->96<!-- /fig:corpus_n --> documents) is scored with the
 Apel & Blix Grimaldi (2012) hawkish/dovish dictionary index, exactly as
 described in that paper. The benchmark is the market itself: probabilities
 implied by the Bank's own published OIS forward curve. Models that add the
@@ -65,7 +65,7 @@ to 2, p-values to 4.
 
 **Benchmark ladder** — scheduled meetings only, expanding-window evaluation
 from <!-- fig:eval_start -->1 January 2019<!-- /fig:eval_start -->
-(<!-- fig:n_scheduled -->61<!-- /fig:n_scheduled --> meetings; the
+(<!-- fig:n_scheduled -->62<!-- /fig:n_scheduled --> meetings; the
 <!-- fig:n_specials -->2<!-- /fig:n_specials --> March 2020 emergency meetings
 are reported separately in the JSON as a robustness line). Lower Brier / log
 score is better; positive skill vs L1 would mean beating the market.
@@ -73,17 +73,17 @@ score is better; positive skill vs L1 would mean beating the market.
 <!-- fallback:readme_ladder -->
 | Model | Description | Mean Brier | Mean log score | Skill vs L1 | n |
 |---|---|---|---|---|---|
-| L0 | always hold | 0.6557 | 6.7945 | — | 61 |
-| L1 | market-only (OIS-implied, two-state ±25bp) | 0.0891 | 0.1437 | reference | 61 |
-| L2 | ordered logit on the market-implied change | 0.0995 | 0.1676 | −0.1167 | 61 |
-| L3 | L2 + lagged tone index + lagged vote skew | 0.1489 | 0.2623 | −0.6712 | 61 |
-| L4 | member-level transition simulation, blended with market | 0.1617 | 0.2587 | −0.8148 | 61 |
+| L0 | always hold | 0.6452 | 6.6849 | — | 62 |
+| L1 | market-only (OIS-implied, two-state ±25bp) | 0.0904 | 0.1470 | reference | 62 |
+| L2 | ordered logit on the market-implied change | 0.0980 | 0.1660 | −0.0841 | 62 |
+| L3 | L2 + lagged tone index + lagged vote skew | 0.1469 | 0.2599 | −0.6250 | 62 |
+| L4 | member-level transition simulation, blended with market | 0.1592 | 0.2553 | −0.7611 | 62 |
 <!-- /fallback:readme_ladder -->
 
 No model that adds the tone index beats the market-only benchmark (L1) in
 this backtest.
 
-**Spec 3** — <!-- fallback:readme_spec3 -->Regressing each meeting's market surprise on the *previous* meeting's index (OLS, Newey–West standard errors, 4 lags, n=92 scheduled meetings): coefficient **−2.15** (t = −2.16, **p = 0.0310**). On the post-hiking-cycle subsample (from 1 September 2023, n=24) the result does not replicate: coefficient −3.35 (t = −1.55, p = 0.1221). Spec 2, an ordered-logit likelihood-ratio test on the discrete decision, finds nothing: LR = 0.4778, p = 0.4894. Coefficients and t-statistics are rounded to 2 decimal places and p-values to 4; full precision is in `data/inference_v1.json`.<!-- /fallback:readme_spec3 -->
+**Spec 3** — <!-- fallback:readme_spec3 -->Regressing each meeting's market surprise on the *previous* meeting's index (OLS, Newey–West standard errors, 4 lags, n=93 scheduled meetings): coefficient **−2.08** (t = −2.08, **p = 0.0375**). On the post-hiking-cycle subsample (from 1 September 2023, n=25) the result does not replicate: coefficient −2.97 (t = −1.35, p = 0.1777). Spec 2, an ordered-logit likelihood-ratio test on the discrete decision, finds nothing: LR = 0.4556, p = 0.4997. Coefficients and t-statistics are rounded to 2 decimal places and p-values to 4; full precision is in `data/inference_v1.json`.<!-- /fallback:readme_spec3 -->
 The two specifications disagree; both are reported.
 
 <!-- fallback:readme_lock -->**First pre-registered lock: 16 September 2026, 17:20:49 UTC, for the 17 September 2026 announcement** (tag `lock-2026-09`). Locked calls so far: 2. Next lock: 3 November 2026, for the 5 November 2026 announcement.<!-- /fallback:readme_lock -->

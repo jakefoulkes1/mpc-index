@@ -3455,3 +3455,71 @@ Tests 197 -> 198.
 - It holds the rule only for editor's notes, the one form a dated claim takes
   that a test can recognise. A dated claim written as ordinary prose is held
   by the rule above and by reading, not by a test.
+
+## 2026-10-05 — September ingest: corpus to 96, results republished
+
+Routine ingest. **No methodology changed**: the lexicon, the scoring rules,
+the ladder specifications and the inference specifications are untouched,
+and both lock files are byte-identical. What changed is the sample the frozen
+methods run over. Numbers shown to the author before publication.
+
+- **Scraped `2026-09-minutes.txt`** (meeting ending 16 September, announced
+  17 September) with `pipeline.scrape.minutes 2026 september` - the per-month
+  function `scrape.era` calls - not the full era run. **Deviation, and why**:
+  `scrape.era` re-fetches every month from August 2015 and overwrites each raw
+  `.txt`, which would replace the 52 PDF-reconstructed documents with the
+  Bank's summary-only HTML while `source_kind.json` went on labelling them
+  `pdf`. `data/raw/` is gitignored, so no diff would show it. `backfill_pdf`
+  then recorded `source_kind: html` (dry-checked first: no file was
+  summary-only, so it fetched nothing). `data/raw/` was backed up before the
+  scrape and compared after: one new text file, its HTML and one
+  `source_kind` key, nothing else.
+- **7,739 words**, the longest 2026 document but inside the corpus range
+  (Q3 6,552, max 9,606). Checked rather than waved through: minute
+  paragraphs run 1-53 without a gap or repeat, the vote sentence appears
+  once, and the text ends on the full membership list (nine members,
+  Treasury representative); the page furniture before and after is the
+  same size as July's. The length is the annual APF gilt-sales section.
+  No HARD STOP.
+- **Every rebuild diffed, all purely additive**: `index.json` 95 -> 96,
+  0 existing documents changed; `votes.csv` 95 -> 96 meetings, 851 -> 860
+  rows, 0 existing rows changed (Greene, Mann, Pill at 4.00%); 
+  `market_history.csv` 95 -> 96 and `surprises.csv` 92 -> 93, 0 existing
+  rows changed. `surprises.csv` is rebuilt because Spec 3 reads it.
+  `test_corpus_and_voting_record_dates_match_one_to_one_within_tolerance`
+  passes.
+- **The benchmark's September row is not the lock's m0.** `market_history`
+  gives p_hike 0.2932 (SONIA 3.7302 dated 15 September); the lock recorded
+  0.2892 (SONIA 3.7312, the latest available at lock time, dated 14
+  September). Same forward, 3.8035. Two documented paths, not a defect.
+- **September's A&BG reading is 1.3333 - hawkish, not dovish.** The 30 July
+  episode predicted the realised-inflation lexicon would read dovish while
+  the hawkish minority held; at this meeting it did not. Trailing 4-document
+  mean 1.2203 over the four preceding documents (the inspector's
+  convention), 1.1786 including September (the lock files' convention).
+  **6 hits, 4 hawkish and 2 dovish** - above the corpus Q3 of 3, still thin:
+  two fewer hawkish hits would read neutral. Three of the four hawkish hits
+  are conditional, forward-looking sentences ("might feed into higher wage
+  settlements", "could increase inflationary pressures", "into higher prices
+  if the conflict persisted"); "strong" and "weak inflationary" fire on the
+  one sentence restating July's risk balance. Recorded as observation; the
+  interpretation is the episode's.
+- **Results republished on 96 documents. The finding is unchanged - no
+  text-augmented model beats market pricing - but the skill scores moved
+  materially towards zero on one meeting.** n_scheduled 61 -> 62. L1 Brier
+  0.0891 -> 0.0904 (September was a poor meeting for the curve: m0 Brier
+  0.1673). Skill vs L1: L2 −0.1167 -> −0.0841, L3 −0.6712 -> −0.6250,
+  L4 −0.8148 -> −0.7611.
+- **Spec 3 does not cross 0.05**: n 92 -> 93, p **0.0310 -> 0.0375**, moving
+  less significant. The skew-controlled variant moves 0.0373 -> **0.0477**,
+  0.0023 short of the line. Spec 2 stays null (0.4894 -> 0.4997). Fragility
+  subsample n 24 -> 25, p 0.1221 -> 0.1777; its Spec 2 fits still do not
+  converge, as before.
+- **Lexicon sparsity unchanged on 96**: median 2, Q1 1, Q3 3, min 0, max 12.
+- **Regenerated, not hand-edited**: index.html, methodology.html,
+  episodes.html, README.md through `build_fallbacks`; `og-image.png` from
+  the 96-document series. The July episode's editor's note stays at the
+  10 August values (entry above).
+- **Not rebuilt, deliberately, as in August**: `site_context.json` (its Bank
+  Rate panel still reads "latest, 30 July 2026"), `member_behaviour_v1.json`,
+  `validation_v1.json`. Flagged so the omission is on the record.

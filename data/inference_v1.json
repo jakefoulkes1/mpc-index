@@ -2,101 +2,101 @@
   "schema": "inference-v1",
   "newey_west_maxlags": 4,
   "full_sample": {
-    "n": 92,
+    "n": 93,
     "spec3_surprise_on_lagged_index": {
-      "n": 92,
+      "n": 93,
       "newey_west_maxlags": 4,
-      "r_squared": 0.0498,
+      "r_squared": 0.0463,
       "coefficients": {
         "const": {
-          "coef": 1.75589,
-          "t": 1.4075,
-          "p": 0.1593
+          "coef": 1.599056,
+          "t": 1.2761,
+          "p": 0.2019
         },
         "lagged_index": {
-          "coef": -2.148858,
-          "t": -2.1576,
-          "p": 0.031
+          "coef": -2.079304,
+          "t": -2.0798,
+          "p": 0.0375
         }
       }
     },
     "spec3_surprise_on_lagged_index_and_skew": {
-      "n": 92,
+      "n": 93,
       "newey_west_maxlags": 4,
-      "r_squared": 0.0517,
+      "r_squared": 0.0503,
       "coefficients": {
         "const": {
-          "coef": 1.692044,
-          "t": 1.3623,
-          "p": 0.1731
+          "coef": 1.522253,
+          "t": 1.2246,
+          "p": 0.2207
         },
         "lagged_index": {
-          "coef": -2.07115,
-          "t": -2.0829,
-          "p": 0.0373
+          "coef": -1.974653,
+          "t": -1.9798,
+          "p": 0.0477
         },
         "lagged_skew": {
-          "coef": -577.591375,
-          "t": -0.7005,
-          "p": 0.4836
+          "coef": -825.472327,
+          "t": -0.985,
+          "p": 0.3246
         }
       }
     },
     "spec2_ordered_logit_lr_test": {
-      "n": 92,
+      "n": 93,
       "converged": true,
-      "log_likelihood_restricted_implied_change_only": -12.5995,
-      "log_likelihood_full_plus_lagged_index": -12.3606,
-      "lr_statistic": 0.4778,
+      "log_likelihood_restricted_implied_change_only": -12.6632,
+      "log_likelihood_full_plus_lagged_index": -12.4354,
+      "lr_statistic": 0.4556,
       "degrees_of_freedom": 1,
-      "p_value": 0.4894
+      "p_value": 0.4997
     }
   },
   "fragility_check_subsample": {
     "start_date": "2023-09-01",
     "results": {
-      "n": 24,
+      "n": 25,
       "spec3_surprise_on_lagged_index": {
-        "n": 24,
+        "n": 25,
         "newey_west_maxlags": 4,
-        "r_squared": 0.1153,
+        "r_squared": 0.087,
         "coefficients": {
           "const": {
-            "coef": 3.602865,
-            "t": 2.3779,
-            "p": 0.0174
+            "coef": 2.853939,
+            "t": 1.6915,
+            "p": 0.0907
           },
           "lagged_index": {
-            "coef": -3.346283,
-            "t": -1.5461,
-            "p": 0.1221
+            "coef": -2.966896,
+            "t": -1.3477,
+            "p": 0.1777
           }
         }
       },
       "spec3_surprise_on_lagged_index_and_skew": {
-        "n": 24,
+        "n": 25,
         "newey_west_maxlags": 4,
-        "r_squared": 0.1153,
+        "r_squared": 0.0914,
         "coefficients": {
           "const": {
-            "coef": 3.601298,
-            "t": 2.4201,
-            "p": 0.0155
+            "coef": 2.851518,
+            "t": 1.6795,
+            "p": 0.0931
           },
           "lagged_index": {
-            "coef": -3.344162,
-            "t": -1.5812,
-            "p": 0.1138
+            "coef": -2.929448,
+            "t": -1.3408,
+            "p": 0.18
           },
           "lagged_skew": {
-            "coef": -20.431772,
-            "t": -0.0157,
-            "p": 0.9875
+            "coef": -557.736047,
+            "t": -0.4416,
+            "p": 0.6588
           }
         }
       },
       "spec2_ordered_logit_lr_test": {
-        "n": 24,
+        "n": 25,
         "converged": false,
         "note": "one or both ordered-logit fits did not converge - LR test not computed"
       }

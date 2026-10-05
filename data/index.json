@@ -1,6 +1,6 @@
 {
   "schema": "index-v1",
-  "generated_utc": "2026-08-05T16:29:26+00:00",
+  "generated_utc": "2026-10-05T12:42:44+00:00",
   "lexicon": "abg_2012 (Apel & Blix Grimaldi 2012, verbatim - see pipeline/score/lexicon/abg_2012.json and DECISIONS.md). starter_v0 remains in the repo as plumbing only and is no longer used in any output.",
   "neutral_value": 1.0,
   "documents": [
@@ -1523,6 +1523,22 @@
       "abg_hawk": 1,
       "abg_dove": 2,
       "abg_net_index": 0.6667
+    },
+    {
+      "doc_id": "minutes-2026-09",
+      "type": "minutes",
+      "meeting_end": "2026-09-16",
+      "published": "2026-09-17",
+      "decision": "maintain Bank Rate at 3.75%",
+      "vote": "6-3",
+      "raw_vote_text": "Related links Related links Our latest decision explained Current Bank Rate 3.75% Next due: 5 November 2026 Monetary Policy Summary and minutes of the Monetary Policy Committee meeting on 17 September 2026 PDF 0.3MB) PDF Close dialog Published on 17 September 2026 Monetary Policy Summary, September 2026 At its meeting ending on 16 September 2026, the Monetary Policy Committee (MPC) voted by a majority of 6\u20133 to maintain Bank Rate at 3.75%.",
+      "source_url": "https://www.bankofengland.co.uk/monetary-policy-summary-and-minutes/2026/september-2026",
+      "source_kind": "html",
+      "word_count": 7739,
+      "sha256": "0c3764be868cbee324065fece4e64082fa873b16295f50b827675368b8f80f13",
+      "abg_hawk": 4,
+      "abg_dove": 2,
+      "abg_net_index": 1.3333
     }
   ],
   "series": [
@@ -2000,6 +2016,11 @@
       "date": "2026-07-30",
       "abg_net_index": 0.6667,
       "doc_id": "minutes-2026-07"
+    },
+    {
+      "date": "2026-09-17",
+      "abg_net_index": 1.3333,
+      "doc_id": "minutes-2026-09"
     }
   ]
 }
